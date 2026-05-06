@@ -17,7 +17,7 @@ Plan Agent 负责管理项目计划，并对代码进行审查、提交问题与
 
 ### 1. 定位文件
 
-找到或创建 `.ai/reviews/REV-{stage}.md`。同一阶段的所有审查问题写入同一文件。
+找到或创建 `.ai/users/{username}/code_review/REV-{stage}.md`。同一阶段的所有审查问题写入同一文件。
 
 ### 2. 分配编号
 
@@ -48,8 +48,12 @@ REV 编号全局递增。如果文件已存在，从文件中最后一个编号 
 
 ### 4. 更新索引
 
-- 在 `.ai/reviews/index.md` 中更新对应阶段文件的待处理条目数。
-- 在 `.ai/reviews/log.md` 追加 `[REV-{stage}-{NO}] pending: {一句话描述}`。
+- 在 `.ai/users/{username}/code_review/index.md` 中更新对应阶段文件的待处理条目数。
+- 在 `.ai/users/{username}/code_review/log.md` 追加 `[REV-{stage}-{NO}] pending: {一句话描述}`。
+
+### 5. 上报公域
+
+若问题优先级为 `high`，须立即将问题详情（标题、描述、影响范围）写入公共日志 `.ai/log/`，确保团队及时可见。
 
 ---
 
@@ -62,16 +66,4 @@ REV 编号全局递增。如果文件已存在，从文件中最后一个编号 
 3. 写入验收记录（`通过` 或 `不通过` + 备注）。
 4. 更新状态：通过 → `closed`，不通过 → 退回 `fixing`。
 5. 更新 `index.md` 和 `log.md`。
-
----
-
-## 部署
-
-在目标项目的 `kilo.jsonc` 中追加本文件路径：
-
-```jsonc
-"instructions": [
-  "Kilo/Instructions/kilo_instructions_core.md",
-  ".kilo/rules/plan-agent-addon.md"
-]
-```
+6. 若条目 `closed`，简要记录结论到公共日志 `.ai/log/`。

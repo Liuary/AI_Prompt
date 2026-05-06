@@ -1,121 +1,159 @@
 # 部署指令
 
-本文件供 AI Agent 自动执行部署。请按步骤操作，完成后告知用户结果。
+本文件供 AI Agent 自动执行部署。按步骤顺序操作，每步完成后确认成功再进入下一步。全部完成后向用户报告结果。
 
 ## 环境判定
 
-首先确认目标项目目录结构。如果根目录不存在 `AGENTS.md`、`kilo.jsonc`、`.kilo/` 等文件，说明是首次部署，需要全量初始化。如果部分文件已存在，跳过已有步骤并告知用户已跳过的项。
+首先检查目标项目根目录是否存在 `AGENTS.md`、`kilo.jsonc` 或 `.kilo/` 目录。若三者均不存在则为**首次部署**，执行全部步骤；否则为**增量部署**，跳过已存在的文件/目录并告知用户跳过的项。
 
-## 步骤 1：核心约束与流程文件
+## 步骤 1：创建目录结构
 
-### 1.1 创建 AGENTS.md
+在目标项目根目录依次执行（已存在则跳过）：
 
-如果目标项目根目录不存在 `AGENTS.md`，则创建并将模板内容写入。
+```bash
+mkdir -p .kilo/rules
+mkdir -p .kilo/agents
+mkdir -p .kilo/skills/bug-acceptance
+mkdir -p .kilo/skills/get-bugs
+mkdir -p .kilo/skills/check-kb
+mkdir -p .ai/dev/note
+mkdir -p .ai/log
+mkdir -p .ai/plan
+mkdir -p .ai/kb
+mkdir -p .ai/tmp
+mkdir -p .ai/users
+```
 
-模板内容与当前项目的 `AGENTS.md` 相同。读取当前项目的 `AGENTS.md` 文件内容，写入目标项目的 `AGENTS.md`。
+## 步骤 2：部署核心配置文件
 
-### 1.2 创建 kilo.jsonc
+### 2.1 AGENTS.md
 
-如果目标项目根目录不存在 `kilo.jsonc`，创建并写入：
+若目标项目已存在 `AGENTS.md` 则跳过。否则读取**当前项目**的 `AGENTS.md` 完整内容，写入目标项目根目录 `AGENTS.md`。
+
+### 2.2 kilo.jsonc
+
+若目标项目已存在 `kilo.jsonc` 则跳过。否则创建并写入：
 
 ```jsonc
 {
+  "$schema": "https://app.kilo.ai/config.json",
   "instructions": [
     ".kilo/rules/kilo_instructions_core.md",
-    ".kilo/rules/coding-agent-addon.md"
+    ".kilo/rules/coding-agent-addon.md",
+    ".kilo/rules/plan-agent-addon.md"
   ]
 }
 ```
 
-### 1.3 创建 .kilo/rules/ 目录
+## 步骤 3：部署 Instructions 与附加指令
 
-```bash
-mkdir -p .kilo/rules
-```
+源文件统一从**当前项目**路径读取。若当前项目不可用（如通过 URL 远程部署），则以 GitHub 源文件为回退：
 
-### 1.4 复制 Instructions 核心文件
+| 源文件（当前项目） | 目标文件 | 说明 |
+|---|---|---|
+| `Kilo/Instructions/kilo_instructions_core.md` | `.kilo/rules/kilo_instructions_core.md` | .ai 工作区操作规范（公域+私域） |
+| `Kilo/rules/coding-agent-addon.md` | `.kilo/rules/coding-agent-addon.md` | 代码 Agent 附加指令（Bug 修复 + 审查处理流程） |
+| `Kilo/rules/plan-agent-addon.md` | `.kilo/rules/plan-agent-addon.md` | Plan Agent 附加指令（计划管理 + 审查提交与验收） |
 
-读取源文件中 `Kilo/Instructions/kilo_instructions_core.md` 的完整内容，写入目标项目的 `.kilo/rules/kilo_instructions_core.md`。
+每个文件的部署操作：
+1. 若目标文件已存在且内容非空 → 跳过。
+2. 读取源文件完整内容 → 写入目标文件。
+3. 若源文件读取失败，回退读取 GitHub 原始文件：
+   ```
+   https://raw.githubusercontent.com/Liuary/AI_Prompt/main/{源文件路径}
+   ```
 
-### 1.5 复制代码 Agent 附加指令
+## 步骤 4：部署 Agent 文件
 
-读取源文件中 `Kilo/rules/coding-agent-addon.md` 的完整内容，写入目标项目的 `.kilo/rules/coding-agent-addon.md`。
+将以下 Agent 定义文件逐一从源复制到目标（已存在则跳过）：
 
-源文件路径从以下任一位置查找：
-- 当前项目 `Kilo/rules/coding-agent-addon.md`
-- GitHub 原始文件 `https://raw.githubusercontent.com/huayinghuo/AI_Prompt/main/Kilo/rules/coding-agent-addon.md`
+| 源文件 | 目标文件 | 类型 |
+|--------|----------|------|
+| `Kilo/agents/code.md` | `.kilo/agents/code.md` | 主 Agent（覆盖内置 code） |
+| `Kilo/agents/plan.md` | `.kilo/agents/plan.md` | 主 Agent（覆盖内置 plan） |
+| `Kilo/agents/ask.md` | `.kilo/agents/ask.md` | 主 Agent（覆盖内置 ask） |
+| `Kilo/agents/debug.md` | `.kilo/agents/debug.md` | 子代办（由 code 调用） |
+| `Kilo/agents/tester.md` | `.kilo/agents/tester.md` | 子代办（由 code 调用） |
 
-## 步骤 2：Subagent 部署
+每个文件：读取完整内容 → 写入目标路径。YAML 头（`---` 到 `---`）必须完整保留。
 
-### 2.1 创建 agent 目录
+## 步骤 5：部署 Skill 文件
 
-```bash
-mkdir -p .kilo/agents
-```
-
-### 2.2 部署 tester Subagent
-
-读取源文件 `Kilo/agents/tester.md` 的完整内容，写入目标项目的 `.kilo/agents/tester.md`。
-
-YAML 头必须完整保留（从 `---` 到 `---`），正文 Prompt 保持原样。
-
-## 步骤 3：Skill 部署
-
-### 3.1 创建 skill 目录
-
-```bash
-mkdir -p .kilo/skills
-```
-
-### 3.2 逐一部署 Skill 文件
-
-将以下 Skill 文件从源复制到目标：
+将以下 Skill 文件逐一从源复制到目标（已存在则跳过）：
 
 | 源文件 | 目标文件 |
 |--------|----------|
-| `Kilo/skills/bug-acceptance.md` | `.kilo/skills/bug-acceptance.md` |
-| `Kilo/skills/get-bugs.md` | `.kilo/skills/get-bugs.md` |
-| `Kilo/skills/check-kb.md` | `.kilo/skills/check-kb.md` |
+| `Kilo/skills/bug-acceptance/SKILL.md` | `.kilo/skills/bug-acceptance/SKILL.md` |
+| `Kilo/skills/get-bugs/SKILL.md` | `.kilo/skills/get-bugs/SKILL.md` |
+| `Kilo/skills/check-kb/SKILL.md` | `.kilo/skills/check-kb/SKILL.md` |
 
 每个文件：读取完整内容 → 写入目标路径，保持 Markdown 格式不变。
 
-## 步骤 4：初始化 .ai/ 工作目录
+## 步骤 6：配置 .ai/ 工作区
 
-在目标项目根目录创建以下子目录（如已存在则跳过）：
+### 6.1 创建用户身份文件
 
-```bash
-mkdir -p .ai/dev/note
-mkdir -p .ai/log
-mkdir -p .ai/plan
-mkdir -p .ai/reviews
-mkdir -p .ai/bugs
-mkdir -p .ai/kb
-mkdir -p .ai/tmp
+若 `.ai/.info.json` 不存在则创建：
+
+```json
+{
+    "user": ""
+}
 ```
 
-## 步骤 5：验证与报告
+Agent 在首次会话时将自动填入用户名（通过 `git config user.name` 获取）。若用户手动填入也可。
 
-### 5.1 验证清单
+### 6.2 配置 .gitignore
 
-检查以下文件是否全部存在且内容非空：
-
-- [ ] `AGENTS.md`
-- [ ] `kilo.jsonc`
-- [ ] `.kilo/rules/kilo_instructions_core.md`
-- [ ] `.kilo/rules/coding-agent-addon.md`
-- [ ] `.kilo/agents/tester.md`
-- [ ] `.kilo/skills/bug-acceptance.md`
-- [ ] `.kilo/skills/get-bugs.md`
-- [ ] `.kilo/skills/check-kb.md`
-
-### 5.2 报告模板
-
-向用户输出部署报告，格式如下：
+检查目标项目 `.gitignore` 中是否包含以下行，缺失则追加：
 
 ```
-部署完成。共创建/更新 X 个文件，跳过 N 个已存在文件。
+.ai/.info.json
+.ai/users/
+.kilo/
+```
+
+若目标项目无 `.gitignore` 则创建并写入以上内容。
+
+## 步骤 7：验证
+
+检查以下文件是否全部存在且内容非空。任何遗漏均须在报告中说明。
+
+| 文件 | 说明 |
+|------|------|
+| `AGENTS.md` | 核心行为准则 |
+| `kilo.jsonc` | Kilo 配置 |
+| `.kilo/rules/kilo_instructions_core.md` | .ai 工作区操作规范 |
+| `.kilo/rules/coding-agent-addon.md` | 代码 Agent 附加指令 |
+| `.kilo/rules/plan-agent-addon.md` | Plan Agent 附加指令 |
+| `.kilo/agents/code.md` | 代码 Agent 定义 |
+| `.kilo/agents/plan.md` | Plan Agent 定义 |
+| `.kilo/agents/ask.md` | Ask Agent 定义 |
+| `.kilo/agents/debug.md` | Debug Agent 定义 |
+| `.kilo/agents/tester.md` | 测试 Agent 定义 |
+| `.kilo/skills/bug-acceptance/SKILL.md` | Bug 验收 Skill |
+| `.kilo/skills/get-bugs/SKILL.md` | 获取 Bug Skill |
+| `.kilo/skills/check-kb/SKILL.md` | 查阅知识库 Skill |
+| `.ai/.info.json` | 用户身份文件 |
+
+## 步骤 8：报告
+
+向用户输出部署报告：
+
+```
+部署完成。
+
+{每个文件的状态列表，格式如下：}
+- ✅ AGENTS.md （已创建）
+- ✅ kilo.jsonc （已创建）
+- ⏭️ .kilo/rules/kilo_instructions_core.md （已存在，跳过）
+- ✅ .kilo/rules/coding-agent-addon.md （已创建）
+...
+
+共创建 X 个文件，跳过 N 个已存在文件。
 
 生效操作：
 - Subagent 和 Skill 需重启 Kilo 会话后生效
-- AGENTS.md 和 kilo.jsonc 即时生效
+- AGENTS.md 和 kilo.jsonc 中引用的 Instructions 即时生效
+- .ai/ 工作区目录已就绪，Agent 首次会话时将自动初始化子文件
 ```

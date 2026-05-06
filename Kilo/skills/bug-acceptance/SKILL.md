@@ -1,16 +1,19 @@
-# Bug 验收
+---
+name: bug-acceptance
+description: 标准化 Bug 验收流程，供测试 Agent 或代码 Agent（自测后自查）调用。
+---
 
-标准化 Bug 验收流程，供测试 Agent 或代码 Agent（自测后自查）调用。
+# Bug 验收
 
 ## 输入
 
-- Bug 编号（如 `BUG-20260506-001`）
+- 模块名 和 Bug 编号（如 `模块A/BUG-001`）
 
 ## 执行步骤
 
 ### 1. 读取 Bug 文件
 
-读取 `.ai/bugs/{编号}_{标题}.md`，提取以下关键信息：
+读取 `.ai/users/{username}/bugs/{模块名}/{编号}_{标题}.md`，提取以下关键信息：
 - 期望行为（`## 期望行为`）
 - 复现步骤（`## 复现步骤`）
 - 修复记录中的 Commit（`## 修复记录` 表格）
@@ -41,5 +44,9 @@
 
 - **验收通过**：Bug 状态改为 `closed`。
 - **验收不通过**：Bug 状态退回 `fixing`。
-- 更新 `.ai/bugs/index.md` 中该 Bug 的状态。
-- 更新 `.ai/bugs/log.md` 追加变更摘要。
+- 更新 `.ai/users/{username}/bugs/index.md` 中该 Bug 的状态。
+- 更新 `.ai/users/{username}/bugs/log.md` 追加变更摘要。
+
+### 6. 归入公共域
+
+验收通过后，简要记录结论到公共日志 `.ai/log/`。
