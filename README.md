@@ -71,6 +71,8 @@ AI_Prompt/
 python deploy.py /path/to/target
 ```
 
+或者让 AI 读取 DEPLOY.md ，按照规则自动部署。
+
 ### 手动部署
 
 在目标项目中按以下步骤部署：
