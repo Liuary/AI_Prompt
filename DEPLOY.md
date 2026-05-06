@@ -1,6 +1,21 @@
 # 部署指令
 
-本文件供 AI Agent 自动执行部署。按步骤顺序操作，每步完成后确认成功再进入下一步。全部完成后向用户报告结果。
+本文件供 AI Agent 自动执行部署，也提供 `deploy.py` 脚本供用户手动一键部署。
+
+## 自动部署（推荐）
+
+```bash
+python deploy.py /path/to/target
+python deploy.py /path/to/target --source /path/to/template
+```
+
+脚本自动完成所有目录创建、文件复制和配置生成。详见 `python deploy.py --help`。
+
+---
+
+## 手动部署
+
+按步骤顺序操作，每步完成后确认成功再进入下一步。
 
 ## 环境判定
 

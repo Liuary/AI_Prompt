@@ -8,6 +8,7 @@
 AI_Prompt/
 ├── AGENTS.md                    # 项目永久性行为约束 + 编码规范（跨工具通用标准）
 ├── kilo.jsonc                   # Kilo 配置，引用 Instructions 文件
+├── deploy.py                    # 一键部署脚本
 ├── Kilo/                           # 模板文件
 │   ├── Instructions/
 │   │   └── kilo_instructions_core.md    # .ai 工作区操作规范（公域+私域统一版）
@@ -63,6 +64,14 @@ AI_Prompt/
 私域中的代码审查和 Bug 追踪在完成时，将核心结论摘要写入公共日志，详细记录保留在本地。
 
 ## 部署
+
+### 自动部署（推荐）
+
+```bash
+python deploy.py /path/to/target
+```
+
+### 手动部署
 
 在目标项目中按以下步骤部署：
 
