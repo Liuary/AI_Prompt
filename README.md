@@ -12,7 +12,6 @@ AI_Prompt/
 │   ├── Instructions/
 │   │   └── kilo_instructions_core.md    # .ai 工作区操作规范（公域+私域统一版）
 │   ├── agents/
-│   │   ├── code.md                 # 代码 Agent 模板
 │   │   ├── plan.md                 # Plan Agent 模板
 │   │   ├── ask.md                  # Ask Agent 模板
 │   │   ├── debug.md                # Debug Agent 模板
@@ -95,14 +94,14 @@ AI_Prompt/
 ```bash
 # 在目标项目根目录执行
 mkdir -p .kilo/agents
-cp AI_Prompt/Kilo/agents/code.md .kilo/agents/code.md
 cp AI_Prompt/Kilo/agents/plan.md .kilo/agents/plan.md
 cp AI_Prompt/Kilo/agents/ask.md  .kilo/agents/ask.md
 cp AI_Prompt/Kilo/agents/debug.md .kilo/agents/debug.md
 cp AI_Prompt/Kilo/agents/tester.md .kilo/agents/tester.md
 ```
 
-- `code`、`plan`、`ask` 为主 Agent，覆盖 Kilo 内置同名 Agent，带有角色权限约束
+- `plan`、`ask` 为主 Agent，覆盖 Kilo 内置同名 Agent，带有角色权限约束
+- `code` 保留 Kilo 内置，通过 `coding-agent-addon.md` 注入工作流指令
 - `debug`、`tester` 为子代办 Agent，由主 Agent 通过 `task` 工具按需调用
 
 ### 3. Skill

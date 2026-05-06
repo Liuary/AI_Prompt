@@ -71,7 +71,6 @@ mkdir -p .ai/users
 
 | 源文件 | 目标文件 | 类型 |
 |--------|----------|------|
-| `Kilo/agents/code.md` | `.kilo/agents/code.md` | 主 Agent（覆盖内置 code） |
 | `Kilo/agents/plan.md` | `.kilo/agents/plan.md` | 主 Agent（覆盖内置 plan） |
 | `Kilo/agents/ask.md` | `.kilo/agents/ask.md` | 主 Agent（覆盖内置 ask） |
 | `Kilo/agents/debug.md` | `.kilo/agents/debug.md` | 子代办（由 code 调用） |
@@ -128,7 +127,6 @@ Agent 在首次会话时将自动填入用户名（通过 `git config user.name`
 | `.kilo/rules/kilo_instructions_core.md` | .ai 工作区操作规范 |
 | `.kilo/rules/coding-agent-addon.md` | 代码 Agent 附加指令 |
 | `.kilo/rules/plan-agent-addon.md` | Plan Agent 附加指令 |
-| `.kilo/agents/code.md` | 代码 Agent 定义 |
 | `.kilo/agents/plan.md` | Plan Agent 定义 |
 | `.kilo/agents/ask.md` | Ask Agent 定义 |
 | `.kilo/agents/debug.md` | Debug Agent 定义 |
