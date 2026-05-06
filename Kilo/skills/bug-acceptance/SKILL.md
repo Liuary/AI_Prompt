@@ -49,4 +49,4 @@ description: 标准化 Bug 验收流程，供测试 Agent 或代码 Agent（自�
 
 ### 6. 归入公共域
 
-验收通过后，简要记录结论到公共日志 `.ai/log/`。
+验收通过后，核心结论写入 `.ai/bugs/{module}.md`，并在公共日志简要记录。

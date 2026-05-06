@@ -89,4 +89,4 @@ permission:
 6. **更新索引与日志**：
    - 更新 `.ai/users/{username}/bugs/index.md` 中该 Bug 的状态。
    - 更新 `.ai/users/{username}/bugs/log.md` 追加变更摘要。
-7. **归入公共域**：验收通过后，简要记录结论到公共日志 `.ai/log/`。
+7. **归入公共域**：验收通过后，核心结论写入 `.ai/bugs/{module}.md`，并在公共日志简要记录。

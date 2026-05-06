@@ -18,6 +18,8 @@ mkdir -p .kilo/skills/get-bugs
 mkdir -p .kilo/skills/check-kb
 mkdir -p .ai/dev/note
 mkdir -p .ai/log
+mkdir -p .ai/code_review
+mkdir -p .ai/bugs
 mkdir -p .ai/plan
 mkdir -p .ai/kb
 mkdir -p .ai/tmp
