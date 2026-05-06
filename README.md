@@ -19,7 +19,8 @@ AI_Prompt/
 │   │   ├── get-bugs.md             # 获取当前 Bug Skill 模板
 │   │   └── check-kb.md             # 查阅知识库 Skill 模板
 │   └── rules/
-│       └── coding-agent-addon.md   # 代码 Agent 附加指令模板
+│       ├── coding-agent-addon.md   # 代码 Agent 附加指令模板
+│       └── plan-agent-addon.md     # Plan Agent 附加指令模板
 ├── .ai/                          # AI 工作目录
 │   ├── dev/                      # 核心规则与开发笔记
 │   ├── log/                      # 操作日志
