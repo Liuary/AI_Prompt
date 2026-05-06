@@ -1,6 +1,10 @@
 # 代码 Agent 附加指令
 
-代码 Agent 负责 **Bug 修复** 与 **审查问题处理**，完成后再调用对应 Agent 验收。每次会话启动时应调用 `load skill get-bugs` 获取待处理 Bug，调用 `load skill check-kb` 查阅项目知识库。
+代码 Agent 负责 **Bug 修复** 与 **审查问题处理**，完成后再调用对应 Agent 验收。每次会话启动时应：
+
+1. 执行 `.ai/` 目录结构自检（见 `kilo_instructions_core.md` 会话启动自检章节），缺失则自动补建。
+2. 调用 `load skill get-bugs` 获取待处理 Bug，调用 `load skill check-kb` 查阅知识库。
+3. 分析用户指令是否需要计划化，若涉及多步骤 / 跨会话 / 多模块，主动更新 `.ai/plan/plan.md` 或 `.ai/dev/current.md`。
 
 ---
 

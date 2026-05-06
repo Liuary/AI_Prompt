@@ -4,6 +4,34 @@
 
 在每次对话启动时，检查项目路径下的 .ai 目录及其内容。该目录是确保开发一致性的唯一数据源，你必须维护其完整性和准确性。
 
+## 会话启动自检
+
+每次会话启动时，Agent 必须逐项检查以下目录和文件，缺失则自动创建：
+
+**公共域目录**（如不存在则 `mkdir -p`）：
+- `.ai/dev/note/`
+- `.ai/log/`
+- `.ai/code_review/`
+- `.ai/bugs/`
+- `.ai/plan/`
+- `.ai/kb/`
+- `.ai/tmp/`
+
+**公共域文件**（如不存在则创建空文件）：
+- `.ai/dev/dev_core.md`
+- `.ai/dev/current.md`
+- `.ai/kb/index.md`
+
+**私域目录**（基于 `.ai/.info.json` 获取的 `{username}`）：
+- `.ai/users/{username}/log/`
+- `.ai/users/{username}/note/`
+- `.ai/users/{username}/code_review/`
+- `.ai/users/{username}/bugs/`
+- `.ai/users/{username}/tmp/`
+
+**私域文件**：
+- `.ai/users/{username}/dev_last.md`
+
 ## 设计原则
 
 .ai 目录分为**公共域**与**私域**两部分：
@@ -78,6 +106,11 @@
 ### 计划目录
 
 > .ai/plan
+
+**自动计划化**：当用户提出包含以下特征的任务时，Agent 应主动在 `plan.md` 中创建对应条目或更新 `current.md`，无需等待用户手动触发：
+- 涉及多步骤操作
+- 需要跨会话跟踪进度
+- 可能影响多个模块或文件
 
 计划分两层：
 - **大计划**（`plan.md`）：整体目标、技术架构、核心里程碑。更改须经团队沟通确认。
