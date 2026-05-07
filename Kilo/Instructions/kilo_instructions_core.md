@@ -50,6 +50,16 @@
 
 每次对话启动时，Agent 首先读取此文件获取当前用户名。若文件不存在或 `user` 为空，则自动执行 `git config user.name` 获取 Git 用户名并写入。若无 Git 配置则选取默认用户名。此文件加入 `.gitignore` 不纳入版本管理。
 
+### 路径自校验
+
+大模型在构造 `.ai/users/{username}/` 路径时可能意外截断或修改用户名（如 `Alice` → `Alic`），导致文件读写失败。访问任何 `.ai/users/{username}/` 下的文件时，必须遵循以下自校验规则：
+
+1. **访问失败立即校验**：`read`、`write`、`edit`、`glob` 操作返回 "file not found" 或 "no such file" 时，不要直接报错。先执行 `read .ai/.info.json` 重新获取正确的 `username`。
+2. **比对并修正**：将当前使用的 `username` 与 `.ai/.info.json` 中的值逐字符比对。若不一致，用正确值重建完整路径后重试。
+3. **连续失败上报**：重试仍失败时，向用户报告「路径 `{失败的路径}` 不存在，已确认用户名为 `{正确用户名}`」，由用户确认后再操作。
+
+此规则适用于所有 Agent（Architect / Code / Debug / Tester / Ask）。
+
 ---
 
 ## 公共域
