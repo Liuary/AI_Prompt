@@ -132,6 +132,61 @@
 
 发生计划外操作或偏差时，必须先向用户说明并寻求确认，同时在日志中记录。
 
+#### 子计划状态与自动闭环
+
+每个小计划阶段目录下必须维护 `status.md`，用于记录该阶段的执行状态和责任 Agent。人工流程为默认模式，只有用户明确开启自动闭环时，Agent 才能根据状态自动启动下游会话。
+
+`status.md` 模板：
+
+```markdown
+# {stage} 状态
+
+- **执行模式**：manual | auto
+- **自动推进**：disabled | enabled
+- **状态**：planned | ready_for_code | coding | ready_for_review | review_failed | review_passed | ready_for_test | test_writing | testing | bug_found | bug_fixing | done | paused
+- **当前责任 Agent**：architect | code | test-writer | tester | user
+- **上一责任 Agent**：architect | code | test-writer | tester | user | none
+- **更新时间**：yyyy-mm-dd HH:MM
+
+## 当前任务
+...
+
+## 阻塞 / 暂停原因
+...
+
+## 状态记录
+| 时间 | Agent | 状态变化 | 说明 |
+|------|-------|----------|------|
+```
+
+状态含义：
+- `planned`：计划已创建，等待用户确认或细化。
+- `ready_for_code`：可进入编码实现。
+- `coding`：代码 Agent 正在实现。
+- `ready_for_review`：实现完成，等待 Architect 审查。
+- `review_failed`：审查不通过，等待代码 Agent 修改。
+- `review_passed`：审查通过，可进入测试阶段。
+- `ready_for_test`：等待测试编写或验收。
+- `test_writing`：TestWriter Agent 正在补充测试代码。
+- `testing`：Tester Agent 正在执行测试与验收。
+- `bug_found`：测试发现 Bug，等待代码 Agent 修复。
+- `bug_fixing`：代码 Agent 正在修复 Bug。
+- `done`：子计划完成，自动流程停止。
+- `paused`：流程暂停，必须等待用户决策。
+
+自动推进规则：
+- 默认 `执行模式=manual` 且 `自动推进=disabled`，不允许 Agent 自行启动其他会话。
+- 仅当 `执行模式=auto` 且 `自动推进=enabled` 时，允许 Agent 根据状态启动下游 Agent Manager session。
+- 任一 Agent 遇到计划外架构变更、超过范围的修改、权限不明确、测试环境缺失、连续两次验收失败时，必须将状态改为 `paused`，`当前责任 Agent` 改为 `user`，并写明暂停原因。
+- 状态为 `done`、`paused` 或 `当前责任 Agent=user` 时，不得继续自动推进。
+
+允许的自动启动链路：
+- Architect 可启动 Code、TestWriter、Tester。
+- Code 可启动 Architect、Tester、Debug。
+- TestWriter 可启动 Tester。
+- Tester 可启动 Code。
+- Debug 不得启动其他 Agent。
+
 ### 临时目录
 
 > .ai/tmp

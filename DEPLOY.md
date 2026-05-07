@@ -31,6 +31,8 @@ mkdir -p .kilo/agents
 mkdir -p .kilo/skills/bug-acceptance
 mkdir -p .kilo/skills/get-bugs
 mkdir -p .kilo/skills/check-kb
+mkdir -p .kilo/skills/get-stage-status
+mkdir -p .kilo/skills/update-stage-status
 mkdir -p .ai/dev/note
 mkdir -p .ai/log
 mkdir -p .ai/code_review
@@ -56,7 +58,10 @@ mkdir -p .ai/users
   "$schema": "https://app.kilo.ai/config.json",
   "instructions": [
     ".kilo/Instructions/kilo_instructions_core.md"
-  ]
+  ],
+  "experimental": {
+    "agent_manager_tool": true
+  }
 }
 ```
 
@@ -87,6 +92,7 @@ mkdir -p .ai/users
 | `Kilo/agents/ask.md` | `.kilo/agents/ask.md` | 主 Agent（覆盖内置 ask） |
 | `Kilo/agents/debug.md` | `.kilo/agents/debug.md` | 子代办（由 code 调用） |
 | `Kilo/agents/tester.md` | `.kilo/agents/tester.md` | 子代办（由 code 调用） |
+| `Kilo/agents/test-writer.md` | `.kilo/agents/test-writer.md` | 子代办（由 architect 调用，负责写测试） |
 
 每个文件：读取完整内容 → 写入目标路径。YAML 头（`---` 到 `---`）必须完整保留。
 
@@ -99,6 +105,8 @@ mkdir -p .ai/users
 | `Kilo/skills/bug-acceptance/SKILL.md` | `.kilo/skills/bug-acceptance/SKILL.md` |
 | `Kilo/skills/get-bugs/SKILL.md` | `.kilo/skills/get-bugs/SKILL.md` |
 | `Kilo/skills/check-kb/SKILL.md` | `.kilo/skills/check-kb/SKILL.md` |
+| `Kilo/skills/get-stage-status/SKILL.md` | `.kilo/skills/get-stage-status/SKILL.md` |
+| `Kilo/skills/update-stage-status/SKILL.md` | `.kilo/skills/update-stage-status/SKILL.md` |
 
 每个文件：读取完整内容 → 写入目标路径，保持 Markdown 格式不变。
 
@@ -142,9 +150,12 @@ Agent 在首次会话时将自动填入用户名（通过 `git config user.name`
 | `.kilo/agents/ask.md` | Ask Agent 定义 |
 | `.kilo/agents/debug.md` | Debug Agent 定义 |
 | `.kilo/agents/tester.md` | 测试 Agent 定义 |
+| `.kilo/agents/test-writer.md` | 测试编写 Agent 定义 |
 | `.kilo/skills/bug-acceptance/SKILL.md` | Bug 验收 Skill |
 | `.kilo/skills/get-bugs/SKILL.md` | 获取 Bug Skill |
 | `.kilo/skills/check-kb/SKILL.md` | 查阅知识库 Skill |
+| `.kilo/skills/get-stage-status/SKILL.md` | 获取子计划状态 Skill |
+| `.kilo/skills/update-stage-status/SKILL.md` | 更新子计划状态 Skill |
 | `.ai/.info.json` | 用户身份文件 |
 
 ## 步骤 8：报告

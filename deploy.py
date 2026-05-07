@@ -28,9 +28,12 @@ TEMPLATE_FILES = {
     "Kilo/agents/ask.md": ".kilo/agents/ask.md",
     "Kilo/agents/debug.md": ".kilo/agents/debug.md",
     "Kilo/agents/tester.md": ".kilo/agents/tester.md",
+    "Kilo/agents/test-writer.md": ".kilo/agents/test-writer.md",
     "Kilo/skills/bug-acceptance/SKILL.md": ".kilo/skills/bug-acceptance/SKILL.md",
     "Kilo/skills/get-bugs/SKILL.md": ".kilo/skills/get-bugs/SKILL.md",
     "Kilo/skills/check-kb/SKILL.md": ".kilo/skills/check-kb/SKILL.md",
+    "Kilo/skills/get-stage-status/SKILL.md": ".kilo/skills/get-stage-status/SKILL.md",
+    "Kilo/skills/update-stage-status/SKILL.md": ".kilo/skills/update-stage-status/SKILL.md",
 }
 
 # ─── 需要创建的目录 ───────────────────────────────────────────────────
@@ -40,6 +43,8 @@ DIRS = [
     ".kilo/skills/bug-acceptance",
     ".kilo/skills/get-bugs",
     ".kilo/skills/check-kb",
+    ".kilo/skills/get-stage-status",
+    ".kilo/skills/update-stage-status",
     ".ai/dev/note",
     ".ai/log",
     ".ai/code_review",
@@ -63,7 +68,10 @@ KILO_JSONC_CONTENT = """\
   "$schema": "https://app.kilo.ai/config.json",
   "instructions": [
     ".kilo/Instructions/kilo_instructions_core.md"
-  ]
+  ],
+  "experimental": {
+    "agent_manager_tool": true
+  }
 }
 """
 

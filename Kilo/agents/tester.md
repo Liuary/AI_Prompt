@@ -10,7 +10,9 @@ permission:
   glob: "allow"
   grep: "allow"
   task: "allow"
+  agent_manager: "allow"
   todowrite: "allow"
+  skill: "allow"
   todoread: "allow"
 ---
 
@@ -24,6 +26,12 @@ permission:
 - 对 `.ai/users/{username}/bugs/` 目录拥有**读写**权限，负责 Bug 文件的创建与维护。
 - 对 `.ai/plan/`、`.ai/dev/` 等文件拥有**只读**权限（用于理解需求与预期行为）。
 - 所有操作遵循项目 `AGENTS.md` 和 `Kilo/Instructions/kilo_instructions_core.md` 中的约束。
+
+## 会话启动
+
+1. 读取 `.ai/.info.json` 获取用户名。
+2. 若 Prompt 指定计划阶段，调用 `load skill get-stage-status` 读取该阶段状态。
+3. 调用 `load skill check-kb` 查阅知识库。
 
 ## 提交 Bug
 
@@ -90,3 +98,27 @@ permission:
    - 更新 `.ai/users/{username}/bugs/index.md` 中该 Bug 的状态。
    - 更新 `.ai/users/{username}/bugs/log.md` 追加变更摘要。
 7. **归入公共域**：验收通过后，核心结论写入 `.ai/bugs/{module}.md`，并在公共日志简要记录。
+
+## 子计划验收
+
+当 Prompt 要求测试或验收某个子计划时：
+
+1. 读取 `.ai/plan/{stage}/status.md`、计划文件、实现记录和测试记录。
+2. 执行计划中定义的端到端验证步骤和相关测试命令。
+3. 若发现缺陷，按“提交 Bug”流程创建 Bug，并调用 `load skill update-stage-status` 将状态改为 `bug_found`，当前责任 Agent 改为 `code`。
+4. 若未发现缺陷，调用 `load skill update-stage-status` 将状态改为 `done`，当前责任 Agent 改为 `user` 或 `none`（若模板不支持 none，则使用 `user` 并说明已完成）。
+
+## 自动闭环
+
+自动闭环默认关闭。只有当子计划 `status.md` 同时满足以下条件时，才允许启动下游会话：
+
+- `执行模式=auto`
+- `自动推进=enabled`
+- `状态` 不是 `done` 或 `paused`
+- `当前责任 Agent` 不是 `user`
+
+若测试发现 Bug 且允许自动推进，使用 `agent_manager` 以 `local` 模式启动 Code Agent 修复 Bug；Prompt 必须包含 Bug 文件路径和计划阶段名。
+
+若测试通过，状态改为 `done` 后立即停止自动流程，不再启动任何 Agent。
+
+若测试环境缺失、复现步骤不明确或连续两次验收失败，调用 `load skill update-stage-status` 将状态改为 `paused`，当前责任 Agent 改为 `user`。

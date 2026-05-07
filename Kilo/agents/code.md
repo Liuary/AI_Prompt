@@ -15,6 +15,7 @@ permission:
   glob: "allow"
   grep: "allow"
   task: "allow"
+  agent_manager: "allow"
   todowrite: "allow"
   skill: "allow"
 ---
@@ -24,7 +25,8 @@ permission:
 1. 读取 `.ai/.info.json` 获取用户名，后续所有 `.ai/users/` 路径基于此构造。
 2. 执行 `.ai/` 目录结构自检（见 `Kilo/Instructions/kilo_instructions_core.md` 会话启动自检章节），缺失则自动补建。
 3. 调用 `load skill get-bugs` 获取待处理 Bug，调用 `load skill check-kb` 查阅知识库。
-4. 分析用户指令是否需要计划化，若涉及多步骤 / 跨会话 / 多模块，主动更新 `.ai/plan/plan.md` 或 `.ai/dev/current.md`。
+4. 若用户或启动 Prompt 指定计划阶段，调用 `load skill get-stage-status` 读取 `.ai/plan/{stage}/status.md`。
+5. 分析用户指令是否需要计划化，若涉及多步骤 / 跨会话 / 多模块，主动更新 `.ai/plan/plan.md` 或 `.ai/dev/current.md`。
 
 ---
 
@@ -49,6 +51,7 @@ permission:
 - 将 Bug 文件中 `- **状态**：fixing` 改为 `- **状态**：resolved`。
 - 更新 `.ai/users/{username}/bugs/index.md` 中该 Bug 的状态。
 - 更新 `.ai/users/{username}/bugs/log.md` 追加 `[模块/编号] resolved: {修复说明}`。
+- 若本次修复归属于某个子计划，调用 `load skill update-stage-status` 将状态改为 `ready_for_test` 或 `ready_for_review`（按启动 Prompt 要求执行）。
 
 ### 4. 请求验收
 
@@ -86,3 +89,33 @@ permission:
 ### 4. 等待验收
 
 审查条目标记为 `resolved` 后，由 Architect Agent 在下一轮审查中验收。无需代码 Agent 主动请求。
+
+---
+
+## 自动闭环
+
+自动闭环默认关闭。只有当子计划 `status.md` 同时满足以下条件时，才允许启动下游会话：
+
+- `执行模式=auto`
+- `自动推进=enabled`
+- `状态` 不是 `done` 或 `paused`
+- `当前责任 Agent` 不是 `user`
+
+### 完成编码后
+
+完成计划实现并通过自测后：
+
+1. 调用 `load skill update-stage-status` 将状态改为 `ready_for_review`，当前责任 Agent 改为 `architect`。
+2. 若允许自动推进，使用 `agent_manager` 以 `local` 模式启动 Architect session 进行审查。
+3. 若 `agent_manager` 不可用或当前为 manual 流程，只写状态并告知用户下一步应由 Architect 审查。
+
+### 修复 Bug 后
+
+修复 Bug 并标记 `resolved` 后：
+
+1. 若允许自动推进，启动 Tester session 验收对应 Bug。
+2. 若不允许自动推进，只写入 Bug 状态和日志，等待用户或 Tester 手动验收。
+
+### 失败与暂停
+
+遇到计划外架构变更、修改范围超出计划、测试环境缺失或连续两次同类问题修复失败时，调用 `load skill update-stage-status` 将状态改为 `paused`，当前责任 Agent 改为 `user`，并说明原因。

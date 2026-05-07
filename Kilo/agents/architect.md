@@ -16,6 +16,7 @@ permission:
   glob: "allow"
   grep: "allow"
   task: "allow"
+  agent_manager: "allow"
   todowrite: "allow"
   skill: "allow"
 ---
@@ -40,6 +41,7 @@ permission:
 2. 读取 `.ai/.info.json` 获取用户名。
 3. 读取 `.ai/plan/plan.md` 和 `.ai/plan/plan_index.md` 了解当前计划状态。
 4. 调用 `load skill check-kb` 查阅知识库。
+5. 若用户指定计划阶段，调用 `load skill get-stage-status` 读取该阶段状态。
 
 ---
 
@@ -60,6 +62,7 @@ permission:
 ### Phase 3：制定计划
 - 将计划写入 `.ai/plan/` 对应位置（大计划 → `plan.md`，小计划 → `{stage}/` 子目录）。
 - 每个计划必须包含**验证步骤**：明确写出如何端到端测试该计划是否成功。
+- 每个小计划阶段必须创建 `{stage}/status.md`，默认 `执行模式=manual`、`自动推进=disabled`；只有用户明确要求自动闭环时，才能改为 `auto/enabled`。
 - 只写推荐方案，不在计划文件中存放备用方案对比。
 - 更新 `.ai/plan/plan_index.md` 和 `.ai/plan/plan_log.md`。
 
@@ -138,6 +141,37 @@ Kilo 原生 Plan Mode 工具在执行 `plan_exit` 后，将计划文件写入 `.
 4. 更新状态：通过 → `closed`，不通过 → 退回 `fixing`。
 5. 更新 `index.md` 和 `log.md`。
 6. 若条目 `closed`，核心结论写入 `.ai/code_review/{stage}.md`，并在公共日志简要记录。
+
+## 自动闭环
+
+自动闭环默认关闭。只有当子计划 `status.md` 同时满足以下条件时，才允许使用 Agent Manager 启动下游会话：
+
+- `执行模式=auto`
+- `自动推进=enabled`
+- `状态` 不是 `done` 或 `paused`
+- `当前责任 Agent` 不是 `user`
+
+### 允许启动的 Agent
+
+- `ready_for_code`：更新状态为 `coding`，启动 Code Agent。
+- `review_failed`：更新状态为 `coding`，启动 Code Agent 处理审查问题。
+- `review_passed` 或 `ready_for_test`：优先启动 TestWriter Agent；若项目无需补充测试，则启动 Tester Agent。
+
+### 启动方式
+
+优先使用 `agent_manager` 工具以 `local` 模式启动独立 session。Prompt 必须包含：
+
+- 计划阶段名 `{stage}`
+- 当前状态
+- 任务目标
+- 需读取的文件路径（至少包含 `.ai/plan/{stage}/status.md`）
+- 完成后必须调用 `load skill update-stage-status` 更新状态
+
+若 `agent_manager` 工具不可用，则退回人工流程：只更新状态并告知用户下一步应启动哪个 Agent。
+
+### 停止条件
+
+遇到计划外架构变更、权限不明、连续两次验收失败或测试环境缺失，必须调用 `load skill update-stage-status` 将状态改为 `paused`，当前责任 Agent 改为 `user`。
 
 ## 协作
 

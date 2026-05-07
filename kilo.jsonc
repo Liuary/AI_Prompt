@@ -2,5 +2,8 @@
   "$schema": "https://app.kilo.ai/config.json",
   "instructions": [
     "Kilo/Instructions/kilo_instructions_core.md"
-  ]
+  ],
+  "experimental": {
+    "agent_manager_tool": true
+  }
 }
