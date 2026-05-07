@@ -130,3 +130,7 @@ cp AI_Prompt/Kilo/skills/check-kb/SKILL.md .kilo/skills/check-kb/SKILL.md
 ### 4. 初始化 .ai/ 目录
 
 按需在目标项目创建 `.ai/` 子目录：`dev/note/`、`log/`、`plan/`、`kb/`、`tmp/`、`users/`。创建 `.ai/.info.json` 标识用户身份，并在 `.gitignore` 中忽略 `.ai/.info.json` 和 `.ai/users/`。
+
+## 示例项目
+
+- [novel_create](https://github.com/Liuary/novel_create) — 小说创作工具，使用 AI_Prompt 作为模板项目部署
