@@ -22,10 +22,9 @@ from pathlib import Path
 # ─── 模板文件清单（源文件相对路径 → 目标文件相对路径）───────────────────
 TEMPLATE_FILES = {
     "AGENTS.md": "AGENTS.md",
-    "Kilo/Instructions/kilo_instructions_core.md": ".kilo/rules/kilo_instructions_core.md",
-    "Kilo/rules/coding-agent-addon.md": ".kilo/rules/coding-agent-addon.md",
-    "Kilo/rules/plan-agent-addon.md": ".kilo/rules/plan-agent-addon.md",
-    "Kilo/agents/plan.md": ".kilo/agents/plan.md",
+    "Kilo/Instructions/kilo_instructions_core.md": ".kilo/Instructions/kilo_instructions_core.md",
+    "Kilo/agents/architect.md": ".kilo/agents/architect.md",
+    "Kilo/agents/code.md": ".kilo/agents/code.md",
     "Kilo/agents/ask.md": ".kilo/agents/ask.md",
     "Kilo/agents/debug.md": ".kilo/agents/debug.md",
     "Kilo/agents/tester.md": ".kilo/agents/tester.md",
@@ -36,7 +35,7 @@ TEMPLATE_FILES = {
 
 # ─── 需要创建的目录 ───────────────────────────────────────────────────
 DIRS = [
-    ".kilo/rules",
+    ".kilo/Instructions",
     ".kilo/agents",
     ".kilo/skills/bug-acceptance",
     ".kilo/skills/get-bugs",
@@ -63,9 +62,7 @@ KILO_JSONC_CONTENT = """\
 {
   "$schema": "https://app.kilo.ai/config.json",
   "instructions": [
-    ".kilo/rules/kilo_instructions_core.md",
-    ".kilo/rules/coding-agent-addon.md",
-    ".kilo/rules/plan-agent-addon.md"
+    ".kilo/Instructions/kilo_instructions_core.md"
   ]
 }
 """

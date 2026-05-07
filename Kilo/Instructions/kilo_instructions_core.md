@@ -189,7 +189,7 @@
 管理开发阶段的代码评审问题（架构、规范、逻辑），按计划阶段组织。与 Bug 追踪分离。
 
 **角色分工：**
-- **Plan Agent**：根据计划阶段审查代码，提交问题，验收修复结果。
+- **Architect Agent**：根据计划阶段审查代码，提交问题，验收修复结果。
 - **代码 Agent**：处理审查问题，修改代码并标记状态。
 
 每个计划阶段的审查问题集中在 `REV-{plan_stage}.md`。条目模板：
@@ -198,7 +198,7 @@
 ## REV-{NO}: {简要标题}
 - **状态**：pending | fixing | resolved | closed
 - **优先级**：high | medium | low
-- **提出人**：Plan Agent
+- **提出人**：Architect Agent
 - **提出时间**：yyyy-mm-dd HH:MM
 
 ### 问题描述
@@ -256,10 +256,10 @@ pending/open  ──→  fixing  ──→  resolved  ──→  closed
 
 | 状态 | 代码审查 | Bug 追踪 | 操作者 |
 |------|---------|---------|--------|
-| 起始 | `pending` | `open` | Plan/测试 Agent 提交 |
+| 起始 | `pending` | `open` | Architect/测试 Agent 提交 |
 | 修复中 | `fixing` | `fixing` | 代码 Agent 承接 |
 | 待验收 | `resolved` | `resolved` | 代码 Agent 完成 |
-| 关闭 | `closed` | `closed` | Plan/测试 Agent 验收通过 |
+| 关闭 | `closed` | `closed` | Architect/测试 Agent 验收通过 |
 
 ### 个人临时目录
 

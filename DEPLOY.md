@@ -26,7 +26,7 @@ python deploy.py /path/to/target --source /path/to/template
 在目标项目根目录依次执行（已存在则跳过）：
 
 ```bash
-mkdir -p .kilo/rules
+mkdir -p .kilo/Instructions
 mkdir -p .kilo/agents
 mkdir -p .kilo/skills/bug-acceptance
 mkdir -p .kilo/skills/get-bugs
@@ -55,22 +55,18 @@ mkdir -p .ai/users
 {
   "$schema": "https://app.kilo.ai/config.json",
   "instructions": [
-    ".kilo/rules/kilo_instructions_core.md",
-    ".kilo/rules/coding-agent-addon.md",
-    ".kilo/rules/plan-agent-addon.md"
+    ".kilo/Instructions/kilo_instructions_core.md"
   ]
 }
 ```
 
-## 步骤 3：部署 Instructions 与附加指令
+## 步骤 3：部署 Instructions
 
 源文件统一从**当前项目**路径读取。若当前项目不可用（如通过 URL 远程部署），则以 GitHub 源文件为回退：
 
 | 源文件（当前项目） | 目标文件 | 说明 |
 |---|---|---|
-| `Kilo/Instructions/kilo_instructions_core.md` | `.kilo/rules/kilo_instructions_core.md` | .ai 工作区操作规范（公域+私域） |
-| `Kilo/rules/coding-agent-addon.md` | `.kilo/rules/coding-agent-addon.md` | 代码 Agent 附加指令（Bug 修复 + 审查处理流程） |
-| `Kilo/rules/plan-agent-addon.md` | `.kilo/rules/plan-agent-addon.md` | Plan Agent 附加指令（计划管理 + 审查提交与验收） |
+| `Kilo/Instructions/kilo_instructions_core.md` | `.kilo/Instructions/kilo_instructions_core.md` | .ai 工作区操作规范（公域+私域） |
 
 每个文件的部署操作：
 1. 若目标文件已存在且内容非空 → 跳过。
@@ -86,7 +82,8 @@ mkdir -p .ai/users
 
 | 源文件 | 目标文件 | 类型 |
 |--------|----------|------|
-| `Kilo/agents/plan.md` | `.kilo/agents/plan.md` | 主 Agent（覆盖内置 plan） |
+| `Kilo/agents/architect.md` | `.kilo/agents/architect.md` | 主 Agent（新建 architect） |
+| `Kilo/agents/code.md` | `.kilo/agents/code.md` | 主 Agent（覆盖内置 code） |
 | `Kilo/agents/ask.md` | `.kilo/agents/ask.md` | 主 Agent（覆盖内置 ask） |
 | `Kilo/agents/debug.md` | `.kilo/agents/debug.md` | 子代办（由 code 调用） |
 | `Kilo/agents/tester.md` | `.kilo/agents/tester.md` | 子代办（由 code 调用） |
@@ -139,10 +136,9 @@ Agent 在首次会话时将自动填入用户名（通过 `git config user.name`
 |------|------|
 | `AGENTS.md` | 核心行为准则 |
 | `kilo.jsonc` | Kilo 配置 |
-| `.kilo/rules/kilo_instructions_core.md` | .ai 工作区操作规范 |
-| `.kilo/rules/coding-agent-addon.md` | 代码 Agent 附加指令 |
-| `.kilo/rules/plan-agent-addon.md` | Plan Agent 附加指令 |
-| `.kilo/agents/plan.md` | Plan Agent 定义 |
+| `.kilo/Instructions/kilo_instructions_core.md` | .ai 工作区操作规范 |
+| `.kilo/agents/architect.md` | Architect Agent 定义 |
+| `.kilo/agents/code.md` | 代码 Agent 定义 |
 | `.kilo/agents/ask.md` | Ask Agent 定义 |
 | `.kilo/agents/debug.md` | Debug Agent 定义 |
 | `.kilo/agents/tester.md` | 测试 Agent 定义 |
@@ -161,8 +157,8 @@ Agent 在首次会话时将自动填入用户名（通过 `git config user.name`
 {每个文件的状态列表，格式如下：}
 - ✅ AGENTS.md （已创建）
 - ✅ kilo.jsonc （已创建）
-- ⏭️ .kilo/rules/kilo_instructions_core.md （已存在，跳过）
-- ✅ .kilo/rules/coding-agent-addon.md （已创建）
+- ✅ .kilo/Instructions/kilo_instructions_core.md （已创建）
+- ✅ .kilo/agents/code.md （已创建）
 ...
 
 共创建 X 个文件，跳过 N 个已存在文件。

@@ -1,8 +1,6 @@
 {
   "$schema": "https://app.kilo.ai/config.json",
   "instructions": [
-    "Kilo/Instructions/kilo_instructions_core.md",
-    "Kilo/rules/coding-agent-addon.md",
-    "Kilo/rules/plan-agent-addon.md"
+    "Kilo/Instructions/kilo_instructions_core.md"
   ]
 }

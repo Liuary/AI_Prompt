@@ -1,8 +1,27 @@
-# 代码 Agent 附加指令
+---
+description: 代码 Agent，负责 Bug 修复与审查问题处理，完成后再调用对应 Agent 验收。
+mode: primary
+color: "#4A90D9"
+permission:
+  edit:
+    ".ai/plan/**": "allow"
+    ".ai/dev/**": "allow"
+    ".ai/log/**": "allow"
+    ".ai/kb/**": "allow"
+    ".ai/users/**": "allow"
+    "*": "allow"
+  bash: "allow"
+  read: "allow"
+  glob: "allow"
+  grep: "allow"
+  task: "allow"
+  todowrite: "allow"
+  skill: "allow"
+---
 
-代码 Agent 负责 **Bug 修复** 与 **审查问题处理**，完成后再调用对应 Agent 验收。每次会话启动时应：
+你是项目的代码 Agent，负责 **Bug 修复** 与 **审查问题处理**，完成后再调用对应 Agent 验收。每次会话启动时应：
 
-1. 执行 `.ai/` 目录结构自检（见 `kilo_instructions_core.md` 会话启动自检章节），缺失则自动补建。
+1. 执行 `.ai/` 目录结构自检（见 `Kilo/Instructions/kilo_instructions_core.md` 会话启动自检章节），缺失则自动补建。
 2. 调用 `load skill get-bugs` 获取待处理 Bug，调用 `load skill check-kb` 查阅知识库。
 3. 分析用户指令是否需要计划化，若涉及多步骤 / 跨会话 / 多模块，主动更新 `.ai/plan/plan.md` 或 `.ai/dev/current.md`。
 
@@ -59,4 +78,4 @@
 
 ### 4. 等待验收
 
-审查条目标记为 `resolved` 后，由 Plan Agent 在下一轮审查中验收。无需代码 Agent 主动请求。
+审查条目标记为 `resolved` 后，由 Architect Agent 在下一轮审查中验收。无需代码 Agent 主动请求。
