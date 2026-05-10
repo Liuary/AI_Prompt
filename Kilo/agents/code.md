@@ -15,7 +15,6 @@ permission:
   glob: "allow"
   grep: "allow"
   task: "allow"
-  agent_manager: "allow"
   todowrite: "allow"
   skill: "allow"
 ---
@@ -106,15 +105,15 @@ permission:
 完成计划实现并通过自测后：
 
 1. 调用 `load skill update-stage-status` 将状态改为 `ready_for_review`，当前责任 Agent 改为 `architect`。
-2. 若允许自动推进，使用 `agent_manager` 以 `local` 模式启动 Architect session 进行审查。
-3. 若 `agent_manager` 不可用或当前为 manual 流程，只写状态并告知用户下一步应由 Architect 审查。
+2. 不主动创建新的 Agent Manager session；若由 AutoRunner 调用，完成状态更新后将控制权交回 AutoRunner。
+3. 若当前为 manual 流程，只写状态并告知用户下一步应由 Architect 审查。
 
 ### 修复 Bug 后
 
 修复 Bug 并标记 `resolved` 后：
 
-1. 若允许自动推进，启动 Tester session 验收对应 Bug。
-2. 若不允许自动推进，只写入 Bug 状态和日志，等待用户或 Tester 手动验收。
+1. 不主动创建新的 Agent Manager session；若由 AutoRunner 调用，完成状态更新后将控制权交回 AutoRunner。
+2. 若当前为 manual 流程，只写入 Bug 状态和日志，等待用户或 Tester 手动验收。
 
 ### 失败与暂停
 

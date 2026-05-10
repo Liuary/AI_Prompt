@@ -10,7 +10,6 @@ permission:
   glob: "allow"
   grep: "allow"
   task: "allow"
-  agent_manager: "allow"
   todowrite: "allow"
   skill: "allow"
   todoread: "allow"
@@ -105,7 +104,7 @@ permission:
 
 1. 读取 `.ai/plan/{stage}/status.md`、计划文件、实现记录和测试记录。
 2. 执行计划中定义的端到端验证步骤和相关测试命令。
-3. 若发现缺陷，按“提交 Bug”流程创建 Bug，并调用 `load skill update-stage-status` 将状态改为 `bug_found`，当前责任 Agent 改为 `code`。
+3. 若发现缺陷，按“提交 Bug”流程创建 Bug，并调用 `load skill update-stage-status` 将状态改为 `bug_found`；自动流程当前责任 Agent 改为 `code-worker`，人工流程改为 `code`。
 4. 若未发现缺陷，调用 `load skill update-stage-status` 将状态改为 `done`，当前责任 Agent 改为 `user` 或 `none`（若模板不支持 none，则使用 `user` 并说明已完成）。
 
 ## 自动闭环
@@ -117,7 +116,7 @@ permission:
 - `状态` 不是 `done` 或 `paused`
 - `当前责任 Agent` 不是 `user`
 
-若测试发现 Bug 且允许自动推进，使用 `agent_manager` 以 `local` 模式启动 Code Agent 修复 Bug；Prompt 必须包含 Bug 文件路径和计划阶段名。
+若测试发现 Bug 且允许自动推进，不主动创建新的 Agent Manager session；将状态改为 `bug_found` 后交回 AutoRunner，由 AutoRunner 在同一 worktree 内调度 CodeWorker 修复。
 
 若测试通过，状态改为 `done` 后立即停止自动流程，不再启动任何 Agent。
 

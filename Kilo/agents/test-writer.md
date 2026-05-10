@@ -57,7 +57,7 @@ permission:
 
 - `.ai/plan/{stage}/status.md`
 - `.ai/plan/{stage}/` 下相关计划文件
-- 代码 Agent 的实现摘要或提交记录
+- CodeWorker 或代码 Agent 的实现摘要或提交记录
 - 相关源码与既有测试
 
 ### 3. 编写测试
@@ -78,7 +78,7 @@ permission:
 
 仅当 `执行模式=auto` 且 `自动推进=enabled` 时，允许启动 Tester Agent：
 
-- 使用 Agent Manager 启动 Tester session（优先）或通过 `task` 调用 tester Subagent。
+- 不主动创建新的 Agent Manager session；若由 AutoRunner 调用，完成状态更新后将控制权交回 AutoRunner，由 AutoRunner 调度 Tester。
 - Prompt 格式：`测试并验收子计划 {stage}，重点验证：{测试目标}`。
 
 若状态为 `manual`、`paused`、`done` 或当前责任 Agent 为 `user`，不得自动启动下游 Agent。

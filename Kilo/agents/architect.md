@@ -153,21 +153,20 @@ Kilo 原生 Plan Mode 工具在执行 `plan_exit` 后，将计划文件写入 `.
 
 ### 允许启动的 Agent
 
-- `ready_for_code`：更新状态为 `coding`，启动 Code Agent。
-- `review_failed`：更新状态为 `coding`，启动 Code Agent 处理审查问题。
-- `review_passed` 或 `ready_for_test`：优先启动 TestWriter Agent；若项目无需补充测试，则启动 Tester Agent。
+- `ready_for_code`：启动 AutoRunner Agent，让其在单个 worktree 中完成后续编码、审查、测试、Bug 修复闭环。
+- 其他状态：由已启动的 AutoRunner 在同一 worktree 内串行调度，不再由 Architect 为每个阶段创建新的 worktree。
 
 ### 启动方式
 
-优先使用 `agent_manager` 工具以 `local` 模式启动独立 session。Prompt 必须包含：
+优先使用 `agent_manager` 工具以 `worktree` 模式（非 `local`）启动 **AutoRunner** 独立 session。`branchName` 格式为 `auto-{stage}`（如 `auto-auth-login`）。Prompt 必须包含：
 
 - 计划阶段名 `{stage}`
 - 当前状态
-- 任务目标
+- 任务目标：在单个 worktree 内完成子计划自动闭环
 - 需读取的文件路径（至少包含 `.ai/plan/{stage}/status.md`）
 - 完成后必须调用 `load skill update-stage-status` 更新状态
 
-若 `agent_manager` 工具不可用，则退回人工流程：只更新状态并告知用户下一步应启动哪个 Agent。
+若 `agent_manager` 工具不可用或创建失败，则退回人工流程：只更新状态并告知用户下一步应启动哪个 Agent。
 
 ### 停止条件
 

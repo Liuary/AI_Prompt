@@ -88,9 +88,12 @@ mkdir -p .ai/users
 | 源文件 | 目标文件 | 类型 |
 |--------|----------|------|
 | `Kilo/agents/architect.md` | `.kilo/agents/architect.md` | 主 Agent（新建 architect） |
+| `Kilo/agents/auto-runner.md` | `.kilo/agents/auto-runner.md` | 子代办（单 worktree 自动闭环调度） |
 | `Kilo/agents/code.md` | `.kilo/agents/code.md` | 主 Agent（覆盖内置 code） |
+| `Kilo/agents/code-worker.md` | `.kilo/agents/code-worker.md` | 子代办（自动闭环编码实现） |
 | `Kilo/agents/ask.md` | `.kilo/agents/ask.md` | 主 Agent（覆盖内置 ask） |
 | `Kilo/agents/debug.md` | `.kilo/agents/debug.md` | 子代办（由 code 调用） |
+| `Kilo/agents/review-worker.md` | `.kilo/agents/review-worker.md` | 子代办（自动闭环代码审查） |
 | `Kilo/agents/tester.md` | `.kilo/agents/tester.md` | 子代办（由 code 调用） |
 | `Kilo/agents/test-writer.md` | `.kilo/agents/test-writer.md` | 子代办（由 architect 调用，负责写测试） |
 
@@ -146,9 +149,12 @@ Agent 在首次会话时将自动填入用户名（通过 `git config user.name`
 | `kilo.jsonc` | Kilo 配置 |
 | `.kilo/Instructions/kilo_instructions_core.md` | .ai 工作区操作规范 |
 | `.kilo/agents/architect.md` | Architect Agent 定义 |
+| `.kilo/agents/auto-runner.md` | AutoRunner Agent 定义 |
 | `.kilo/agents/code.md` | 代码 Agent 定义 |
+| `.kilo/agents/code-worker.md` | CodeWorker Agent 定义 |
 | `.kilo/agents/ask.md` | Ask Agent 定义 |
 | `.kilo/agents/debug.md` | Debug Agent 定义 |
+| `.kilo/agents/review-worker.md` | ReviewWorker Agent 定义 |
 | `.kilo/agents/tester.md` | 测试 Agent 定义 |
 | `.kilo/agents/test-writer.md` | 测试编写 Agent 定义 |
 | `.kilo/skills/bug-acceptance/SKILL.md` | Bug 验收 Skill |

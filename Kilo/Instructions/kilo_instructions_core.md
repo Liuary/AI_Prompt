@@ -143,10 +143,18 @@
 
 - **执行模式**：manual | auto
 - **自动推进**：disabled | enabled
-- **状态**：planned | ready_for_code | coding | ready_for_review | review_failed | review_passed | ready_for_test | test_writing | testing | bug_found | bug_fixing | done | paused
-- **当前责任 Agent**：architect | code | test-writer | tester | user
-- **上一责任 Agent**：architect | code | test-writer | tester | user | none
+- **状态**：planned | ready_for_code | auto_running | coding | ready_for_review | review_failed | review_passed | ready_for_test | test_writing | testing | bug_found | bug_fixing | done | paused
+- **当前责任 Agent**：architect | auto-runner | code | code-worker | review-worker | test-writer | tester | user
+- **上一责任 Agent**：architect | auto-runner | code | code-worker | review-worker | test-writer | tester | user | none
 - **更新时间**：yyyy-mm-dd HH:MM
+
+## Worktree / Session
+
+- **工作模式**：manual | worktree
+- **分支名**：-
+- **Session 名称**：-
+- **合并状态**：not_started | pending_merge | merged | cleanup_ready | cleaned
+- **清理策略**：manual | auto
 
 ## 当前任务
 ...
@@ -162,30 +170,34 @@
 状态含义：
 - `planned`：计划已创建，等待用户确认或细化。
 - `ready_for_code`：可进入编码实现。
-- `coding`：代码 Agent 正在实现。
-- `ready_for_review`：实现完成，等待 Architect 审查。
-- `review_failed`：审查不通过，等待代码 Agent 修改。
+- `auto_running`：AutoRunner 已在单个 worktree 内接管该子计划闭环。
+- `coding`：代码 Agent 或 CodeWorker 正在实现。
+- `ready_for_review`：实现完成，等待 Architect 或 ReviewWorker 审查。
+- `review_failed`：审查不通过，等待代码 Agent 或 CodeWorker 修改。
 - `review_passed`：审查通过，可进入测试阶段。
 - `ready_for_test`：等待测试编写或验收。
 - `test_writing`：TestWriter Agent 正在补充测试代码。
 - `testing`：Tester Agent 正在执行测试与验收。
-- `bug_found`：测试发现 Bug，等待代码 Agent 修复。
-- `bug_fixing`：代码 Agent 正在修复 Bug。
+- `bug_found`：测试发现 Bug，等待代码 Agent 或 CodeWorker 修复。
+- `bug_fixing`：代码 Agent 或 CodeWorker 正在修复 Bug。
 - `done`：子计划完成，自动流程停止。
 - `paused`：流程暂停，必须等待用户决策。
 
 自动推进规则：
 - 默认 `执行模式=manual` 且 `自动推进=disabled`，不允许 Agent 自行启动其他会话。
-- 仅当 `执行模式=auto` 且 `自动推进=enabled` 时，允许 Agent 根据状态启动下游 Agent Manager session。
+- 仅当 `执行模式=auto` 且 `自动推进=enabled` 时，允许 Architect 启动一个 AutoRunner Agent Manager worktree session。
+- 自动流程采用“一个子计划一个 worktree”：AutoRunner 在该 worktree 内通过 `task` 串行调度 CodeWorker / ReviewWorker / TestWriter / Tester / Debug，不允许每个阶段再创建新的 worktree。
 - 任一 Agent 遇到计划外架构变更、超过范围的修改、权限不明确、测试环境缺失、连续两次验收失败时，必须将状态改为 `paused`，`当前责任 Agent` 改为 `user`，并写明暂停原因。
 - 状态为 `done`、`paused` 或 `当前责任 Agent=user` 时，不得继续自动推进。
 
 允许的自动启动链路：
-- Architect 可启动 Code、TestWriter、Tester。
-- Code 可启动 Architect、Tester、Debug。
-- TestWriter 可启动 Tester。
-- Tester 可启动 Code。
+- Architect 可启动 AutoRunner。
+- AutoRunner 可通过 `task` 调度 CodeWorker、ReviewWorker、TestWriter、Tester、Debug。
+- 自动流程使用 `code-worker` / `review-worker`，人工流程使用主 `code` / `architect`，两者职责隔离。
+- Code、CodeWorker、ReviewWorker、TestWriter、Tester 不得自行创建新的 Agent Manager worktree；只更新状态并将控制权交回 AutoRunner 或用户。
 - Debug 不得启动其他 Agent。
+
+自动流程中的 `status.md` 更新发生在 AutoRunner worktree 内。主工作区只有在用户将 worktree 改动 Apply/Merge 后才能看到最终状态；不要在主工作区同时手改同一子计划状态文件。
 
 ### 临时目录
 

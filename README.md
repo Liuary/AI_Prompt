@@ -1,6 +1,15 @@
 # AI_Prompt
 
-该项目是一个迭代中的AI模版项目，旨在vibe开发中对工程方向进行把控，分层的约束和稳定化AI在项目中的行为，以达到更加规范化AI项目开发的目的
+AI_Prompt 是一个持续迭代中的 Kilo Agent 模板项目，用来把个人项目里的 AI 协作方式固定下来：哪些规则要长期遵守、计划放在哪里、Bug 和审查怎么流转、哪些经验应该进知识库、什么时候可以自动跑完整个子任务。
+
+这个项目不是业务代码库，而是一套可部署到其他项目里的工作方式模板。它的目标不是让 AI 完全替代开发者，而是给 AI 设定清晰边界：默认保留人工控制，需要时再开启自动闭环；自动流程也只推进到子计划完成，最终合并和清理仍由人确认。
+
+它主要解决几个常见问题：
+
+- AI 容易改超范围、过度设计、忘记测试，所以把行为约束写进 `AGENTS.md`。
+- 项目计划、日志、审查、Bug、知识沉淀容易散落各处，所以统一收进 `.ai/` 工作区。
+- 调试流程、编译经验不应该塞进 AGENTS.md，所以单独拆出 `.ai/kb/` 知识库。
+- 人工开发和自动闭环容易互相干扰，所以拆分主 Agent 与 Worker Agent：人工使用 `architect` / `code`，自动流程由 `auto-runner` 调度 `code-worker` / `review-worker` 等子 Agent。
 
 ## 文件结构
 
@@ -14,9 +23,12 @@ AI_Prompt/
 │   │   └── kilo_instructions_core.md    # .ai 工作区操作规范（公域+私域统一版）
 │   ├── agents/
 │   │   ├── architect.md             # Architect Agent 模板（计划管理 + 代码审查）
+│   │   ├── auto-runner.md           # AutoRunner Agent 模板（单 worktree 自动闭环调度）
 │   │   ├── code.md                 # 代码 Agent 模板（Bug 修复 + 审查处理）
+│   │   ├── code-worker.md          # CodeWorker 子 Agent 模板（自动闭环编码实现）
 │   │   ├── ask.md                  # Ask Agent 模板
 │   │   ├── debug.md                # Debug Agent 模板
+│   │   ├── review-worker.md        # ReviewWorker 子 Agent 模板（自动闭环代码审查）
 │   │   ├── tester.md               # 测试 Subagent 模板
 │   │   └── test-writer.md          # 测试编写 Subagent 模板
 │   ├── skills/
@@ -66,6 +78,85 @@ AI_Prompt/
 
 私域中的代码审查和 Bug 追踪在完成时，将核心结论摘要写入公共日志，详细记录保留在本地。
 
+## 人工流程
+
+人工流程是默认模式，适合日常开发和还不稳定的项目阶段。子计划 `status.md` 默认保持：
+
+```markdown
+- **执行模式**：manual
+- **自动推进**：disabled
+```
+
+在人工流程中，Agent 不会主动启动新的 Agent Manager session，只会按用户指令工作并维护 `.ai/` 记录。
+
+典型流程：
+
+```text
+用户 → architect：制定或调整计划
+用户 → code：按计划实现功能
+用户 → architect：审查实现结果
+用户 → code：修复审查问题
+用户 → test-writer：补充测试（可选）
+用户 → tester：测试、验收、提交 Bug
+用户 → code：修复 Bug
+用户 → tester：再次验收
+```
+
+人工流程使用主 Agent：
+
+- `architect`：计划管理、代码审查、审查验收，不改源码
+- `code`：功能实现、审查问题修复、Bug 修复
+- `ask`：只读分析、知识检索、方案讨论
+- `tester` / `debug` / `test-writer`：可由用户或主 Agent 按需调用
+
+人工流程的好处是可控，适合需求还在变化、需要频繁确认或风险较高的阶段。
+
+## 自动流程
+
+自动流程是可选能力，用于希望让一个子计划尽量完整跑完的场景。只有当子计划 `status.md` 同时设置以下字段时才启用：
+
+```markdown
+- **执行模式**：auto
+- **自动推进**：enabled
+```
+
+同时目标项目 `kilo.jsonc` 需要开启：
+
+```jsonc
+"experimental": {
+  "agent_manager_tool": true
+}
+```
+
+自动流程的核心设计是：**一个子计划只创建一个 AutoRunner worktree**。Architect 不会为 Code、Review、Test 分别创建多个 worktree，而是只启动一个 `auto-runner`，后续所有实现、审查、测试和 Bug 修复都在同一个 worktree 中完成。
+
+典型流程：
+
+```text
+用户 → architect：创建子计划并开启 auto/enabled
+architect → Agent Manager：启动 auto-{stage} worktree
+auto-runner → code-worker：实现功能
+auto-runner → review-worker：代码审查
+auto-runner → code-worker：修复审查问题
+auto-runner → test-writer：补充测试（如需要）
+auto-runner → tester：执行测试并提交 Bug
+auto-runner → code-worker：修复 Bug
+auto-runner → tester：验收通过
+auto-runner → status = done
+用户 → Agent Manager：检查 diff，手动合并/应用/清理 worktree
+```
+
+自动流程使用 Worker Agent：
+
+- `auto-runner`：调度者，不写源码，负责推进状态机
+- `code-worker`：自动流程专用编码与修复
+- `review-worker`：自动流程专用代码审查，源码只读
+- `test-writer`：写测试，不做最终验收
+- `tester`：测试、验收、提交 Bug
+- `debug`：只读排查根因
+
+自动流程只推进到 `done`，不会自动合并到主分支，也不会自动删除 worktree。最终仍需要用户在 Agent Manager 中检查 diff 后决定是否合并和清理。
+
 ## 部署
 
 ### 自动部署（推荐）
@@ -109,15 +200,20 @@ python deploy.py /path/to/target
 # 在目标项目根目录执行
 mkdir -p .kilo/agents
 cp AI_Prompt/Kilo/agents/architect.md .kilo/agents/architect.md
+cp AI_Prompt/Kilo/agents/auto-runner.md .kilo/agents/auto-runner.md
 cp AI_Prompt/Kilo/agents/code.md .kilo/agents/code.md
+cp AI_Prompt/Kilo/agents/code-worker.md .kilo/agents/code-worker.md
 cp AI_Prompt/Kilo/agents/ask.md  .kilo/agents/ask.md
 cp AI_Prompt/Kilo/agents/debug.md .kilo/agents/debug.md
+cp AI_Prompt/Kilo/agents/review-worker.md .kilo/agents/review-worker.md
 cp AI_Prompt/Kilo/agents/tester.md .kilo/agents/tester.md
 cp AI_Prompt/Kilo/agents/test-writer.md .kilo/agents/test-writer.md
 ```
 
 - `architect`、`code`、`ask` 为主 Agent，覆盖 Kilo 内置同名 Agent，带有角色权限约束
-- `debug`、`tester`、`test-writer` 为子代办 Agent，由主 Agent 通过 `task` 或 Agent Manager 按需调用
+- `auto-runner`、`code-worker`、`review-worker`、`debug`、`tester`、`test-writer` 为子代办 Agent。
+- 人工流程使用主 `architect` / `code`；自动闭环使用 `auto-runner` 调度 `code-worker` / `review-worker`，两套职责隔离。
+- 自动闭环时 Architect 只启动一个 `auto-runner` worktree，后续由 AutoRunner 在同一 worktree 内通过 `task` 串行调度其他 Agent。
 
 ### 3. Skill
 
@@ -140,18 +236,7 @@ cp AI_Prompt/Kilo/skills/update-stage-status/SKILL.md .kilo/skills/update-stage-
 - 调用示例：`load skill get-bugs` → 获取当前模块 Bug 列表
 - Skill 与 Agent 无关，任何 Agent 均可按需加载
 
-### 4. 自动闭环（可选）
-
-默认所有子计划均为人工流程。只有当 `.ai/plan/{stage}/status.md` 中同时设置：
-
-```markdown
-- **执行模式**：auto
-- **自动推进**：enabled
-```
-
-并且 `kilo.jsonc` 开启 `experimental.agent_manager_tool` 时，Agent 才能根据状态自动启动下游会话。若保持 `manual/disabled`，现有人工流程不受影响。
-
-### 5. 初始化 .ai/ 目录
+### 4. 初始化 .ai/ 目录
 
 按需在目标项目创建 `.ai/` 子目录：`dev/note/`、`log/`、`plan/`、`kb/`、`tmp/`、`users/`。创建 `.ai/.info.json` 标识用户身份，并在 `.gitignore` 中忽略 `.ai/.info.json` 和 `.ai/users/`。
 
