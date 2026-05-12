@@ -1,8 +1,8 @@
 # AI_Prompt
 
-AI_Prompt 是一个持续迭代中的 Kilo Agent 模板项目，用来把个人项目里的 AI 协作方式固定下来：哪些规则要长期遵守、计划放在哪里、Bug 和审查怎么流转、哪些经验应该进知识库、什么时候可以自动跑完整个子任务。
+AI_Prompt 是一个跨 AI 工具的开发治理模板项目，当前支持 **Kilo** 和 **Deep Code CLI**，用来把个人项目里的 AI 协作方式固定下来：哪些规则要长期遵守、计划放在哪里、Bug 和审查怎么流转、哪些经验应该进知识库、什么时候可以自动跑完整个子任务。
 
-这个项目不是业务代码库，而是一套可部署到其他项目里的工作方式模板。它的目标不是让 AI 完全替代开发者，而是给 AI 设定清晰边界：默认保留人工控制，需要时再开启自动闭环；自动流程也只推进到子计划完成，最终合并和清理仍由人确认。
+这个项目不是业务代码库，而是一套可部署到其他项目里的工作方式模板。它的目标不是让 AI 完全替代开发者，而是给 AI 设定清晰边界——无论你用的是 Kilo、Deep Code CLI 还是其他 AI 工具，Agent 都能在同一套治理体系下可控地工作。默认保留人工控制，需要时再开启自动闭环；自动流程也只推进到子计划完成，最终合并和清理仍由人确认。
 
 它主要解决几个常见问题：
 
@@ -17,12 +17,16 @@ AI_Prompt 是一个持续迭代中的 Kilo Agent 模板项目，用来把个人�
 AI_Prompt/
 ├── AGENTS.md                    # 项目永久性行为约束 + 编码规范（跨工具通用标准）
 ├── kilo.jsonc                   # Kilo 配置，引用 Instructions 文件
-├── deploy.py                    # 一键部署脚本
+├── deploy.py                    # 一键部署脚本（支持 --tool 参数）
 ├── DEPLOY.md                    # 部署操作文档
 ├── README.md                    # 项目总览
 ├── docs/                        # 项目文档
 │   └── research/                # 研究分析文档
-├── Kilo/                           # 模板文件
+├── adapters/                    # 工具适配器
+│   └── deepcode/                # Deep Code CLI 适配器
+│       ├── DEEPCODE.md          #   Deep Code CLI 使用指南
+│       └── skills/              #   Skill 文件（与 Kilo 共用核心内容）
+├── Kilo/                           # 模板文件（Kilo 适配器）
 │   ├── Instructions/
 │   │   └── kilo_instructions_core.md    # .ai 工作区操作规范（公域+私域统一版）
 │   ├── agents/
@@ -176,83 +180,56 @@ auto-runner → status = done
 ### 自动部署（推荐）
 
 ```bash
+# 部署全部工具（默认）
 python deploy.py /path/to/target
+
+# 仅部署指定工具
+python deploy.py /path/to/target -k      # Kilo
+python deploy.py /path/to/target -d      # Deep Code CLI
+
+# 查看帮助和工具列表
+python deploy.py --help
+python deploy.py --list
 ```
 
-或者让 AI 读取 DEPLOY.md ，按照规则自动部署。
+或者让 AI 读取 DEPLOY.md，按照规则自动部署。
+
+### 支持的 AI 工具
+
+| 工具 | 选项 | 部署内容 |
+|------|------|----------|
+| **全部**（默认） | （不指定） | Kilo + Deep Code CLI 全部部署 |
+| **Kilo** | `-k` / `--kilo` | Agent + Skill + Instructions → `.kilo/` |
+| **Deep Code CLI** | `-d` / `--deepcode` | 合并版 AGENTS.md + Skill → `.agents/skills/`，AGENTS.md → `.deepcode/` |
+
+各工具详细说明：
+- Kilo：AI_Prompt 原生支持，拥有完整的 Agent 角色体系、自动闭环、状态机等全部功能
+- Deep Code CLI：通过 Skill + AGENTS.md 提供核心治理能力，无 Agent 角色和自动闭环
 
 ### 手动部署
 
-在目标项目中按以下步骤部署：
+完整的分步骤部署说明见 `DEPLOY.md`，涵盖：
 
-### 1. 核心约束与流程
+1. **通用步骤**：复制 `AGENTS.md`、创建 `.ai/` 工作区、配置 `.gitignore`
+2. **Kilo 适配**：配置 `kilo.jsonc`、复制 Agent 定义、复制 Skill 文件
+3. **Deep Code CLI 适配**：复制 Skill 到 `.agents/skills/`、部署 `.deepcode/AGENTS.md`
+4. **验证**：检查所有文件就位
 
-| 步骤 | 操作 |
-|------|------|
-| 复制 `AGENTS.md` | 放置到目标项目根目录（Kilo 自动加载） |
-| 创建 `kilo.jsonc` | 目标项目根目录创建，`instructions` 数组引用 Instructions 文件 |
-| 复制 Instructions | `Kilo/Instructions/kilo_instructions_core.md` → 目标项目 `.kilo/Instructions/` 目录 |
+### 多工具架构说明
 
-目标项目 `kilo.jsonc` 示例：
-```jsonc
-{
-  "$schema": "https://app.kilo.ai/config.json",
-  "instructions": [
-    ".kilo/Instructions/kilo_instructions_core.md"
-  ],
-  "experimental": {
-    "agent_manager_tool": true
-  }
-}
+AI_Prompt 采用 **核心 + 适配器** 的架构：
+
+```
+AI_Prompt/
+├── AGENTS.md              ← 核心约束（所有工具共用）
+├── .ai/                   ← 工作区（所有工具共用）
+├── Kilo/                  ← Kilo 适配器（Agent/Skill/Instructions）
+└── adapters/
+    └── deepcode/          ← Deep Code CLI 适配器（Skill）
 ```
 
-### 2. Agent
-
-将 Agent 模板文件复制到目标项目的 `.kilo/agents/` 目录，Kilo 自动发现并覆盖内置同名 Agent：
-
-```bash
-# 在目标项目根目录执行
-mkdir -p .kilo/agents
-cp AI_Prompt/Kilo/agents/architect.md .kilo/agents/architect.md
-cp AI_Prompt/Kilo/agents/auto-runner.md .kilo/agents/auto-runner.md
-cp AI_Prompt/Kilo/agents/code.md .kilo/agents/code.md
-cp AI_Prompt/Kilo/agents/code-worker.md .kilo/agents/code-worker.md
-cp AI_Prompt/Kilo/agents/ask.md  .kilo/agents/ask.md
-cp AI_Prompt/Kilo/agents/debug.md .kilo/agents/debug.md
-cp AI_Prompt/Kilo/agents/review-worker.md .kilo/agents/review-worker.md
-cp AI_Prompt/Kilo/agents/tester.md .kilo/agents/tester.md
-cp AI_Prompt/Kilo/agents/test-writer.md .kilo/agents/test-writer.md
-```
-
-- `architect`、`code`、`ask` 为主 Agent，覆盖 Kilo 内置同名 Agent，带有角色权限约束
-- `auto-runner`、`code-worker`、`review-worker`、`debug`、`tester`、`test-writer` 为子代办 Agent。
-- 人工流程使用主 `architect` / `code`；自动闭环使用 `auto-runner` 调度 `code-worker` / `review-worker`，两套职责隔离。
-- 自动闭环时 Architect 只启动一个 `auto-runner` worktree，后续由 AutoRunner 在同一 worktree 内通过 `task` 串行调度其他 Agent。
-
-### 3. Skill
-
-将 Skill 模板文件复制到目标项目的 `.kilo/skills/` 目录，Kilo 自动发现：
-
-```bash
-mkdir -p .kilo/skills/bug-acceptance
-mkdir -p .kilo/skills/get-bugs
-mkdir -p .kilo/skills/check-kb
-mkdir -p .kilo/skills/get-stage-status
-mkdir -p .kilo/skills/update-stage-status
-cp AI_Prompt/Kilo/skills/bug-acceptance/SKILL.md .kilo/skills/bug-acceptance/SKILL.md
-cp AI_Prompt/Kilo/skills/get-bugs/SKILL.md .kilo/skills/get-bugs/SKILL.md
-cp AI_Prompt/Kilo/skills/check-kb/SKILL.md .kilo/skills/check-kb/SKILL.md
-cp AI_Prompt/Kilo/skills/get-stage-status/SKILL.md .kilo/skills/get-stage-status/SKILL.md
-cp AI_Prompt/Kilo/skills/update-stage-status/SKILL.md .kilo/skills/update-stage-status/SKILL.md
-```
-
-- Skill 通过文件命名识别，Agent 使用 `load skill <name>` 或 `skill` 工具调用
-- 调用示例：`load skill get-bugs` → 获取当前模块 Bug 列表
-- Skill 与 Agent 无关，任何 Agent 均可按需加载
-
-### 4. 初始化 .ai/ 目录
-
-按需在目标项目创建 `.ai/` 子目录：`dev/note/`、`log/`、`plan/`、`kb/`、`tmp/`、`users/`。创建 `.ai/.info.json` 标识用户身份，并在 `.gitignore` 中忽略 `.ai/.info.json` 和 `.ai/users/`。
+- **核心层**（`AGENTS.md` + `.ai/` 目录）：工具无关，定义行为约束和工作区规范
+- **适配器层**（`Kilo/` + `adapters/`）：工具专用，将核心体系翻译为各工具的配置文件格式
 
 ## 示例项目
 

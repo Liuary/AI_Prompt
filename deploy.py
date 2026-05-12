@@ -1,14 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 r"""
-AI_Prompt 模板项目一键部署脚本。
+AI_Prompt 模板项目一键部署脚本（多工具支持）。
 
 用法:
     python deploy.py <目标路径>
+    python deploy.py <目标路径> --tool kilo
+    python deploy.py <目标路径> --tool deepcode
+    python deploy.py <目标路径> --tool all
     python deploy.py <目标路径> --source <模板源路径>
 
 示例:
-    python deploy.py /home/user/my-project
+    python deploy.py /home/user/my-project                        # 默认 Kilo
+    python deploy.py /home/user/my-project --tool deepcode        # Deep Code CLI
+    python deploy.py /home/user/my-project --tool all             # 全部工具
     python deploy.py D:\\Projects\\my-app --source ./AI_Prompt
 """
 
@@ -19,9 +24,19 @@ import shutil
 import sys
 from pathlib import Path
 
-# ─── 模板文件清单（源文件相对路径 → 目标文件相对路径）───────────────────
-TEMPLATE_FILES = {
-    "AGENTS.md": "AGENTS.md",
+# ═══════════════════════════════════════════════════════════════════════
+# 通用文件（所有工具都部署）
+# ═══════════════════════════════════════════════════════════════════════
+
+COMMON_FILES = {
+    # AGENTS.md 由各适配器分别提供（Kilo 用根版本，deepcode 用合并版本）
+}
+
+# ═══════════════════════════════════════════════════════════════════════
+# Kilo 专用文件
+# ═══════════════════════════════════════════════════════════════════════
+
+KILO_FILES = {
     "Kilo/Instructions/kilo_instructions_core.md": ".kilo/Instructions/kilo_instructions_core.md",
     "Kilo/agents/architect.md": ".kilo/agents/architect.md",
     "Kilo/agents/auto-runner.md": ".kilo/agents/auto-runner.md",
@@ -39,8 +54,7 @@ TEMPLATE_FILES = {
     "Kilo/skills/update-stage-status/SKILL.md": ".kilo/skills/update-stage-status/SKILL.md",
 }
 
-# ─── 需要创建的目录 ───────────────────────────────────────────────────
-DIRS = [
+KILO_DIRS = [
     ".kilo/Instructions",
     ".kilo/agents",
     ".kilo/skills/bug-acceptance",
@@ -48,6 +62,34 @@ DIRS = [
     ".kilo/skills/check-kb",
     ".kilo/skills/get-stage-status",
     ".kilo/skills/update-stage-status",
+]
+
+# ═══════════════════════════════════════════════════════════════════════
+# Deep Code CLI 专用文件
+# ═══════════════════════════════════════════════════════════════════════
+
+DEEPCODE_FILES = {
+    "adapters/deepcode/skills/check-kb/SKILL.md": ".agents/skills/check-kb/SKILL.md",
+    "adapters/deepcode/skills/get-bugs/SKILL.md": ".agents/skills/get-bugs/SKILL.md",
+    "adapters/deepcode/skills/bug-acceptance/SKILL.md": ".agents/skills/bug-acceptance/SKILL.md",
+    "adapters/deepcode/skills/get-stage-status/SKILL.md": ".agents/skills/get-stage-status/SKILL.md",
+    "adapters/deepcode/skills/update-stage-status/SKILL.md": ".agents/skills/update-stage-status/SKILL.md",
+}
+
+DEEPCODE_DIRS = [
+    ".agents/skills/check-kb",
+    ".agents/skills/get-bugs",
+    ".agents/skills/bug-acceptance",
+    ".agents/skills/get-stage-status",
+    ".agents/skills/update-stage-status",
+    ".deepcode",
+]
+
+# ═══════════════════════════════════════════════════════════════════════
+# 通用目录
+# ═══════════════════════════════════════════════════════════════════════
+
+AI_DIRS = [
     ".ai/dev/note",
     ".ai/log",
     ".ai/code_review",
@@ -58,14 +100,20 @@ DIRS = [
     ".ai/users",
 ]
 
-# ─── .gitignore 必需条目 ──────────────────────────────────────────────
+# ═══════════════════════════════════════════════════════════════════════
+# .gitignore 必需条目
+# ═══════════════════════════════════════════════════════════════════════
+
 GITIGNORE_ENTRIES = [
     ".ai/.info.json",
     ".ai/users/",
     ".kilo/",
 ]
 
-# ─── kilo.jsonc 模板内容 ──────────────────────────────────────────────
+# ═══════════════════════════════════════════════════════════════════════
+# kilo.jsonc 模板内容
+# ═══════════════════════════════════════════════════════════════════════
+
 KILO_JSONC_CONTENT = """\
 {
   "$schema": "https://app.kilo.ai/config.json",
@@ -78,7 +126,10 @@ KILO_JSONC_CONTENT = """\
 }
 """
 
-# ─── .ai/.info.json 模板内容 ──────────────────────────────────────────
+# ═══════════════════════════════════════════════════════════════════════
+# .ai/.info.json 模板内容
+# ═══════════════════════════════════════════════════════════════════════
+
 INFO_JSON_CONTENT = """\
 {
     "user": ""
@@ -89,6 +140,7 @@ INFO_JSON_CONTENT = """\
 # 核心逻辑
 # ═══════════════════════════════════════════════════════════════════════
 
+
 def report(status: str, path: str, detail: str = "") -> str:
     """格式化报告行。"""
     prefix = {"created": "[+]", "skipped": "[=]", "warning": "[!]", "error": "[X]"}.get(status, "   ")
@@ -98,10 +150,17 @@ def report(status: str, path: str, detail: str = "") -> str:
     return line
 
 
-def create_directories(target: Path) -> list[str]:
+def create_directories(target: Path, tool: str) -> list[str]:
     """创建目标项目目录结构，返回报告行列表。"""
     lines = []
-    for d in DIRS:
+    dirs_to_create = list(AI_DIRS)
+
+    if tool in ("kilo", "all"):
+        dirs_to_create.extend(KILO_DIRS)
+    if tool in ("deepcode", "all"):
+        dirs_to_create.extend(DEEPCODE_DIRS)
+
+    for d in dirs_to_create:
         dir_path = target / d
         if dir_path.exists():
             lines.append(report("skipped", str(d), "已存在"))
@@ -111,38 +170,33 @@ def create_directories(target: Path) -> list[str]:
     return lines
 
 
-def copy_template_files(source: Path, target: Path) -> list[str]:
-    """复制模板文件到目标项目，返回报告行列表。"""
+def copy_files(source: Path, target: Path, file_map: dict) -> tuple[list[str], int, int, int]:
+    """复制文件映射到目标项目，返回 (报告行列表, 已复制, 已跳过, 缺失)。"""
     lines = []
-    total_copied = 0
-    total_skipped = 0
-    total_missing = 0
+    copied = 0
+    skipped = 0
+    missing = 0
 
-    for src_rel, dst_rel in TEMPLATE_FILES.items():
+    for src_rel, dst_rel in file_map.items():
         src_path = source / src_rel
         dst_path = target / dst_rel
 
         if not src_path.exists():
             lines.append(report("warning", str(dst_rel), f"源文件不存在: {src_rel}"))
-            total_missing += 1
+            missing += 1
             continue
 
-        # 确保目标父目录存在
         dst_path.parent.mkdir(parents=True, exist_ok=True)
 
         if dst_path.exists():
             lines.append(report("skipped", str(dst_rel), "已存在"))
-            total_skipped += 1
+            skipped += 1
         else:
             shutil.copy2(src_path, dst_path)
             lines.append(report("created", str(dst_rel)))
-            total_copied += 1
+            copied += 1
 
-    if total_copied or total_skipped or total_missing:
-        lines.append(
-            f"\n  复制 {total_copied}，跳过 {total_skipped}，缺失 {total_missing}"
-        )
-    return lines
+    return lines, copied, skipped, missing
 
 
 def configure_kilo_jsonc(target: Path) -> list[str]:
@@ -157,29 +211,25 @@ def configure_kilo_jsonc(target: Path) -> list[str]:
 def configure_gitignore(target: Path) -> list[str]:
     """配置 .gitignore，追加缺失条目，返回报告行列表。"""
     path = target / ".gitignore"
-    lines = []
+    lines_result = []
 
-    # 读取已有内容
     existing = set()
     if path.exists():
         existing = set(line.strip() for line in path.read_text(encoding="utf-8").splitlines() if line.strip())
 
-    # 找出缺失条目
     missing = [e for e in GITIGNORE_ENTRIES if e not in existing]
     if not missing:
         return [report("skipped", ".gitignore", "条目完整")]
 
-    # 追加
     with path.open("a", encoding="utf-8") as f:
-        # 如果文件非空且不以换行结尾，先加一个换行
         if path.stat().st_size > 0:
             f.seek(0, os.SEEK_END)
             if f.tell() > 0:
                 f.write("\n")
         f.writelines(e + "\n" for e in missing)
 
-    lines.append(report("created", ".gitignore", f"追加 {len(missing)} 条"))
-    return lines
+    lines_result.append(report("created", ".gitignore", f"追加 {len(missing)} 条"))
+    return lines_result
 
 
 def configure_info_json(target: Path) -> list[str]:
@@ -190,6 +240,50 @@ def configure_info_json(target: Path) -> list[str]:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(INFO_JSON_CONTENT, encoding="utf-8")
     return [report("created", ".ai/.info.json")]
+
+
+def configure_agents_md(source: Path, target: Path, tool: str) -> list[str]:
+    """部署 AGENTS.md 到项目根目录，按工具选择版本，返回报告行列表。"""
+    lines = []
+    dst_path = target / "AGENTS.md"
+
+    # 选择源文件：all 和 deepcode 用合并版（含 Instructions 规范），kilo 用标准版
+    if tool in ("deepcode", "all"):
+        src_rel = "adapters/deepcode/AGENTS.md"
+    else:
+        src_rel = "AGENTS.md"
+
+    src_path = source / src_rel
+    if not src_path.exists():
+        lines.append(report("warning", "AGENTS.md", f"源文件不存在: {src_rel}"))
+        return lines
+
+    if dst_path.exists():
+        lines.append(report("skipped", "AGENTS.md", "已存在"))
+    else:
+        shutil.copy2(src_path, dst_path)
+        lines.append(report("created", "AGENTS.md"))
+    return lines
+
+
+def configure_deepcode_agents_md(source: Path, target: Path) -> list[str]:
+    """部署 AGENTS.md 到 deepcode 目录（.deepcode/AGENTS.md），如不存在则创建。"""
+    lines = []
+    src_path = source / "adapters" / "deepcode" / "AGENTS.md"
+    dst_path = target / ".deepcode" / "AGENTS.md"
+
+    if not src_path.exists():
+        lines.append(report("warning", ".deepcode/AGENTS.md", "源文件 AGENTS.md 不存在"))
+        return lines
+
+    dst_path.parent.mkdir(parents=True, exist_ok=True)
+
+    if dst_path.exists():
+        lines.append(report("skipped", ".deepcode/AGENTS.md", "已存在"))
+    else:
+        shutil.copy2(src_path, dst_path)
+        lines.append(report("created", ".deepcode/AGENTS.md"))
+    return lines
 
 
 def generate_workspace(target: Path) -> list[str]:
@@ -217,9 +311,48 @@ def generate_workspace(target: Path) -> list[str]:
     return [report("created", workspace_name)]
 
 
+def show_help():
+    """输出自定义帮助信息（覆盖 argparse 默认 --help）。"""
+    print(r"""AI_Prompt — 跨 AI 工具开发治理模板部署脚本
+============================================
+
+用法:
+  python deploy.py <目标路径> [选项]
+
+选项:
+  -k, --kilo          仅部署 Kilo 框架（Agent/Skill/Instructions → .kilo/）
+  -d, --deepcode      仅部署 Deep Code CLI 框架（合并版 AGENTS.md + Skill → .agents/）
+  -l, --list          列出所有支持的 AI 工具
+  -h, --help          显示本帮助信息
+  --source <路径>     指定模板源路径（默认为脚本所在目录）
+
+不指定工具选项时默认部署全部框架。
+
+示例:
+  python deploy.py /home/user/my-project               # 部署全部
+  python deploy.py /home/user/my-project -k            # 仅 Kilo
+  python deploy.py /home/user/my-project -d            # 仅 Deep Code CLI
+  python deploy.py --list                              # 列出工具
+  python deploy.py --help                              # 本帮助
+
+项目: https://github.com/Liuary/AI_Prompt""")
+    sys.exit(0)
+
+
+def show_list():
+    """输出支持的工具列表。"""
+    print("支持的 AI 工具：\n")
+    print("  kilo        Kilo — 终端 Agent 工具，支持完整 Agent 角色体系与自动闭环")
+    print("  deepcode    Deep Code CLI — 终端 AI 编码助手，通过 Skill + AGENTS.md 提供核心治理能力")
+    print("\n用法：python deploy.py <目标路径> [-k | -d]")
+    print("不指定选项时默认部署全部。")
+    sys.exit(0)
+
+
 # ═══════════════════════════════════════════════════════════════════════
 # 入口
 # ═══════════════════════════════════════════════════════════════════════
+
 
 def main():
     # 尽早设置 stdout 编码，避免 Windows GBK 乱码
@@ -229,24 +362,64 @@ def main():
         sys.stderr.reconfigure(encoding="utf-8")
 
     parser = argparse.ArgumentParser(
-        description="AI_Prompt 模板项目一键部署脚本",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog=r"""
-示例:
-  python deploy.py /home/user/my-project
-  python deploy.py D:\\Projects\\my-app --source ./AI_Prompt
-        """.strip(),
+        description="AI_Prompt 模板项目一键部署脚本（多工具支持）",
+        add_help=False,  # 禁用默认 --help，使用自定义帮助
     )
     parser.add_argument(
         "target",
-        help="目标项目路径（不存在则自动创建）",
+        nargs="?",
+        help=argparse.SUPPRESS,
     )
     parser.add_argument(
         "--source",
-        help="模板源路径（默认为脚本所在目录）",
+        help=argparse.SUPPRESS,
         default=None,
     )
+    tool_group = parser.add_mutually_exclusive_group()
+    tool_group.add_argument(
+        "-k", "--kilo",
+        action="store_true",
+        help=argparse.SUPPRESS,
+    )
+    tool_group.add_argument(
+        "-d", "--deepcode",
+        action="store_true",
+        help=argparse.SUPPRESS,
+    )
+    parser.add_argument(
+        "-l", "--list",
+        action="store_true",
+        help=argparse.SUPPRESS,
+    )
+    parser.add_argument(
+        "-h", "--help",
+        action="store_true",
+        help=argparse.SUPPRESS,
+    )
     args = parser.parse_args()
+
+    # ── --help：自定义帮助 ──
+    if args.help:
+        show_help()
+
+    # ── --list：列出工具 ──
+    if args.list:
+        show_list()
+
+    # ── 确定部署哪些工具 ──
+    if args.kilo:
+        tool = "kilo"
+    elif args.deepcode:
+        tool = "deepcode"
+    else:
+        tool = "all"
+
+    # target 为必填
+    if not args.target:
+        print("错误: 需要指定目标项目路径\n")
+        print("用法：python deploy.py <目标路径> [-k | -d]")
+        print("      python deploy.py --help 查看完整帮助")
+        sys.exit(1)
 
     # 确定源路径
     if args.source:
@@ -267,7 +440,7 @@ def main():
         print("错误: 不允许部署到模板源目录自身或其子目录")
         sys.exit(1)
     except ValueError:
-        pass  # 不在源目录下，安全
+        pass
 
     # 创建目标目录
     if not target.exists():
@@ -276,20 +449,55 @@ def main():
         print(f"错误: 目标路径存在但不是目录: {target}")
         sys.exit(1)
 
+    tool_label = {"kilo": "Kilo", "deepcode": "Deep Code CLI", "all": "Kilo + Deep Code CLI（全部）"}[tool]
+
     print(f"\n部署中...")
-    print(f"  源: {source}")
-    print(f"  目标: {target}\n")
+    print(f"  源:     {source}")
+    print(f"  目标:   {target}")
+    print(f"  工具:   {tool_label}\n")
 
     all_lines = []
-    all_lines.append("[目录结构]")
-    all_lines.extend(create_directories(target))
-    all_lines.append("\n[模板文件]")
-    all_lines.extend(copy_template_files(source, target))
-    all_lines.append("\n[配置文件]")
-    all_lines.extend(configure_kilo_jsonc(target))
+
+    # ── 通用文件 ──
+    all_lines.append("[通用文件]")
+    common_lines, cc, cs, cm = copy_files(source, target, COMMON_FILES)
+    all_lines.extend(common_lines)
+
+    # ── AGENTS.md（按工具选择版本）──
+    all_lines.append("\n[AGENTS.md]")
+    all_lines.extend(configure_agents_md(source, target, tool))
+
+    # ── 目录结构 ──
+    all_lines.append("\n[目录结构]")
+    all_lines.extend(create_directories(target, tool))
+
+    # ── Kilo 专用 ──
+    if tool in ("kilo", "all"):
+        all_lines.append("\n[Kilo 适配器]")
+        kilo_lines, kc, ks, km = copy_files(source, target, KILO_FILES)
+        all_lines.extend(kilo_lines)
+        all_lines.append(report("info", f"Kilo 文件: 复制 {kc}, 跳过 {ks}" + (f", 缺失 {km}" if km else "")))
+
+        all_lines.append("\n[Kilo 配置]")
+        all_lines.extend(configure_kilo_jsonc(target))
+
+    # ── Deep Code CLI 专用 ──
+    if tool in ("deepcode", "all"):
+        all_lines.append("\n[Deep Code CLI 适配器]")
+        dc_lines, dc_copied, dc_skipped, dc_missing = copy_files(source, target, DEEPCODE_FILES)
+        all_lines.extend(dc_lines)
+        all_lines.append(report("info", f"DeepCode 文件: 复制 {dc_copied}, 跳过 {dc_skipped}" + (f", 缺失 {dc_missing}" if dc_missing else "")))
+
+        # 部署 AGENTS.md 的 deepcode 专用副本
+        all_lines.append("\n[DeepCode .deepcode/]")
+        all_lines.extend(configure_deepcode_agents_md(source, target))
+
+    # ── 通用配置 ──
+    all_lines.append("\n[Git 配置]")
     all_lines.extend(configure_gitignore(target))
-    all_lines.extend(configure_info_json(target))
+
     all_lines.append("\n[工作区]")
+    all_lines.extend(configure_info_json(target))
     all_lines.extend(generate_workspace(target))
 
     # 输出报告
@@ -297,7 +505,10 @@ def main():
         print(line)
 
     print(f"\n部署完成。目标路径: {target}")
-    print("重启 Kilo 会话后 Subagent 和 Skill 生效。")
+    if tool in ("kilo", "all"):
+        print("重启 Kilo 会话后 Subagent 和 Skill 生效。")
+    if tool in ("deepcode", "all"):
+        print("启动 Deep Code CLI 后使用 /skills 查看可用 Skill。")
 
 
 if __name__ == "__main__":
