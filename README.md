@@ -18,6 +18,10 @@ AI_Prompt/
 ├── AGENTS.md                    # 项目永久性行为约束 + 编码规范（跨工具通用标准）
 ├── kilo.jsonc                   # Kilo 配置，引用 Instructions 文件
 ├── deploy.py                    # 一键部署脚本
+├── DEPLOY.md                    # 部署操作文档
+├── README.md                    # 项目总览
+├── docs/                        # 项目文档
+│   └── research/                # 研究分析文档
 ├── Kilo/                           # 模板文件
 │   ├── Instructions/
 │   │   └── kilo_instructions_core.md    # .ai 工作区操作规范（公域+私域统一版）
@@ -60,6 +64,16 @@ AI_Prompt/
 │       └── tmp/                  # 个人临时文件
 └── .gitignore
 ```
+
+## 项目文档
+
+`docs/research/` 目录存放项目相关的分析研究文档，包括竞品对比、方向探索和决策分析：
+
+| 文档 | 说明 |
+|------|------|
+| `research-ai-prompt-framework.md` | AI_Prompt 框架研究：项目定位、竞品对比、差异分析、发展预测 |
+| `vibe-coding-analysis.md` | Vibe Coding 现象分析 |
+| `project-direction-and-significance.md` | 项目方向与意义讨论 |
 
 ## 三层约束体系
 
