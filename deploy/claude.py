@@ -2,20 +2,28 @@
 # AI_Prompt 部署脚本 — Claude Code 适配器
 
 from pathlib import Path
-from .common import report, copy_files
+from .common import report, copy_files, deploy_resources
 
 CLAUDE_FILES = {
     "adapters/claude-code/CLAUDE.md": "CLAUDE.md",
 }
 
-CLAUDE_DIRS = []
+CLAUDE_DIRS = [
+    ".claude/instructions",
+    ".claude/skills",
+]
 
 
 def deploy_claude(source: Path, target: Path) -> list[str]:
-    """部署 Claude Code。CLAUDE.md 补充 AGENTS.md 通用约束。"""
+    """部署 Claude Code。CLAUDE.md + 通用资源。"""
     lines = []
     lines.append("\n[Claude Code]")
+
+    lines.append("  [CLAUDE.md]")
     c_lines, cc, cs, cm = copy_files(source, target, CLAUDE_FILES)
     lines.extend(c_lines)
-    lines.append(report("info", f"适配器: 复制 {cc}, 跳过 {cs}" + (f", 缺失 {cm}" if cm else "")))
+
+    res_lines, rc, rs = deploy_resources(source, target, ".claude")
+    lines.extend(res_lines)
+    lines.append(report("info", f"总计: 复制 {cc + rc}, 跳过 {cs + rs}" + (f", 缺失 {cm}" if cm else "")))
     return lines
