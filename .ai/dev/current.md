@@ -1,10 +1,11 @@
 # 当前进度
 
-> 顶部维护总进度状态，下方按 `@{username}` 范式记录各成员当前工作。
+> 任务声明格式见 [task_claim.md](task_claim.md)。Agent 修改前须检查文件锁定。
 
-**总体状态**：自动闭环已改为 AutoRunner + worker 职责隔离方案，默认保留人工流程。
+**总体状态**：阶段二 review_passed：Architect 审查发现 5 条待处理（REV-019~023）
 
 ---
 
-@Liuary 已完成 Instructions 统一（公域+私域）、Agent 定义创建、Skill 格式修正、DEPLOY.md 完善。
-@huayinghuo 已新增 AutoRunner 单 worktree 自动闭环方案，并拆分 CodeWorker / ReviewWorker 供自动流程使用。
+@Liuary [协作] review_passed：阶段二  5/5 完成（task_claim 规范 + AGENTS.md 冲突检测 + sync_status Skill + namespace 设计）
+
+@huayinghuo [规划] 已完成：AutoRunner 单 worktree 自动闭环方案，CodeWorker / ReviewWorker 拆分
