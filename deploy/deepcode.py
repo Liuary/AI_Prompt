@@ -3,7 +3,7 @@
 
 import shutil
 from pathlib import Path
-from .common import report, copy_files, deploy_resources
+from .common import report, copy_files
 
 DEEPCODE_FILES = {
     "adapters/deepcode/skills/check-kb/SKILL.md": ".agents/skills/check-kb/SKILL.md",
@@ -20,8 +20,6 @@ DEEPCODE_DIRS = [
     ".agents/skills/get-stage-status",
     ".agents/skills/update-stage-status",
     ".deepcode",
-    ".agents/instructions",
-    ".agents/skills",
 ]
 
 
@@ -42,14 +40,9 @@ def configure_deepcode_agents_md(source: Path, target: Path) -> list[str]:
 
 
 def deploy_deepcode(source: Path, target: Path) -> list[str]:
-    """部署 Deep Code CLI：通用资源 → .agents/ 下，适配器 Skill + AGENTS.md"""
+    """部署 Deep Code CLI。Skill 适配器 + .deepcode/AGENTS.md。"""
     lines = []
     lines.append("\n[Deep Code CLI]")
-    lines.append("  [通用资源 → .agents/]")
-
-    res_lines, rc, rs = deploy_resources(source, target, ".agents")
-    lines.extend(res_lines)
-    lines.append(report("info", f"资源: 复制 {rc}, 跳过 {rs}"))
 
     lines.append("  [DeepCode Skill 适配器]")
     d_lines, dc, ds, dm = copy_files(source, target, DEEPCODE_FILES)
