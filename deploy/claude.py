@@ -6,21 +6,15 @@ from .common import report, copy_files
 
 CLAUDE_FILES = {
     "adapters/claude-code/CLAUDE.md": "CLAUDE.md",
-    ".claude/commands/rule-compile.md": ".claude/commands/rule-compile.md",
-    ".claude/commands/rule-validate.md": ".claude/commands/rule-validate.md",
 }
 
-CLAUDE_DIRS = [
-    ".claude/commands",
-]
+CLAUDE_DIRS = []
 
 
 def deploy_claude(source: Path, target: Path) -> list[str]:
-    """部署 Claude Code。仅在 AGENTS.md 之上补充 CLAUDE.md + 命令。"""
+    """部署 Claude Code。CLAUDE.md 补充 AGENTS.md 通用约束。"""
     lines = []
     lines.append("\n[Claude Code]")
-
-    lines.append("  [Claude 适配器（AGENTS.md 提供通用约束）]")
     c_lines, cc, cs, cm = copy_files(source, target, CLAUDE_FILES)
     lines.extend(c_lines)
     lines.append(report("info", f"适配器: 复制 {cc}, 跳过 {cs}" + (f", 缺失 {cm}" if cm else "")))
