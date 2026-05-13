@@ -1,10 +1,40 @@
 # deploy/common.py
-# AI_Prompt 部署脚本 — 通用逻辑（目录创建、文件复制、配置生成）
+# AI_Prompt 部署脚本 — 通用逻辑（Instructions/Skills/目录/配置）
 
 import os
 import json
 import shutil
 from pathlib import Path
+
+# ── 通用资源（所有工具都部署）───────────────────────────────
+
+# Instructions — 跨工具的 .ai/ 工作区操作规范
+INSTRUCTIONS_FILES = {
+    "Kilo/Instructions/kilo_instructions_core.md": ".kilo/Instructions/kilo_instructions_core.md",
+}
+
+# Skills — 跨工具的 Agent 能力扩展
+SKILLS_FILES = {
+    "Kilo/skills/bug-acceptance/SKILL.md": ".kilo/skills/bug-acceptance/SKILL.md",
+    "Kilo/skills/get-bugs/SKILL.md": ".kilo/skills/get-bugs/SKILL.md",
+    "Kilo/skills/check-kb/SKILL.md": ".kilo/skills/check-kb/SKILL.md",
+    "Kilo/skills/sync-status/SKILL.md": ".kilo/skills/sync-status/SKILL.md",
+    "Kilo/skills/get-stage-status/SKILL.md": ".kilo/skills/get-stage-status/SKILL.md",
+    "Kilo/skills/update-stage-status/SKILL.md": ".kilo/skills/update-stage-status/SKILL.md",
+}
+
+INSTRUCTIONS_DIRS = [
+    ".kilo/Instructions",
+]
+
+SKILLS_DIRS = [
+    ".kilo/skills/bug-acceptance",
+    ".kilo/skills/get-bugs",
+    ".kilo/skills/check-kb",
+    ".kilo/skills/sync-status",
+    ".kilo/skills/get-stage-status",
+    ".kilo/skills/update-stage-status",
+]
 
 # ── 常量 ────────────────────────────────────────────────────────
 
@@ -25,12 +55,10 @@ INFO_JSON_CONTENT = """\
 }
 """
 
-# 根 .gitignore 通用条目（非 .ai/ 子目录范围）
 ROOT_GITIGNORE_ENTRIES = [
     ".kilo/",
 ]
 
-# .ai/.gitignore 模板内容
 AI_GITIGNORE_CONTENT = """\
 .info.json
 users/
@@ -41,7 +69,6 @@ tmp/
 # ── 工具函数 ────────────────────────────────────────────────────
 
 def report(status: str, path: str, detail: str = "") -> str:
-    """格式化报告行。"""
     prefix = {"created": "[+]", "skipped": "[=]", "warning": "[!]", "error": "[X]", "info": " i "}.get(status, "   ")
     line = f"  {prefix} {path}"
     if detail:
@@ -50,10 +77,8 @@ def report(status: str, path: str, detail: str = "") -> str:
 
 
 def create_directories(target: Path, tool_dirs: list[str]) -> list[str]:
-    """创建目标项目目录结构（通用 + 工具特定），返回报告行列表。"""
     lines = []
-    all_dirs = list(AI_DIRS) + list(tool_dirs)
-
+    all_dirs = list(AI_DIRS) + list(INSTRUCTIONS_DIRS) + list(SKILLS_DIRS) + list(tool_dirs)
     for d in all_dirs:
         dir_path = target / d
         if dir_path.exists():
@@ -64,24 +89,16 @@ def create_directories(target: Path, tool_dirs: list[str]) -> list[str]:
     return lines
 
 
-def copy_files(source: Path, target: Path, file_map: dict) -> tuple[list[str], int, int, int]:
-    """复制文件映射到目标项目，返回 (报告行列表, 已复制, 已跳过, 缺失)。"""
-    lines = []
-    copied = 0
-    skipped = 0
-    missing = 0
-
+def copy_files(source: Path, target: Path, file_map: dict) -> tuple:
+    lines, copied, skipped, missing = [], 0, 0, 0
     for src_rel, dst_rel in file_map.items():
         src_path = source / src_rel
         dst_path = target / dst_rel
-
         if not src_path.exists():
             lines.append(report("warning", str(dst_rel), f"源文件不存在: {src_rel}"))
             missing += 1
             continue
-
         dst_path.parent.mkdir(parents=True, exist_ok=True)
-
         if dst_path.exists():
             lines.append(report("skipped", str(dst_rel), "已存在"))
             skipped += 1
@@ -89,17 +106,13 @@ def copy_files(source: Path, target: Path, file_map: dict) -> tuple[list[str], i
             shutil.copy2(src_path, dst_path)
             lines.append(report("created", str(dst_rel)))
             copied += 1
-
     return lines, copied, skipped, missing
 
 
 # ── 通用配置 ────────────────────────────────────────────────────
 
 def configure_gitignore(target: Path) -> list[str]:
-    """配置 .gitignore 和 .ai/.gitignore。"""
     lines = []
-
-    # 根 .gitignore
     root_path = target / ".gitignore"
     existing = set()
     if root_path.exists():
@@ -109,27 +122,22 @@ def configure_gitignore(target: Path) -> list[str]:
         with root_path.open("a", encoding="utf-8") as f:
             if root_path.stat().st_size > 0:
                 f.seek(0, os.SEEK_END)
-                if f.tell() > 0:
-                    f.write("\n")
+                if f.tell() > 0: f.write("\n")
             f.writelines(e + "\n" for e in missing)
         lines.append(report("created", ".gitignore", f"追加 {len(missing)} 条"))
     else:
         lines.append(report("skipped", ".gitignore", "条目完整"))
-
-    # .ai/.gitignore
-    ai_gitignore_path = target / ".ai" / ".gitignore"
-    ai_gitignore_path.parent.mkdir(parents=True, exist_ok=True)
-    if ai_gitignore_path.exists():
+    ai_path = target / ".ai" / ".gitignore"
+    ai_path.parent.mkdir(parents=True, exist_ok=True)
+    if ai_path.exists():
         lines.append(report("skipped", ".ai/.gitignore", "已存在"))
     else:
-        ai_gitignore_path.write_text(AI_GITIGNORE_CONTENT, encoding="utf-8")
+        ai_path.write_text(AI_GITIGNORE_CONTENT, encoding="utf-8")
         lines.append(report("created", ".ai/.gitignore"))
-
     return lines
 
 
 def configure_info_json(target: Path) -> list[str]:
-    """生成 .ai/.info.json（如不存在）。"""
     path = target / ".ai" / ".info.json"
     if path.exists():
         return [report("skipped", ".ai/.info.json", "已存在")]
@@ -139,17 +147,9 @@ def configure_info_json(target: Path) -> list[str]:
 
 
 def generate_workspace(target: Path) -> list[str]:
-    """生成 .code-workspace 文件。"""
-    project_name = target.resolve().name
-    workspace_name = f"{project_name}.code-workspace"
-    workspace_path = target / workspace_name
-
-    if workspace_path.exists():
-        return [report("skipped", workspace_name, "已存在")]
-
-    workspace = {"folders": [{"path": "."}], "settings": {}}
-    workspace_path.write_text(
-        json.dumps(workspace, indent=4, ensure_ascii=False) + "\n",
-        encoding="utf-8"
-    )
-    return [report("created", workspace_name)]
+    name = f"{target.resolve().name}.code-workspace"
+    ws_path = target / name
+    if ws_path.exists():
+        return [report("skipped", name, "已存在")]
+    ws_path.write_text(json.dumps({"folders": [{"path": "."}], "settings": {}}, indent=4, ensure_ascii=False) + "\n", encoding="utf-8")
+    return [report("created", name)]

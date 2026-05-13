@@ -1,8 +1,5 @@
 # deploy/__init__.py
-# AI_Prompt 部署脚本 — 主入口（工具分发 + 部署流程）
-#
-# CLI 解析见 cli.py，工具注册见 TOOLS 字典，部署逻辑见各 {tool}.py。
-# 新增工具只需在 TOOLS 中注册 + 创建 {tool}.py（实现 deploy_{tool} 函数）。
+# AI_Prompt 部署脚本 — 主入口（Instructions/Skills 通用 + 工具分发）
 
 import shutil
 import sys
@@ -12,14 +9,12 @@ from .cli import build_parser, show_help, show_list, resolve_tool
 from .common import (
     report, create_directories, copy_files,
     configure_gitignore, configure_info_json, generate_workspace,
+    INSTRUCTIONS_FILES, SKILLS_FILES, INSTRUCTIONS_DIRS, SKILLS_DIRS,
 )
 from .kilo import KILO_DIRS, deploy_kilo
 from .deepcode import DEEPCODE_DIRS, deploy_deepcode
 from .claude import CLAUDE_DIRS, deploy_claude
 from .copilot import COPILOT_DIRS, deploy_copilot
-
-# ── 工具注册表 ──────────────────────────────────────────────────
-# 新增工具只需在此追加一条，无需修改分发逻辑。
 
 TOOLS = {
     "kilo":    {"dirs": KILO_DIRS,    "label": "Kilo",           "fn": deploy_kilo,    "tip": "重启 Kilo 会话后 Subagent 和 Skill 生效。"},
@@ -30,7 +25,6 @@ TOOLS = {
 
 
 def _configure_agents_md(source, target, tool):
-    """部署 AGENTS.md，按工具选择版本。"""
     lines = []
     src_rel = "adapters/deepcode/AGENTS.md" if tool == "deepcode" else "AGENTS.md"
     src_path = source / src_rel
@@ -92,26 +86,33 @@ def main():
     print(f"  工具:   {label}\n")
 
     all_lines = []
+    targets = list(TOOLS) if tool == "all" else [tool]
 
-    # 通用 + 目录
-    all_lines.append("[通用文件]")
-    all_lines.extend(copy_files(source, target, {})[0])
+    # ── 通用资源：Instructions + Skills（所有工具都部署）──
+    all_lines.append("[通用 Instructions]")
+    i_lines, ic, iskip, im = copy_files(source, target, INSTRUCTIONS_FILES)
+    all_lines.extend(i_lines)
+    all_lines.append(report("info", f"Instructions: 复制 {ic}, 跳过 {iskip}" + (f", 缺失 {im}" if im else "")))
 
+    all_lines.append("\n[通用 Skills]")
+    s_lines, sc, sskip, sm = copy_files(source, target, SKILLS_FILES)
+    all_lines.extend(s_lines)
+    all_lines.append(report("info", f"Skills: 复制 {sc}, 跳过 {sskip}" + (f", 缺失 {sm}" if sm else "")))
+
+    # ── 目录结构 ──
     tool_dirs = []
-    targets = TOOLS if tool == "all" else [tool]
     for t in targets:
         tool_dirs.extend(TOOLS[t]["dirs"])
-
     all_lines.append("\n[目录结构]")
     all_lines.extend(create_directories(target, tool_dirs))
 
-    # 工具适配器
+    # ── 工具适配器 ──
     for t in targets:
         all_lines.append(f"\n[AGENTS.md]")
         all_lines.extend(_configure_agents_md(source, target, t))
         all_lines.extend(TOOLS[t]["fn"](source, target))
 
-    # 通用配置
+    # ── 通用配置 ──
     all_lines.append("\n[Git 配置]")
     all_lines.extend(configure_gitignore(target))
     all_lines.append("\n[工作区]")

@@ -1,11 +1,11 @@
 # deploy/kilo.py
-# AI_Prompt 部署脚本 — Kilo 适配器
+# AI_Prompt 部署脚本 — Kilo 适配器（仅 Agent 定义，Instructions/Skills 已提升为通用）
 
 from pathlib import Path
 from .common import report, copy_files
 
+# Agent 定义（仅 Kilo 支持 Agent 角色体系）
 KILO_FILES = {
-    "Kilo/Instructions/kilo_instructions_core.md": ".kilo/Instructions/kilo_instructions_core.md",
     "Kilo/agents/architect.md": ".kilo/agents/architect.md",
     "Kilo/agents/auto-runner.md": ".kilo/agents/auto-runner.md",
     "Kilo/agents/code.md": ".kilo/agents/code.md",
@@ -15,23 +15,10 @@ KILO_FILES = {
     "Kilo/agents/review-worker.md": ".kilo/agents/review-worker.md",
     "Kilo/agents/tester.md": ".kilo/agents/tester.md",
     "Kilo/agents/test-writer.md": ".kilo/agents/test-writer.md",
-    "Kilo/skills/bug-acceptance/SKILL.md": ".kilo/skills/bug-acceptance/SKILL.md",
-    "Kilo/skills/get-bugs/SKILL.md": ".kilo/skills/get-bugs/SKILL.md",
-    "Kilo/skills/check-kb/SKILL.md": ".kilo/skills/check-kb/SKILL.md",
-    "Kilo/skills/sync-status/SKILL.md": ".kilo/skills/sync-status/SKILL.md",
-    "Kilo/skills/get-stage-status/SKILL.md": ".kilo/skills/get-stage-status/SKILL.md",
-    "Kilo/skills/update-stage-status/SKILL.md": ".kilo/skills/update-stage-status/SKILL.md",
 }
 
 KILO_DIRS = [
-    ".kilo/Instructions",
     ".kilo/agents",
-    ".kilo/skills/bug-acceptance",
-    ".kilo/skills/get-bugs",
-    ".kilo/skills/check-kb",
-    ".kilo/skills/sync-status",
-    ".kilo/skills/get-stage-status",
-    ".kilo/skills/update-stage-status",
 ]
 
 KILO_JSONC_CONTENT = """\
@@ -67,12 +54,12 @@ def configure_kilo_jsonc(target: Path) -> list[str]:
 
 
 def deploy_kilo(source: Path, target: Path) -> list[str]:
-    """部署 Kilo 适配器文件，返回报告行列表。"""
+    """部署 Kilo Agent 定义。"""
     lines = []
-    lines.append("\n[Kilo 适配器]")
+    lines.append("\n[Kilo Agent]")
     k_lines, kc, ks, km = copy_files(source, target, KILO_FILES)
     lines.extend(k_lines)
-    lines.append(report("info", f"Kilo 文件: 复制 {kc}, 跳过 {ks}" + (f", 缺失 {km}" if km else "")))
+    lines.append(report("info", f"Agent: 复制 {kc}, 跳过 {ks}" + (f", 缺失 {km}" if km else "")))
 
     lines.append("\n[Kilo 配置]")
     lines.extend(configure_kilo_jsonc(target))
