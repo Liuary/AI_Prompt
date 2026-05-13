@@ -14,3 +14,5 @@
 
 - [2026-05-13-Liuary-003.md](2026/05/13/2026-05-13-Liuary-003.md) Liuary: 阶段一闭环+阶段二审查（5 pending）
 - [2026-05-13-Liuary-004.md](2026/05/13/2026-05-13-Liuary-004.md) Liuary: 阶段二 5/5 closed，两阶段共 23 条审查闭环
+- [2026-05-13-Liuary-005.md](2026/05/13/2026-05-13-Liuary-005.md) Liuary: 阶段三审查 3个高严重度问题（REV-024~029，6 pending）
+- [2026-05-13-Liuary-006.md](2026/05/13/2026-05-13-Liuary-006.md) Liuary: 阶段三 6/6 closed，29 总数，1 pending

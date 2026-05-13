@@ -85,6 +85,8 @@ permission:
 - 将条目首行的 `- **状态**：fixing` 改为 `- **状态**：resolved`。
 - 更新 `.ai/users/{username}/code_review/index.md` 和 `log.md`。
 
+**⚠️ 强制约束**：将 REV 条目状态改为 `resolved` 前，必须确认处理记录表已填写（至少含修改说明行）。处理记录为空的 REV 条目不得到达 `resolved` 状态——状态变更在处理记录填写完成前无效。
+
 ### 4. 等待验收
 
 审查条目标记为 `resolved` 后，由 Architect Agent 在下一轮审查中验收。无需代码 Agent 主动请求。
