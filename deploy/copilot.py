@@ -23,6 +23,7 @@ COPILOT_AGENTS = {
     "adapters/copilot/agents/architect.agent.md": ".github/agents/architect.agent.md",
     "adapters/copilot/agents/code.agent.md": ".github/agents/code.agent.md",
     "adapters/copilot/agents/tester.agent.md": ".github/agents/tester.agent.md",
+    "adapters/copilot/agents/debug.agent.md": ".github/agents/debug.agent.md",
 }
 
 COPILOT_SCRIPTS = {
