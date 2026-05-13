@@ -94,23 +94,23 @@ def copy_files(source: Path, target: Path, file_map: dict) -> tuple:
     return lines, copied, skipped, missing
 
 
-def deploy_resources(source: Path, target: Path, prefix: str) -> tuple[list[str], int, int]:
-    """将通用 Instructions 和 Skills 部署到目标目录（如 .kilo/instructions/）。"""
+def deploy_resources(source: Path, target: Path, prefix: str, rules_dir: str = "instructions") -> tuple[list[str], int, int]:
+    """将通用 Instructions 和 Skills 部署到目标目录。"""
     lines = []
-    inst_map = {s: f"{prefix}/instructions/{Path(s).name}" for s in INSTRUCTION_SOURCES}
+    inst_map = {s: f"{prefix}/{rules_dir}/{Path(s).name}" for s in INSTRUCTION_SOURCES}
     skill_map = {s: s.replace("skills/", f"{prefix}/skills/") for s in SKILL_SOURCES}
     total_copied, total_skipped = 0, 0
 
-    lines.append("  [通用 Instructions]")
+    lines.append(f"  [通用约束 → {prefix}/{rules_dir}/]")
     i_lines, ic, iskip, im = copy_files(source, target, inst_map)
     lines.extend(i_lines)
-    lines.append(report("info", f"Instructions: 复制 {ic}, 跳过 {iskip}" + (f", 缺失 {im}" if im else "")))
+    lines.append(report("info", f"规则: 复制 {ic}, 跳过 {iskip}" + (f", 缺失 {im}" if im else "")))
     total_copied += ic; total_skipped += iskip
 
-    lines.append("  [通用 Skills]")
+    lines.append(f"  [通用技能 → {prefix}/skills/]")
     s_lines, sc, sskip, sm = copy_files(source, target, skill_map)
     lines.extend(s_lines)
-    lines.append(report("info", f"Skills: 复制 {sc}, 跳过 {sskip}" + (f", 缺失 {sm}" if sm else "")))
+    lines.append(report("info", f"技能: 复制 {sc}, 跳过 {sskip}" + (f", 缺失 {sm}" if sm else "")))
     total_copied += sc; total_skipped += sskip
 
     return lines, total_copied, total_skipped
