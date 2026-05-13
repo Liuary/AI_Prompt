@@ -1,6 +1,6 @@
 # AI_Prompt
 
-Kilo Code AI Agent 项目级行为约束与编码规范。本文件为永久性约束，适用于项目中所有 AI Agent 会话。
+AI Agent 项目级行为约束与编码规范。本文件为永久性约束，适用于项目中所有 AI Agent 会话。
 
 ## 行为准则
 
@@ -63,7 +63,7 @@ Kilo Code AI Agent 项目级行为约束与编码规范。本文件为永久性�
 
 ## AGENTS.md 写入规范
 
-本文件为 AI Agent 行为准则，在 Kilo 等工具中受写入保护。当 AI Agent 需要沉淀新规则时，按以下层级判断写入位置：
+本文件为 AI Agent 行为准则，在多工具中受写入保护。当 AI Agent 需要沉淀新规则时，按以下层级判断写入位置：
 
 - **项目根目录 `AGENTS.md`**：适用于全局性约束、项目整体规范、跨模块通用的编码约定。
 - **子目录 `AGENTS.md`**：适用于仅对该目录或其子目录生效的规则（如 `src/backend/AGENTS.md` 存放后端专用规范）。子目录规则与根目录规则叠加生效，冲突时子目录规则优先。
@@ -82,4 +82,4 @@ Kilo Code AI Agent 项目级行为约束与编码规范。本文件为永久性�
 
 ## 工作区
 
-关于 `.ai/` 工作目录的详细操作流程（日志、计划、笔记等），参见 `instructions/core.md`（通过 `kilo.jsonc` 的 `instructions` 字段加载）。
+关于 `.ai/` 工作目录的详细操作流程（日志、计划、笔记等），参见 `instructions/core.md`。
