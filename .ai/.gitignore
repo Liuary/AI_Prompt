@@ -1,0 +1,5 @@
+# .ai/ 目录的本地忽略规则
+# 不上报到项目根 .gitignore，保持子模块独立性
+.info.json
+users/
+tmp/

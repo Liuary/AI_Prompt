@@ -1,5 +1,4 @@
-.ai/.info.json
-.ai/users/
 .kilo/
+__pycache__/
 *.code-workspace
 SESSION_SUMMARY.md
