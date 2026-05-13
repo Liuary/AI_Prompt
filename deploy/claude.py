@@ -9,10 +9,10 @@ CLAUDE_FILES = {
 }
 
 CLAUDE_AGENT_FILES = {
-    "adapters/claude-code/agents/architect.json": ".claude/agents/architect.json",
-    "adapters/claude-code/agents/code.json": ".claude/agents/code.json",
-    "adapters/claude-code/agents/debug.json": ".claude/agents/debug.json",
-    "adapters/claude-code/agents/tester.json": ".claude/agents/tester.json",
+    "adapters/claude-code/agents/architect.md": ".claude/agents/architect.md",
+    "adapters/claude-code/agents/code.md": ".claude/agents/code.md",
+    "adapters/claude-code/agents/debug.md": ".claude/agents/debug.md",
+    "adapters/claude-code/agents/tester.md": ".claude/agents/tester.md",
 }
 
 CLAUDE_DIRS = [
