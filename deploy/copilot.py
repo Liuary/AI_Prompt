@@ -22,7 +22,7 @@ COPILOT_SKILLS = {
 COPILOT_AGENTS = {
     "adapters/copilot/agents/architect.agent.md": ".github/agents/architect.agent.md",
     "adapters/copilot/agents/code.agent.md": ".github/agents/code.agent.md",
-    "adapters/copilot/agents/reviewer.agent.md": ".github/agents/reviewer.agent.md",
+    "adapters/copilot/agents/tester.agent.md": ".github/agents/tester.agent.md",
 }
 
 COPILOT_SCRIPTS = {
