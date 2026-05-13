@@ -3,7 +3,7 @@
 
 import shutil
 from pathlib import Path
-from .common import report, copy_files
+from .common import report, copy_files, deploy_resources
 
 DEEPCODE_FILES = {
     "adapters/deepcode/skills/check-kb/SKILL.md": ".agents/skills/check-kb/SKILL.md",
@@ -20,19 +20,18 @@ DEEPCODE_DIRS = [
     ".agents/skills/get-stage-status",
     ".agents/skills/update-stage-status",
     ".deepcode",
+    ".agents/instructions",
+    ".agents/skills",
 ]
 
 
 def configure_deepcode_agents_md(source: Path, target: Path) -> list[str]:
-    """部署 AGENTS.md 到 .deepcode/。"""
     lines = []
     src_path = source / "adapters" / "deepcode" / "AGENTS.md"
     dst_path = target / ".deepcode" / "AGENTS.md"
-
     if not src_path.exists():
         lines.append(report("warning", ".deepcode/AGENTS.md", "源文件不存在"))
         return lines
-
     dst_path.parent.mkdir(parents=True, exist_ok=True)
     if dst_path.exists():
         lines.append(report("skipped", ".deepcode/AGENTS.md", "已存在"))
@@ -43,12 +42,19 @@ def configure_deepcode_agents_md(source: Path, target: Path) -> list[str]:
 
 
 def deploy_deepcode(source: Path, target: Path) -> list[str]:
-    """部署 Deep Code CLI 适配器。"""
+    """部署 Deep Code CLI：通用资源 → .agents/ 下，适配器 Skill + AGENTS.md"""
     lines = []
-    lines.append("\n[Deep Code CLI 适配器]")
+    lines.append("\n[Deep Code CLI]")
+    lines.append("  [通用资源 → .agents/]")
+
+    res_lines, rc, rs = deploy_resources(source, target, ".agents")
+    lines.extend(res_lines)
+    lines.append(report("info", f"资源: 复制 {rc}, 跳过 {rs}"))
+
+    lines.append("  [DeepCode Skill 适配器]")
     d_lines, dc, ds, dm = copy_files(source, target, DEEPCODE_FILES)
     lines.extend(d_lines)
-    lines.append(report("info", f"DeepCode 文件: 复制 {dc}, 跳过 {ds}" + (f", 缺失 {dm}" if dm else "")))
+    lines.append(report("info", f"Skill: 复制 {dc}, 跳过 {ds}" + (f", 缺失 {dm}" if dm else "")))
 
     lines.append("\n[DeepCode .deepcode/]")
     lines.extend(configure_deepcode_agents_md(source, target))
