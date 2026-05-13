@@ -2,10 +2,9 @@
 
 > 任务声明格式见 [task_claim.md](task_claim.md)。Agent 修改前须检查文件锁定。
 
-**总体状态**：阶段三 review_passed（REV-030 pending），阶段一/二/三代码审查通过
+**总体状态**：v2.0 全部四个阶段审查通过 🎉（33/33 closed）
 
 ---
 
-@Liuary [适配] review_passed：处理 REV-024~029（状态修正/日志补全/文档同步）
-
+@Liuary [规范] review_passed：阶段四 6/6 + 审查通过，v2.0 全部闭环
 @huayinghuo [规划] 已完成：AutoRunner 单 worktree 自动闭环方案

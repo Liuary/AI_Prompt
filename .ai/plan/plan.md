@@ -62,7 +62,7 @@ AI_Prompt 是**跨 AI 工具的 Agent 开发治理框架**，为 AI 辅助软件
 
 ### 阶段三：多工具适配扩展
 
-> 优先级：🥉  |  状态：review_failed  |  详见：stage-03/
+> 优先级：🥉  |  状态：review_passed  |  详见：stage-03/
 
 - **Claude Code 适配器**：CLAUDE.md + .claude/commands/
 - **GitHub Copilot 适配器**：copilot-instructions.md
@@ -70,7 +70,7 @@ AI_Prompt 是**跨 AI 工具的 Agent 开发治理框架**，为 AI 辅助软件
 
 ### 阶段四：规范体系整理
 
-> 优先级：🏅  |  状态：planned  |  详见：stage-04/
+> 优先级：🏅  |  状态：done  |  详见：stage-04/
 
 - **规范文档**：specs/ 目录，5 个核心规范文档
 - **模板市场储备**：打包格式设计 + 示例模板
@@ -87,7 +87,7 @@ AI_Prompt 是**跨 AI 工具的 Agent 开发治理框架**，为 AI 辅助软件
 
 ## 六、下一步
 
-当前阶段一、二审查通过，阶段三审查进行中。后续推进阶段四（规范体系整理）。
+v2.0 四个阶段开发全部完成。后续进行审查闭环和工作区清理。
 
 ---
 > 本计划为 大计划，更改须经团队沟通确认。各阶段的具体任务分解见对应 `stage-*/` 子目录。
