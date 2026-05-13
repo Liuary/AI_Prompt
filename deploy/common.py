@@ -10,30 +10,24 @@ from pathlib import Path
 
 # Instructions — 跨工具的 .ai/ 工作区操作规范
 INSTRUCTIONS_FILES = {
-    "Kilo/Instructions/kilo_instructions_core.md": ".kilo/Instructions/kilo_instructions_core.md",
+    "instructions/kilo_instructions_core.md": "instructions/kilo_instructions_core.md",
 }
 
-# Skills — 跨工具的 Agent 能力扩展
 SKILLS_FILES = {
-    "Kilo/skills/bug-acceptance/SKILL.md": ".kilo/skills/bug-acceptance/SKILL.md",
-    "Kilo/skills/get-bugs/SKILL.md": ".kilo/skills/get-bugs/SKILL.md",
-    "Kilo/skills/check-kb/SKILL.md": ".kilo/skills/check-kb/SKILL.md",
-    "Kilo/skills/sync-status/SKILL.md": ".kilo/skills/sync-status/SKILL.md",
-    "Kilo/skills/get-stage-status/SKILL.md": ".kilo/skills/get-stage-status/SKILL.md",
-    "Kilo/skills/update-stage-status/SKILL.md": ".kilo/skills/update-stage-status/SKILL.md",
+    "skills/bug-acceptance/SKILL.md": "skills/bug-acceptance/SKILL.md",
+    "skills/get-bugs/SKILL.md": "skills/get-bugs/SKILL.md",
+    "skills/check-kb/SKILL.md": "skills/check-kb/SKILL.md",
+    "skills/sync-status/SKILL.md": "skills/sync-status/SKILL.md",
+    "skills/get-stage-status/SKILL.md": "skills/get-stage-status/SKILL.md",
+    "skills/update-stage-status/SKILL.md": "skills/update-stage-status/SKILL.md",
 }
 
 INSTRUCTIONS_DIRS = [
-    ".kilo/Instructions",
+    "instructions",
 ]
 
 SKILLS_DIRS = [
-    ".kilo/skills/bug-acceptance",
-    ".kilo/skills/get-bugs",
-    ".kilo/skills/check-kb",
-    ".kilo/skills/sync-status",
-    ".kilo/skills/get-stage-status",
-    ".kilo/skills/update-stage-status",
+    "skills",
 ]
 
 # ── 常量 ────────────────────────────────────────────────────────

@@ -27,15 +27,15 @@ KILO_JSONC_CONTENT = """\
   "default_agent": "code",
   "instructions": [
     "AGENTS.md",
-    ".kilo/Instructions/kilo_instructions_core.md"
+    "instructions/kilo_instructions_core.md"
   ],
   "skills": {
-    "get-bugs": ".kilo/skills/get-bugs",
-    "check-kb": ".kilo/skills/check-kb",
-    "bug-acceptance": ".kilo/skills/bug-acceptance",
-    "sync-status": ".kilo/skills/sync-status",
-    "get-stage-status": ".kilo/skills/get-stage-status",
-    "update-stage-status": ".kilo/skills/update-stage-status"
+    "get-bugs": "skills/get-bugs",
+    "check-kb": "skills/check-kb",
+    "bug-acceptance": "skills/bug-acceptance",
+    "sync-status": "skills/sync-status",
+    "get-stage-status": "skills/get-stage-status",
+    "update-stage-status": "skills/update-stage-status"
   },
   "experimental": {
     "agent_manager_tool": true
