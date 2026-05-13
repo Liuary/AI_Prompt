@@ -43,7 +43,7 @@ AI_Prompt 是**跨 AI 工具的 Agent 开发治理框架**，为 AI 辅助软件
 
 ### 阶段一：约束引擎 + 记忆系统
 
-> 优先级：🥇  |  状态：done  |  详见：stage-01/
+> 优先级：🥇  |  状态：review_passed  |  详见：stage-01/
 
 - **规则 DSL**：结构化约束定义（YAML Schema），取代纯自然语言
 - **规则编译器**：DSL → 各工具原生格式（AGENTS.md / CLAUDE.md / instructions.md）
@@ -53,7 +53,7 @@ AI_Prompt 是**跨 AI 工具的 Agent 开发治理框架**，为 AI 辅助软件
 
 ### 阶段二：多人协作基础
 
-> 优先级：🥈  |  状态：done  |  详见：stage-02/
+> 优先级：🥈  |  状态：review_passed  |  详见：stage-02/
 
 - **任务归属**：current.md 格式增强，Agent 接手前声明模块
 - **冲突检测**：多人/多Agent 修改同一文件前的预警
@@ -62,7 +62,7 @@ AI_Prompt 是**跨 AI 工具的 Agent 开发治理框架**，为 AI 辅助软件
 
 ### 阶段三：多工具适配扩展
 
-> 优先级：🥉  |  状态：planned  |  详见：stage-03/
+> 优先级：🥉  |  状态：review_failed  |  详见：stage-03/
 
 - **Claude Code 适配器**：CLAUDE.md + .claude/commands/
 - **GitHub Copilot 适配器**：copilot-instructions.md
@@ -87,7 +87,7 @@ AI_Prompt 是**跨 AI 工具的 Agent 开发治理框架**，为 AI 辅助软件
 
 ## 六、下一步
 
-启动**阶段一：约束引擎 + 记忆系统**，从规则 DSL Schema 设计开始。
+当前阶段一、二审查通过，阶段三审查进行中。后续推进阶段四（规范体系整理）。
 
 ---
 > 本计划为 大计划，更改须经团队沟通确认。各阶段的具体任务分解见对应 `stage-*/` 子目录。

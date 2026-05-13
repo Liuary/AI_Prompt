@@ -86,6 +86,32 @@ DEEPCODE_DIRS = [
 ]
 
 # ═══════════════════════════════════════════════════════════════════════
+# Claude Code 专用文件
+# ═══════════════════════════════════════════════════════════════════════
+
+CLAUDE_FILES = {
+    "adapters/claude-code/CLAUDE.md": "CLAUDE.md",
+    ".claude/commands/rule-compile.md": ".claude/commands/rule-compile.md",
+    ".claude/commands/rule-validate.md": ".claude/commands/rule-validate.md",
+}
+
+CLAUDE_DIRS = [
+    ".claude/commands",
+]
+
+# ═══════════════════════════════════════════════════════════════════════
+# GitHub Copilot 专用文件
+# ═══════════════════════════════════════════════════════════════════════
+
+COPILOT_FILES = {
+    "adapters/copilot/copilot-instructions.md": ".github/copilot-instructions.md",
+}
+
+COPILOT_DIRS = [
+    ".github",
+]
+
+# ═══════════════════════════════════════════════════════════════════════
 # 通用目录
 # ═══════════════════════════════════════════════════════════════════════
 
@@ -159,6 +185,10 @@ def create_directories(target: Path, tool: str) -> list[str]:
         dirs_to_create.extend(KILO_DIRS)
     if tool in ("deepcode", "all"):
         dirs_to_create.extend(DEEPCODE_DIRS)
+    if tool in ("claude", "all"):
+        dirs_to_create.extend(CLAUDE_DIRS)
+    if tool in ("copilot", "all"):
+        dirs_to_create.extend(COPILOT_DIRS)
 
     for d in dirs_to_create:
         dir_path = target / d
@@ -322,6 +352,8 @@ def show_help():
 选项:
   -k, --kilo          仅部署 Kilo 框架（Agent/Skill/Instructions → .kilo/）
   -d, --deepcode      仅部署 Deep Code CLI 框架（合并版 AGENTS.md + Skill → .agents/）
+  -c, --claude        仅部署 Claude Code 适配器（CLAUDE.md + .claude/commands/）
+  -p, --copilot       仅部署 GitHub Copilot 适配器（.github/copilot-instructions.md）
   -l, --list          列出所有支持的 AI 工具
   -h, --help          显示本帮助信息
   --source <路径>     指定模板源路径（默认为脚本所在目录）
@@ -332,6 +364,8 @@ def show_help():
   python deploy.py /home/user/my-project               # 部署全部
   python deploy.py /home/user/my-project -k            # 仅 Kilo
   python deploy.py /home/user/my-project -d            # 仅 Deep Code CLI
+  python deploy.py /home/user/my-project -c            # 仅 Claude Code
+  python deploy.py /home/user/my-project -p            # 仅 Copilot
   python deploy.py --list                              # 列出工具
   python deploy.py --help                              # 本帮助
 
@@ -344,7 +378,9 @@ def show_list():
     print("支持的 AI 工具：\n")
     print("  kilo        Kilo — 终端 Agent 工具，支持完整 Agent 角色体系与自动闭环")
     print("  deepcode    Deep Code CLI — 终端 AI 编码助手，通过 Skill + AGENTS.md 提供核心治理能力")
-    print("\n用法：python deploy.py <目标路径> [-k | -d]")
+    print("  claude      Claude Code — Anthropic 的终端 Agent 工具，通过 CLAUDE.md + 命令提供治理能力")
+    print("  copilot     GitHub Copilot — IDE 内嵌 AI 助手，通过 copilot-instructions.md 提供行为约束")
+    print("\n用法：python deploy.py <目标路径> [-k | -d | -c | -p]")
     print("不指定选项时默认部署全部。")
     sys.exit(0)
 
@@ -386,6 +422,16 @@ def main():
         action="store_true",
         help=argparse.SUPPRESS,
     )
+    tool_group.add_argument(
+        "-c", "--claude",
+        action="store_true",
+        help=argparse.SUPPRESS,
+    )
+    tool_group.add_argument(
+        "-p", "--copilot",
+        action="store_true",
+        help=argparse.SUPPRESS,
+    )
     parser.add_argument(
         "-l", "--list",
         action="store_true",
@@ -411,13 +457,17 @@ def main():
         tool = "kilo"
     elif args.deepcode:
         tool = "deepcode"
+    elif args.claude:
+        tool = "claude"
+    elif args.copilot:
+        tool = "copilot"
     else:
         tool = "all"
 
     # target 为必填
     if not args.target:
         print("错误: 需要指定目标项目路径\n")
-        print("用法：python deploy.py <目标路径> [-k | -d]")
+        print("用法：python deploy.py <目标路径> [-k | -d | -c | -p]")
         print("      python deploy.py --help 查看完整帮助")
         sys.exit(1)
 
@@ -449,7 +499,7 @@ def main():
         print(f"错误: 目标路径存在但不是目录: {target}")
         sys.exit(1)
 
-    tool_label = {"kilo": "Kilo", "deepcode": "Deep Code CLI", "all": "Kilo + Deep Code CLI（全部）"}[tool]
+    tool_label = {"kilo": "Kilo", "deepcode": "Deep Code CLI", "claude": "Claude Code", "copilot": "GitHub Copilot", "all": "全部工具"}[tool]
 
     print(f"\n部署中...")
     print(f"  源:     {source}")
@@ -492,6 +542,20 @@ def main():
         all_lines.append("\n[DeepCode .deepcode/]")
         all_lines.extend(configure_deepcode_agents_md(source, target))
 
+    # ── Claude Code 专用 ──
+    if tool in ("claude", "all"):
+        all_lines.append("\n[Claude Code 适配器]")
+        cc_lines, cc_copied, cc_skipped, cc_missing = copy_files(source, target, CLAUDE_FILES)
+        all_lines.extend(cc_lines)
+        all_lines.append(report("info", f"Claude Code 文件: 复制 {cc_copied}, 跳过 {cc_skipped}" + (f", 缺失 {cc_missing}" if cc_missing else "")))
+
+    # ── Copilot 专用 ──
+    if tool in ("copilot", "all"):
+        all_lines.append("\n[GitHub Copilot 适配器]")
+        cp_lines, cp_copied, cp_skipped, cp_missing = copy_files(source, target, COPILOT_FILES)
+        all_lines.extend(cp_lines)
+        all_lines.append(report("info", f"Copilot 文件: 复制 {cp_copied}, 跳过 {cp_skipped}" + (f", 缺失 {cp_missing}" if cp_missing else "")))
+
     # ── 通用配置 ──
     all_lines.append("\n[Git 配置]")
     all_lines.extend(configure_gitignore(target))
@@ -509,6 +573,10 @@ def main():
         print("重启 Kilo 会话后 Subagent 和 Skill 生效。")
     if tool in ("deepcode", "all"):
         print("启动 Deep Code CLI 后使用 /skills 查看可用 Skill。")
+    if tool in ("claude", "all"):
+        print("Claude Code 会话将自动读取 CLAUDE.md，使用 /rule-compile /rule-validate 命令。")
+    if tool in ("copilot", "all"):
+        print("GitHub Copilot 将自动读取 .github/copilot-instructions.md 作为行为约束。")
 
 
 if __name__ == "__main__":

@@ -11,6 +11,8 @@ python deploy.py /path/to/target
 # 仅部署指定工具
 python deploy.py /path/to/target -k      # Kilo
 python deploy.py /path/to/target -d      # Deep Code CLI
+python deploy.py /path/to/target -c      # Claude Code
+python deploy.py /path/to/target -p      # GitHub Copilot
 
 # 查看帮助和工具列表
 python deploy.py --help
@@ -28,13 +30,17 @@ python deploy.py /path/to/target --source /path/to/template
 
 | 工具 | 选项 | 说明 |
 |------|------|------|
-| **全部**（默认） | （不指定） | 同时部署 Kilo + Deep Code CLI 适配文件 |
+| **全部**（默认） | （不指定） | 同时部署 Kilo + Deep Code CLI + Claude Code + Copilot 适配文件 |
 | **Kilo** | `-k` / `--kilo` | 部署 Agent/Skill/Instructions 到 `.kilo/` 目录 |
 | **Deep Code CLI** | `-d` / `--deepcode` | 部署合并版 AGENTS.md + Skill 到 `.agents/skills/` + `.deepcode/` |
+| **Claude Code** | `-c` / `--claude` | 部署 CLAUDE.md + `.claude/commands/` 命令文件 |
+| **GitHub Copilot** | `-p` / `--copilot` | 部署 `.github/copilot-instructions.md` 行为约束 |
 
 各工具的详细使用说明：
 - Kilo：AI_Prompt 经 `kilo.jsonc` 加载 Instructions 和 Agent
 - Deep Code CLI：见 `adapters/deepcode/DEEPCODE.md`
+- Claude Code：CLAUDE.md 自动加载，命令见 `.claude/commands/`
+- Copilot：`.github/copilot-instructions.md` 自动生效
 
 ---
 
@@ -87,6 +93,17 @@ mkdir -p .agents/skills/bug-acceptance
 mkdir -p .agents/skills/get-stage-status
 mkdir -p .agents/skills/update-stage-status
 ```
+
+### Claude Code 专用目录（`-c`（仅 Claude）或不指定（全部））
+
+```bash
+mkdir -p .claude/commands
+```
+
+### GitHub Copilot 专用目录（`-p`（仅 Copilot）或不指定（全部））
+
+```bash
+mkdir -p .github
 
 ---
 
@@ -255,6 +272,20 @@ Agent 在首次会话时将自动填入用户名（通过 `git config user.name`
 | `.agents/skills/get-stage-status/SKILL.md` | 获取子计划状态 Skill |
 | `.agents/skills/update-stage-status/SKILL.md` | 更新子计划状态 Skill |
 
+### Claude Code 专用（`-c`（仅 Claude）或不指定（全部））
+
+| 文件 | 说明 |
+|------|------|
+| `CLAUDE.md` | Claude Code 项目级指令 |
+| `.claude/commands/rule-compile.md` | 规则编译命令 |
+| `.claude/commands/rule-validate.md` | 规则校验命令 |
+
+### GitHub Copilot 专用（`-p`（仅 Copilot）或不指定（全部））
+
+| 文件 | 说明 |
+|------|------|
+| `.github/copilot-instructions.md` | Copilot 行为约束 |
+
 ---
 
 ## 步骤 7：报告
@@ -276,6 +307,8 @@ Agent 在首次会话时将自动填入用户名（通过 `git config user.name`
 生效操作：
 - Kilo：重启会话后 Subagent 和 Skill 生效
 - Deep Code CLI：使用 /skills 查看可用 Skill
+- Claude Code：CLAUDE.md 自动加载，使用 /rule-compile /rule-validate 命令
+- Copilot：.github/copilot-instructions.md 自动生效
 - AGENTS.md 即时生效
 - .ai/ 工作区目录已就绪，Agent 首次会话时将自动初始化子文件
 ```
