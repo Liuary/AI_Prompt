@@ -25,6 +25,10 @@ COPILOT_AGENTS = {
     "adapters/copilot/agents/reviewer.agent.md": ".github/agents/reviewer.agent.md",
 }
 
+COPILOT_SCRIPTS = {
+    "adapters/copilot/scripts/restrict-edit-scope.ps1": ".github/scripts/restrict-edit-scope.ps1",
+}
+
 COPILOT_DIRS = [
     ".github",
     ".github/instructions",
@@ -33,11 +37,12 @@ COPILOT_DIRS = [
     ".github/skills/bug-acceptance",
     ".github/skills/sync-status",
     ".github/agents",
+    ".github/scripts",
 ]
 
 
 def deploy_copilot(source: Path, target: Path) -> list[str]:
-    """部署 GitHub Copilot：适配层 + Instructions + Skills + Agents。"""
+    """部署 GitHub Copilot：适配层 + Instructions + Skills + Agents + Hook脚本。"""
     lines = []
     lines.append("\n[GitHub Copilot]")
 
@@ -48,19 +53,20 @@ def deploy_copilot(source: Path, target: Path) -> list[str]:
     lines.append("  [文件级 Instructions]")
     i_lines, ic, iskip, im = copy_files(source, target, COPILOT_INSTRUCTIONS)
     lines.extend(i_lines)
-    lines.append(report("info", f"Instructions: 复制 {ic}, 跳过 {iskip}" + (f", 缺失 {im}" if im else "")))
 
     lines.append("  [Skills]")
     s_lines, sc, sskip, sm = copy_files(source, target, COPILOT_SKILLS)
     lines.extend(s_lines)
-    lines.append(report("info", f"Skills: 复制 {sc}, 跳过 {sskip}" + (f", 缺失 {sm}" if sm else "")))
 
     lines.append("  [Agents]")
     a_lines, ac, a_skip, am = copy_files(source, target, COPILOT_AGENTS)
     lines.extend(a_lines)
-    lines.append(report("info", f"Agents: 复制 {ac}, 跳过 {a_skip}" + (f", 缺失 {am}" if am else "")))
 
-    total = cc + ic + sc + ac
-    skipped = cs + iskip + sskip + a_skip
-    lines.append(report("info", f"总计: 复制 {total}, 跳过 {skipped}" + (f", 缺失 {cm + im + sm + am}" if cm or im or sm or am else "")))
+    lines.append("  [Hook 脚本]")
+    h_lines, hc, hskip, hm = copy_files(source, target, COPILOT_SCRIPTS)
+    lines.extend(h_lines)
+
+    total = cc + ic + sc + ac + hc
+    lines.append(report("info", f"总计: 复制 {total}, 跳过 {cs + iskip + sskip + a_skip + hskip}" +
+                 (f", 缺失 {cm + im + sm + am + hm}" if cm or im or sm or am or hm else "")))
     return lines

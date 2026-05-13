@@ -1,7 +1,6 @@
 ---
-description: .ai/ 工作区操作规范。仅当读取或编辑 .ai/ 目录下文件时触发。
-applyTo:
-  - ".ai/**"
+description: "Use when working with files under .ai/: 创建、编辑、维护 .ai/dev、.ai/log、.ai/plan、.ai/bugs、.ai/kb、.ai/code_review 中的计划、日志、Bug、知识库和审查记录。"
+applyTo: ".ai/**"
 ---
 
 # .ai/ 工作区操作规范

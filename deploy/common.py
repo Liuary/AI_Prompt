@@ -158,5 +158,13 @@ def generate_workspace(target: Path) -> list[str]:
     ws_path = target / name
     if ws_path.exists():
         return [report("skipped", name, "已存在")]
-    ws_path.write_text(json.dumps({"folders": [{"path": "."}], "settings": {}}, indent=4, ensure_ascii=False) + "\n", encoding="utf-8")
+    workspace = {
+        "folders": [{"path": "."}],
+        "settings": {
+            "chat.includeApplyingInstructions": True,
+            "chat.useAgentsMdFile": True,
+            "chat.useCustomAgentHooks": True,
+        },
+    }
+    ws_path.write_text(json.dumps(workspace, indent=4, ensure_ascii=False) + "\n", encoding="utf-8")
     return [report("created", name)]
