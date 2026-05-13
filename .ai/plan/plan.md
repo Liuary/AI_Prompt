@@ -43,7 +43,7 @@ AI_Prompt 是**跨 AI 工具的 Agent 开发治理框架**，为 AI 辅助软件
 
 ### 阶段一：约束引擎 + 记忆系统
 
-> 优先级：🥇  |  状态：planned  |  详见：stage-01/
+> 优先级：🥇  |  状态：done  |  详见：stage-01/
 
 - **规则 DSL**：结构化约束定义（YAML Schema），取代纯自然语言
 - **规则编译器**：DSL → 各工具原生格式（AGENTS.md / CLAUDE.md / instructions.md）
@@ -53,7 +53,7 @@ AI_Prompt 是**跨 AI 工具的 Agent 开发治理框架**，为 AI 辅助软件
 
 ### 阶段二：多人协作基础
 
-> 优先级：🥈  |  状态：planned  |  详见：stage-02/
+> 优先级：🥈  |  状态：done  |  详见：stage-02/
 
 - **任务归属**：current.md 格式增强，Agent 接手前声明模块
 - **冲突检测**：多人/多Agent 修改同一文件前的预警

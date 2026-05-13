@@ -10,8 +10,8 @@
 
 | 阶段 | 状态 | 目录 | 核心目标 |
 |------|------|------|----------|
-| 阶段一 | planned | [stage-01/](stage-01/) | 规则 DSL + 编译器/校验器 + 知识库自动化 + 跨会话记忆 |
-| 阶段二 | planned | [stage-02/](stage-02/) | 任务归属 + 冲突检测 + 进度同步 |
+| 阶段一 | review_passed | [stage-01/](stage-01/) | 规则 DSL + 编译器/校验器 + 知识库自动化 + 跨会话记忆 |
+| 阶段二 | done | [stage-02/](stage-02/) | 任务归属 + 冲突检测 + 进度同步 |
 | 阶段三 | planned | [stage-03/](stage-03/) | Claude Code 适配器 + Copilot 适配器 + 标准接口 |
 | 阶段四 | planned | [stage-04/](stage-04/) | 规范文档体系 + 模板市场储备 |
 
