@@ -36,4 +36,4 @@
 ## 知识库与工作区
 
 - 约束体系 → AGENTS.md/CLAUDE.md，知识库 → `.ai/kb/`
-- `.ai/` 工作区详见 `.kilo/Instructions/kilo_instructions_core.md`
+- `.ai/` 工作区详见 `instructions/core.md`

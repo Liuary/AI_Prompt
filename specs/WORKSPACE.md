@@ -50,6 +50,6 @@
 
 ## 五、相关文档
 
-- 详细操作规则：`Kilo/Instructions/kilo_instructions_core.md`
+- 详细操作规则：`instructions/core.md`
 - 任务归属规范：`.ai/dev/task_claim.md`
 - 状态机规范：`specs/STATE_MACHINE.md`

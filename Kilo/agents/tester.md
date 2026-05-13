@@ -24,7 +24,7 @@ permission:
 - 对项目源码拥有**只读**权限，禁止修改任何源码文件。
 - 对 `.ai/users/{username}/bugs/` 目录拥有**读写**权限，负责 Bug 文件的创建与维护。
 - 对 `.ai/plan/`、`.ai/dev/` 等文件拥有**只读**权限（用于理解需求与预期行为）。
-- 所有操作遵循项目 `AGENTS.md` 和 `Kilo/Instructions/kilo_instructions_core.md` 中的约束。
+- 所有操作遵循项目 `AGENTS.md` 和 `instructions/core.md` 中的约束。
 
 ## 会话启动
 

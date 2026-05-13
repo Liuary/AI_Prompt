@@ -73,7 +73,7 @@ Kilo Code AI Agent 项目级行为约束与编码规范。本文件为永久性�
 
 ## 知识库
 
-关于 `.ai/kb/` 项目知识库的写入规范、分类结构与索引维护，参见 `Kilo/Instructions/kilo_instructions_core.md` 中的 `## 知识库` 章节。
+关于 `.ai/kb/` 项目知识库的写入规范、分类结构与索引维护，参见 `instructions/core.md` 中的 `## 知识库` 章节。
 
 **核心区分原则**：
 - **约束体系**（AGENTS.md / Instructions / dev_core.md）：记录"应该怎么做"。
@@ -82,4 +82,4 @@ Kilo Code AI Agent 项目级行为约束与编码规范。本文件为永久性�
 
 ## 工作区
 
-关于 `.ai/` 工作目录的详细操作流程（日志、计划、笔记等），参见 `Kilo/Instructions/kilo_instructions_core.md`（通过 `kilo.jsonc` 的 `instructions` 字段加载）。
+关于 `.ai/` 工作目录的详细操作流程（日志、计划、笔记等），参见 `instructions/core.md`（通过 `kilo.jsonc` 的 `instructions` 字段加载）。

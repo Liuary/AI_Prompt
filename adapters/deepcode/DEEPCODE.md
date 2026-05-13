@@ -9,7 +9,7 @@ Deep Code CLI 没有 Kilo 的 `instructions` 加载机制（无法通过 `kilo.j
 | 来源 | 内容 |
 |------|------|
 | 根 `AGENTS.md` | 核心行为约束、编码规范、注释规范 |
-| `Kilo/Instructions/kilo_instructions_core.md` | .ai/ 工作区操作规范、日志规范、计划规范、审查/Bug 生命周期、知识库写入规范 |
+| `instructions/core.md` | .ai/ 工作区操作规范、日志规范、计划规范、审查/Bug 生命周期、知识库写入规范 |
 
 部署时，此合并版 AGENTS.md 同时写入 `./AGENTS.md` 和 `./.deepcode/AGENTS.md`，确保 Deep Code CLI 在任何读取路径下都能获取完整的治理规则。
 

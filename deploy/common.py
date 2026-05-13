@@ -10,7 +10,7 @@ from pathlib import Path
 
 # Instructions — 跨工具的 .ai/ 工作区操作规范
 INSTRUCTIONS_FILES = {
-    "instructions/kilo_instructions_core.md": "instructions/kilo_instructions_core.md",
+    "instructions/core.md": "instructions/core.md",
 }
 
 SKILLS_FILES = {

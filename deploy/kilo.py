@@ -27,7 +27,7 @@ KILO_JSONC_CONTENT = """\
   "default_agent": "code",
   "instructions": [
     "AGENTS.md",
-    "instructions/kilo_instructions_core.md"
+    "instructions/core.md"
   ],
   "skills": {
     "get-bugs": "skills/get-bugs",

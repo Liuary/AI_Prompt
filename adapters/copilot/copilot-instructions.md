@@ -37,4 +37,4 @@
 # 知识库与工作区
 
 - 约束 → AGENTS.md/copilot-instructions.md，知识 → `.ai/kb/`
-- `.ai/` 工作区详见 `.kilo/Instructions/kilo_instructions_core.md`
+- `.ai/` 工作区详见 `instructions/core.md`

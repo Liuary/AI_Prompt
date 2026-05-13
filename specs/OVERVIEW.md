@@ -24,7 +24,7 @@
 | 规范 | 状态 | 核心产物 |
 |------|------|----------|
 | SPEC-01 | ✅ | `specs/rules.yaml` + `rules/rules.yaml` |
-| SPEC-02 | ✅ | `Kilo/Instructions/kilo_instructions_core.md` + `AGENTS.md` |
+| SPEC-02 | ✅ | `instructions/core.md` + `AGENTS.md` |
 | SPEC-03 | ✅ | `Kilo/agents/` 下 9 个 Agent 定义文件 |
 | SPEC-04 | ✅ | `status.md` 状态机 + `plan/` 计划体系 |
 | SPEC-05 | ✅ | `rule_cli.py` + `lib/rule_engine.py` + `tests/` |
