@@ -1,10 +1,9 @@
 # deploy/kilo.py
-# AI_Prompt 部署脚本 — Kilo 适配器（仅 Agent 定义，Instructions/Skills 已提升为通用）
+# AI_Prompt 部署脚本 — Kilo 适配器
 
 from pathlib import Path
-from .common import report, copy_files
+from .common import report, copy_files, deploy_resources
 
-# Agent 定义（仅 Kilo 支持 Agent 角色体系）
 KILO_FILES = {
     "Kilo/agents/architect.md": ".kilo/agents/architect.md",
     "Kilo/agents/auto-runner.md": ".kilo/agents/auto-runner.md",
@@ -19,6 +18,8 @@ KILO_FILES = {
 
 KILO_DIRS = [
     ".kilo/agents",
+    ".kilo/instructions",
+    ".kilo/skills",
 ]
 
 KILO_JSONC_CONTENT = """\
@@ -27,15 +28,15 @@ KILO_JSONC_CONTENT = """\
   "default_agent": "code",
   "instructions": [
     "AGENTS.md",
-    "instructions/core.md"
+    ".kilo/instructions/core.md"
   ],
   "skills": {
-    "get-bugs": "skills/get-bugs",
-    "check-kb": "skills/check-kb",
-    "bug-acceptance": "skills/bug-acceptance",
-    "sync-status": "skills/sync-status",
-    "get-stage-status": "skills/get-stage-status",
-    "update-stage-status": "skills/update-stage-status"
+    "get-bugs": ".kilo/skills/get-bugs",
+    "check-kb": ".kilo/skills/check-kb",
+    "bug-acceptance": ".kilo/skills/bug-acceptance",
+    "sync-status": ".kilo/skills/sync-status",
+    "get-stage-status": ".kilo/skills/get-stage-status",
+    "update-stage-status": ".kilo/skills/update-stage-status"
   },
   "experimental": {
     "agent_manager_tool": true
@@ -45,7 +46,6 @@ KILO_JSONC_CONTENT = """\
 
 
 def configure_kilo_jsonc(target: Path) -> list[str]:
-    """生成 kilo.jsonc（如不存在）。"""
     path = target / "kilo.jsonc"
     if path.exists():
         return [report("skipped", "kilo.jsonc", "已存在")]
@@ -54,12 +54,21 @@ def configure_kilo_jsonc(target: Path) -> list[str]:
 
 
 def deploy_kilo(source: Path, target: Path) -> list[str]:
-    """部署 Kilo Agent 定义。"""
+    """部署 Kilo：通用资源 → .kilo/ 下，Agent → .kilo/agents/"""
     lines = []
-    lines.append("\n[Kilo Agent]")
-    k_lines, kc, ks, km = copy_files(source, target, KILO_FILES)
-    lines.extend(k_lines)
-    lines.append(report("info", f"Agent: 复制 {kc}, 跳过 {ks}" + (f", 缺失 {km}" if km else "")))
+    lines.append("\n[Kilo]")
+    lines.append("  [通用资源 → .kilo/]")
+
+    # Instructions + Skills 部署到 .kilo/
+    res_lines, rc, rs = deploy_resources(source, target, ".kilo")
+    lines.extend(res_lines)
+    lines.append(report("info", f"资源: 复制 {rc}, 跳过 {rs}"))
+
+    # Agent 定义
+    lines.append("  [Agent 定义 → .kilo/agents/]")
+    a_lines, ac, as_skip, am = copy_files(source, target, KILO_FILES)
+    lines.extend(a_lines)
+    lines.append(report("info", f"Agent: 复制 {ac}, 跳过 {as_skip}" + (f", 缺失 {am}" if am else "")))
 
     lines.append("\n[Kilo 配置]")
     lines.extend(configure_kilo_jsonc(target))

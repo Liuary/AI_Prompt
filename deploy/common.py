@@ -1,33 +1,24 @@
 # deploy/common.py
-# AI_Prompt 部署脚本 — 通用逻辑（Instructions/Skills/目录/配置）
+# AI_Prompt 部署脚本 — 通用逻辑
 
 import os
 import json
 import shutil
 from pathlib import Path
 
-# ── 通用资源（所有工具都部署）───────────────────────────────
+# ── 通用资源源文件（部署时按工具前缀复制到目标目录）───────
 
-# Instructions — 跨工具的 .ai/ 工作区操作规范
-INSTRUCTIONS_FILES = {
-    "instructions/core.md": "instructions/core.md",
-}
-
-SKILLS_FILES = {
-    "skills/bug-acceptance/SKILL.md": "skills/bug-acceptance/SKILL.md",
-    "skills/get-bugs/SKILL.md": "skills/get-bugs/SKILL.md",
-    "skills/check-kb/SKILL.md": "skills/check-kb/SKILL.md",
-    "skills/sync-status/SKILL.md": "skills/sync-status/SKILL.md",
-    "skills/get-stage-status/SKILL.md": "skills/get-stage-status/SKILL.md",
-    "skills/update-stage-status/SKILL.md": "skills/update-stage-status/SKILL.md",
-}
-
-INSTRUCTIONS_DIRS = [
-    "instructions",
+INSTRUCTION_SOURCES = [
+    "instructions/core.md",
 ]
 
-SKILLS_DIRS = [
-    "skills",
+SKILL_SOURCES = [
+    "skills/bug-acceptance/SKILL.md",
+    "skills/get-bugs/SKILL.md",
+    "skills/check-kb/SKILL.md",
+    "skills/sync-status/SKILL.md",
+    "skills/get-stage-status/SKILL.md",
+    "skills/update-stage-status/SKILL.md",
 ]
 
 # ── 常量 ────────────────────────────────────────────────────────
@@ -72,7 +63,7 @@ def report(status: str, path: str, detail: str = "") -> str:
 
 def create_directories(target: Path, tool_dirs: list[str]) -> list[str]:
     lines = []
-    all_dirs = list(AI_DIRS) + list(INSTRUCTIONS_DIRS) + list(SKILLS_DIRS) + list(tool_dirs)
+    all_dirs = list(AI_DIRS) + list(tool_dirs)
     for d in all_dirs:
         dir_path = target / d
         if dir_path.exists():
@@ -101,6 +92,28 @@ def copy_files(source: Path, target: Path, file_map: dict) -> tuple:
             lines.append(report("created", str(dst_rel)))
             copied += 1
     return lines, copied, skipped, missing
+
+
+def deploy_resources(source: Path, target: Path, prefix: str) -> tuple[list[str], int, int]:
+    """将通用 Instructions 和 Skills 部署到目标目录（如 .kilo/instructions/）。"""
+    lines = []
+    inst_map = {s: f"{prefix}/instructions/{Path(s).name}" for s in INSTRUCTION_SOURCES}
+    skill_map = {s: s.replace("skills/", f"{prefix}/skills/") for s in SKILL_SOURCES}
+    total_copied, total_skipped = 0, 0
+
+    lines.append("  [通用 Instructions]")
+    i_lines, ic, iskip, im = copy_files(source, target, inst_map)
+    lines.extend(i_lines)
+    lines.append(report("info", f"Instructions: 复制 {ic}, 跳过 {iskip}" + (f", 缺失 {im}" if im else "")))
+    total_copied += ic; total_skipped += iskip
+
+    lines.append("  [通用 Skills]")
+    s_lines, sc, sskip, sm = copy_files(source, target, skill_map)
+    lines.extend(s_lines)
+    lines.append(report("info", f"Skills: 复制 {sc}, 跳过 {sskip}" + (f", 缺失 {sm}" if sm else "")))
+    total_copied += sc; total_skipped += sskip
+
+    return lines, total_copied, total_skipped
 
 
 # ── 通用配置 ────────────────────────────────────────────────────

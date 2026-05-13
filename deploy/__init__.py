@@ -1,5 +1,5 @@
 # deploy/__init__.py
-# AI_Prompt 部署脚本 — 主入口（Instructions/Skills 通用 + 工具分发）
+# AI_Prompt 部署脚本 — 主入口
 
 import shutil
 import sys
@@ -9,7 +9,6 @@ from .cli import build_parser, show_help, show_list, resolve_tool
 from .common import (
     report, create_directories, copy_files,
     configure_gitignore, configure_info_json, generate_workspace,
-    INSTRUCTIONS_FILES, SKILLS_FILES, INSTRUCTIONS_DIRS, SKILLS_DIRS,
 )
 from .kilo import KILO_DIRS, deploy_kilo
 from .deepcode import DEEPCODE_DIRS, deploy_deepcode
@@ -19,8 +18,8 @@ from .copilot import COPILOT_DIRS, deploy_copilot
 TOOLS = {
     "kilo":    {"dirs": KILO_DIRS,    "label": "Kilo",           "fn": deploy_kilo,    "tip": "重启 Kilo 会话后 Subagent 和 Skill 生效。"},
     "deepcode":{"dirs": DEEPCODE_DIRS, "label": "Deep Code CLI", "fn": deploy_deepcode, "tip": "启动 Deep Code CLI 后使用 /skills 查看可用 Skill。"},
-    "claude":  {"dirs": CLAUDE_DIRS,  "label": "Claude Code",    "fn": deploy_claude,   "tip": "Claude Code 会话将自动读取 CLAUDE.md，使用 /rule-compile /rule-validate 命令。"},
-    "copilot": {"dirs": COPILOT_DIRS, "label": "GitHub Copilot", "fn": deploy_copilot,  "tip": "GitHub Copilot 将自动读取 .github/copilot-instructions.md 作为行为约束。"},
+    "claude":  {"dirs": CLAUDE_DIRS,  "label": "Claude Code",    "fn": deploy_claude,   "tip": "Claude Code 将自动读取 CLAUDE.md，使用 /rule-compile /rule-validate 命令。"},
+    "copilot": {"dirs": COPILOT_DIRS, "label": "GitHub Copilot", "fn": deploy_copilot,  "tip": "GitHub Copilot 将自动读取 .github/copilot-instructions.md。"},
 }
 
 
@@ -88,31 +87,22 @@ def main():
     all_lines = []
     targets = list(TOOLS) if tool == "all" else [tool]
 
-    # ── 通用资源：Instructions + Skills（所有工具都部署）──
-    all_lines.append("[通用 Instructions]")
-    i_lines, ic, iskip, im = copy_files(source, target, INSTRUCTIONS_FILES)
-    all_lines.extend(i_lines)
-    all_lines.append(report("info", f"Instructions: 复制 {ic}, 跳过 {iskip}" + (f", 缺失 {im}" if im else "")))
-
-    all_lines.append("\n[通用 Skills]")
-    s_lines, sc, sskip, sm = copy_files(source, target, SKILLS_FILES)
-    all_lines.extend(s_lines)
-    all_lines.append(report("info", f"Skills: 复制 {sc}, 跳过 {sskip}" + (f", 缺失 {sm}" if sm else "")))
-
-    # ── 目录结构 ──
+    # 目录结构
     tool_dirs = []
     for t in targets:
         tool_dirs.extend(TOOLS[t]["dirs"])
-    all_lines.append("\n[目录结构]")
+    all_lines.append("[目录结构]")
     all_lines.extend(create_directories(target, tool_dirs))
 
-    # ── 工具适配器 ──
+    # AGENTS.md（第一个工具写入，后续跳过）
+    all_lines.append("\n[AGENTS.md]")
+    all_lines.extend(_configure_agents_md(source, target, targets[0]))
+
+    # 各工具适配器（各自部署 Instructions + Skills 到自己的目录）
     for t in targets:
-        all_lines.append(f"\n[AGENTS.md]")
-        all_lines.extend(_configure_agents_md(source, target, t))
         all_lines.extend(TOOLS[t]["fn"](source, target))
 
-    # ── 通用配置 ──
+    # 通用配置
     all_lines.append("\n[Git 配置]")
     all_lines.extend(configure_gitignore(target))
     all_lines.append("\n[工作区]")
