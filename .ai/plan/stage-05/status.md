@@ -5,7 +5,7 @@
 - **状态**：ready_for_review
 - **当前责任 Agent**：architect
 - **上一责任 Agent**：code-worker
-- **更新时间**：2026-05-16 16:06
+- **更新时间**：2026-05-16 16:34
 
 ## Worktree / Session
 
@@ -17,7 +17,7 @@
 
 ## 当前任务
 
-REV-056/057 已由 CodeWorker 修复完成。等待 Architect 审查验收。
+REV-056/057 已由 CodeWorker 修复完成。已合并至 main，等待 Architect 审查验收。
 
 ## 任务清单
 
@@ -42,7 +42,7 @@ REV-056/057 已由 CodeWorker 修复完成。等待 Architect 审查验收。
 
 ## 阻塞 / 暂停原因
 
-REV-056/057 已修复，等待 Architect 审查验收。
+REV-056/057 已修复并合并至 main，等待 Architect 审查验收。
 
 ## 状态记录
 
@@ -58,3 +58,4 @@ REV-056/057 已修复，等待 Architect 审查验收。
 | 2026-05-16 13:05 | architect | review_passed → review_failed | REV-056 (core.md默认值矛盾), REV-057 (deps/architect 判断维度不一致) |
 | 2026-05-16 15:59 | architect | review_failed → ready_for_code | 启用自动推进，启动 AutoRunner 处理 REV-056~057 |
 | 2026-05-16 16:06 | code-worker | ready_for_code → ready_for_review | REV-056/057 全部修复完成，等待 Architect 审查 |
+| 2026-05-16 16:34 | auto-runner | ready_for_review | 合并至 main，等待 Architect 验收 |
