@@ -8,7 +8,7 @@ from pathlib import Path
 from .cli import build_parser, show_help, show_list, resolve_tool
 from .common import (
     report, create_directories, copy_files,
-    configure_gitignore, configure_info_json, generate_workspace,
+    configure_gitignore, configure_info_json, configure_config_yaml, generate_workspace,
 )
 from .kilo import KILO_DIRS, deploy_kilo
 from .deepcode import DEEPCODE_DIRS, deploy_deepcode
@@ -107,6 +107,8 @@ def main():
     all_lines.extend(configure_gitignore(target))
     all_lines.append("\n[工作区]")
     all_lines.extend(configure_info_json(target))
+    all_lines.append("\n[工作流配置]")
+    all_lines.extend(configure_config_yaml(target))
     all_lines.extend(generate_workspace(target))
 
     for line in all_lines:

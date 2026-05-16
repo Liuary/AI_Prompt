@@ -26,11 +26,18 @@ description: 标准化更新 .ai/plan/{stage}/status.md 的子计划状态、责
 
 ## 执行步骤
 
+### 0. 读取全局配置
+
+读取 `.ai/config.yaml`，获取 `defaults` 中的 `execution_mode`、`auto_advance`、`merge_mode`。
+
 ### 1. 读取状态文件
 
 读取 `.ai/plan/{stage}/status.md`。
 
-若文件不存在，由 Architect 才能创建；其他 Agent 不得自行创建，必须提示用户或 Architect 先初始化阶段状态。
+若文件不存在且当前 Agent 为 Architect：
+  1. 从 `.ai/config.yaml` `defaults` 读取 `execution_mode`、`auto_advance` 作为初始值
+  2. 按模板创建 `status.md`，将 config 默认值写入对应字段
+其他 Agent 不得自行创建，必须提示用户或 Architect 先初始化阶段状态。
 
 ### 2. 校验状态变更
 
@@ -87,7 +94,19 @@ planned | ready_for_code | coding | ready_for_review | review_failed | review_pa
 - 连续两次验收失败
 - 自动推进链路无法判断下一步
 
-### 6. 输出结果
+### 6. 合并状态处理
+
+当子计划状态变为 `done` 时，根据 `.ai/config.yaml` 中的 `merge_mode` 决定合并行为：
+
+- **`merge_mode=auto`**：
+  1. 自动将 `合并状态` 更新为 `merged`
+  2. 自动将 `合并状态` 更新为 `cleaned`（无需等待人工确认）
+  3. 在状态记录中注明"自动合并"
+- **`merge_mode=manual`**：
+  1. 将 `合并状态` 设为 `pending_merge`
+  2. 输出提示：合并与清理需在 Agent Manager 中手动完成
+
+### 7. 输出结果
 
 输出更新摘要：
 

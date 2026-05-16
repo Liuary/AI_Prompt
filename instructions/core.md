@@ -141,8 +141,8 @@
 ```markdown
 # {stage} 状态
 
-- **执行模式**：manual | auto
-- **自动推进**：disabled | enabled
+- **执行模式**：manual | auto  <!-- 初始值从 .ai/config.yaml defaults 读取，本文件可覆盖 -->
+- **自动推进**：disabled | enabled  <!-- 初始值从 .ai/config.yaml defaults 读取，本文件可覆盖 -->
 - **状态**：planned | ready_for_code | auto_running | coding | ready_for_review | review_failed | review_passed | ready_for_test | test_writing | testing | bug_found | bug_fixing | done | paused
 - **当前责任 Agent**：architect | auto-runner | code | code-worker | review-worker | test-writer | tester | user
 - **上一责任 Agent**：architect | auto-runner | code | code-worker | review-worker | test-writer | tester | user | none
@@ -166,6 +166,19 @@
 | 时间 | Agent | 状态变化 | 说明 |
 |------|-------|----------|------|
 ```
+
+### 级联优先级
+
+工作流配置采用级联覆盖机制（高优先级覆盖低优先级）：
+
+1. `.ai/config.yaml` `defaults` — 全局默认值，所有阶段通用
+2. `.ai/plan/{stage}/status.md` — 阶段局部覆盖，可覆盖全局默认
+3. 用户直接指令 — 最高优先级，覆盖所有配置
+
+具体字段取值规则：
+- `执行模式` / `自动推进`：先查 status.md，若未填则回退到 config.yaml defaults
+- `test_enabled` / `merge_mode`：仅从 config.yaml 读取，status.md 不直接声明此字段
+- `合并状态` / `清理策略`：merge_mode=auto 时自动推进，merge_mode=manual 时需人工确认
 
 状态含义：
 - `planned`：计划已创建，等待用户确认或细化。

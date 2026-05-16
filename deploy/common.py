@@ -50,6 +50,35 @@ users/
 tmp/
 """
 
+CONFIG_YAML_CONTENT = """\
+# .ai/config.yaml
+# AI_Prompt 工作流统一配置
+# 提供所有阶段的全局默认值
+# 各阶段 status.md 可局部覆盖
+
+meta:
+  version: 1.0.0
+
+# ---- 工作流默认值 ----
+# 创建新阶段或 status.md 未填写时应用以下默认值
+defaults:
+  # 执行模式：manual=人工驱动，auto=Agent 驱动
+  # 仅 auto+enabled 的阶段参与自动闭环
+  execution_mode: manual
+
+  # 自动推进：disabled=每步暂停，enabled=自动下一步
+  # 需要 execution_mode=auto 才生效
+  auto_advance: disabled
+
+  # 单元测试链路：false=跳过 test_writing→testing→bug_fixing
+  # 为 false 时 review_passed 直接过渡到 done
+  test_enabled: false
+
+  # Worktree 合并：manual=在 Agent Manager 中确认
+  # auto=AutoRunner 完成后自动执行 git merge + 清理
+  merge_mode: auto
+"""
+
 
 # ── 工具函数 ────────────────────────────────────────────────────
 
@@ -151,6 +180,15 @@ def configure_info_json(target: Path) -> list[str]:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(INFO_JSON_CONTENT, encoding="utf-8")
     return [report("created", ".ai/.info.json")]
+
+
+def configure_config_yaml(target: Path) -> list[str]:
+    path = target / ".ai" / "config.yaml"
+    if path.exists():
+        return [report("skipped", ".ai/config.yaml", "已存在")]
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(CONFIG_YAML_CONTENT, encoding="utf-8")
+    return [report("created", ".ai/config.yaml")]
 
 
 def generate_workspace(target: Path) -> list[str]:

@@ -12,6 +12,10 @@ description: 读取 .ai/plan/{stage}/status.md，判断当前子计划状态、�
 
 ## 执行步骤
 
+### 0. 读取全局配置
+
+读取 `.ai/config.yaml`，解析 `defaults` 中的 `execution_mode`、`auto_advance`、`test_enabled`、`merge_mode`。
+
 ### 1. 定位状态文件
 
 读取 `.ai/plan/{stage}/status.md`。
@@ -59,10 +63,17 @@ description: 读取 .ai/plan/{stage}/status.md，判断当前子计划状态、�
 1. 读取所有阶段的 `status.md`，筛选满足以下条件的阶段：
    - `deps_satisfied = true`（本 Skill 递归判断）
    - `状态` 为 `ready_for_code` 或 `auto_running`
-   - `自动推进` 为 `enabled`
+   - `自动推进` 为 `enabled`（若 status.md 未填则回退到 config.yaml `auto_advance`）
 2. 收集为 `parallel_candidates` 列表，供 Architect 批量启动 AutoRunner。
 
 ### 5. 判断自动推进资格
+
+**字段回退**：若 `status.md` 未填写 `执行模式` 或 `自动推进`，从 `.ai/config.yaml` `defaults` 中读取对应值。
+
+**测试状态排除**：若 `.ai/config.yaml` 中 `test_enabled=false`，则以下测试链路状态视为已禁用，不参与自动推进：
+  - `ready_for_test`、`test_writing`、`testing`、`bug_found`、`bug_fixing`
+  - 当前处于上述任一状态时，建议直接切换至 `done`（跳过测试链路）
+  - `review_passed` 在 `test_enabled=false` 时等价于 `done`
 
 只有同时满足以下条件才返回 `can_auto_continue = true`：
 

@@ -15,6 +15,8 @@ permission:
   todoread: "allow"
 ---
 
+# 本 Agent 的调用由 .ai/config.yaml defaults.test_enabled 控制，auto-runner 在 test_enabled=false 时不会调度本 Agent。
+
 # 角色
 
 你是项目测试 Agent，负责缺陷的**提交**与**验收闭环**，不参与代码修复。你的工作目录是 `.ai/users/{username}/bugs/`。
