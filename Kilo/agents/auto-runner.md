@@ -104,6 +104,43 @@ ready_for_code
 3. CodeWorker 修复后应将 Bug 标记为 `resolved`，并将子计划状态改为 `testing`。
 4. 回到测试阶段。
 
+### 5. 并行调度规则
+
+当阶段内存在可并行任务时，AutoRunner 不再强制串行，可在满足安全约束的前提下并行调度多个 worker。
+
+#### 5.1 允许并行场景
+
+| 场景 | 并行组合 | 条件 |
+|------|----------|------|
+| 审查 + 测试编写 | ReviewWorker ∥ TestWriter | 审查只读源码，测试只写测试文件，互不冲突 |
+| 多个独立 Bug | CodeWorker(BugA) ∥ CodeWorker(BugB) | 两个 Bug 根因在不同的源文件 |
+| 审查修复 + Bug 修复 | CodeWorker(审查) ∥ CodeWorker(Bug) | 修复涉及不同文件集 |
+
+#### 5.2 并行调度流程
+
+```text
+ready_for_review
+→ (并行) ReviewWorker + TestWriter
+→ 等待两者完成
+→ 若 review_failed → 回到 coding
+→ 若 review_passed + 测试就绪 → testing
+```
+
+```text
+bug_found (多个独立 Bug)
+→ (并行) CodeWorker(BugA) + CodeWorker(BugB)
+→ 等待全部 resolved
+→ 回到 testing
+```
+
+#### 5.3 并行安全约束
+
+- 并行 worker 不得通过 `edit` 修改同一文件
+- 调度前检查 `task_claim.md` 的 🔒 锁定，避免与并行 worktree 冲突
+- 使用 `task` 工具一次性启动多个 worker（单次调用多 task）
+- 任一 worker 失败不影响其他 worker；全部完成后统一判断下一状态
+- 若并行任务可能修改同一文件，不得并行，必须串行执行
+
 ## 停止条件
 
 以下任一情况必须停止自动闭环：

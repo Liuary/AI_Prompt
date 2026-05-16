@@ -185,13 +185,17 @@
 
 自动推进规则：
 - 默认 `执行模式=manual` 且 `自动推进=disabled`，不允许 Agent 自行启动其他会话。
-- 仅当 `执行模式=auto` 且 `自动推进=enabled` 时，允许 Architect 启动一个 AutoRunner Agent Manager worktree session。
-- 自动流程采用“一个子计划一个 worktree”：AutoRunner 在该 worktree 内通过 `task` 串行调度 CodeWorker / ReviewWorker / TestWriter / Tester / Debug，不允许每个阶段再创建新的 worktree。
+- 仅当 `执行模式=auto` 且 `自动推进=enabled` 时，允许 Architect 启动 AutoRunner Agent Manager worktree session。
+- 自动流程采用"每个独立的子计划一个 worktree"：Architect 根据 `.ai/plan/deps.yaml` 判断阶段依赖，**无依赖的阶段可并行启动多个 AutoRunner worktree**；AutoRunner 在单个 worktree 内调度 CodeWorker / ReviewWorker / TestWriter / Tester / Debug，其中部分阶段允许内部并行（如审查和测试编写并行调度）。
+- **并行安全规则**：
+  - 并行 worktree 不得修改同一文件；若可能冲突，Architect 必须在 `deps.yaml` 中标记为 `mutual_exclusion` 使其串行
+  - 先完成的 worktree 先合并，后完成的在合并前需 rebase 已合并分支
+  - 并行 worktree 间通过 `task_claim.md` 的 🔒 锁定机制检测文件冲突
 - 任一 Agent 遇到计划外架构变更、超过范围的修改、权限不明确、测试环境缺失、连续两次验收失败时，必须将状态改为 `paused`，`当前责任 Agent` 改为 `user`，并写明暂停原因。
 - 状态为 `done`、`paused` 或 `当前责任 Agent=user` 时，不得继续自动推进。
 
 允许的自动启动链路：
-- Architect 可启动 AutoRunner。
+- Architect 可启动 AutoRunner（可并行启动多个，每个对应独立的无依赖子计划）。
 - AutoRunner 可通过 `task` 调度 CodeWorker、ReviewWorker、TestWriter、Tester、Debug。
 - 自动流程使用 `code-worker` / `review-worker`，人工流程使用主 `code` / `architect`，两者职责隔离。
 - Code、CodeWorker、ReviewWorker、TestWriter、Tester 不得自行创建新的 Agent Manager worktree；只更新状态并将控制权交回 AutoRunner 或用户。

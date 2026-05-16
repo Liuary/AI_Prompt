@@ -32,8 +32,37 @@ description: 读取 .ai/plan/{stage}/status.md，判断当前子计划状态、�
 - `更新时间`
 - `当前任务`
 - `阻塞 / 暂停原因`
+- `前置依赖`
+- `依赖状态`
 
-### 3. 判断自动推进资格
+### 3. 依赖就绪检查
+
+若 `status.md` 中存在 `前置依赖` 字段且不为 `无`：
+
+1. 读取 `.ai/plan/deps.yaml`，查找当前阶段的 `depends_on` 列表。
+2. 对每条依赖检查其阶段状态：
+   - `type: hard` 且依赖阶段状态为 `done` → 已满足
+   - `type: hard` 且依赖阶段状态非 `done` → 未满足，阻塞
+   - `type: soft` 且依赖阶段状态为 `done` → 已满足
+   - `type: soft` 且依赖阶段状态非 `done` → 弱阻塞（警告但可启动）
+   - `type: mutual_exclusion` 且依赖阶段状态为 `done` → 已满足
+   - `type: mutual_exclusion` 且依赖阶段状态非 `done` → 阻塞，必须等待
+3. 综合判断 `deps_satisfied`：
+   - 所有 `hard` 和 `mutual_exclusion` 依赖满足 → `true`
+   - 任一 `hard` 或 `mutual_exclusion` 依赖未满足 → `false`
+4. 若 `deps.yaml` 不存在，视为无依赖声明，`deps_satisfied = true`。
+
+### 4. 并行候选检测
+
+当 `deps_satisfied = true` 时：
+
+1. 读取所有阶段的 `status.md`，筛选满足以下条件的阶段：
+   - `deps_satisfied = true`（本 Skill 递归判断）
+   - `状态` 为 `ready_for_code` 或 `auto_running`
+   - `自动推进` 为 `enabled`
+2. 收集为 `parallel_candidates` 列表，供 Architect 批量启动 AutoRunner。
+
+### 5. 判断自动推进资格
 
 只有同时满足以下条件才返回 `can_auto_continue = true`：
 
@@ -41,10 +70,11 @@ description: 读取 .ai/plan/{stage}/status.md，判断当前子计划状态、�
 - `自动推进` 为 `enabled`
 - `状态` 不是 `done` 或 `paused`
 - `当前责任 Agent` 不是 `user`
+- `依赖状态` 不为 `blocked`（所有 hard 依赖必须满足）
 
 否则返回 `can_auto_continue = false`，并说明原因。
 
-### 4. 输出格式
+### 6. 输出格式
 
 ```markdown
 ## 子计划状态
@@ -54,11 +84,16 @@ description: 读取 .ai/plan/{stage}/status.md，判断当前子计划状态、�
 - 自动推进：disabled | enabled
 - 状态：{status}
 - 当前责任 Agent：{agent}
+- 前置依赖：{依赖列表 或 无}
+- 依赖就绪：true | false
 - 可自动推进：true | false
 - 阻塞原因：{reason 或 无}
 
+## 并行候选
+{若依赖就绪且可自动推进，列出同批次可并行启动的其他阶段}
+
 ## 下一步建议
-{根据状态给出下一步，例如：启动 Code、等待用户、启动 Tester、停止流程}
+{根据状态给出下一步，例如：启动 Code、等待用户、启动 Tester、停止流程；若存在并行候选则建议批量启动}
 ```
 
 ## 状态到下一步映射

@@ -14,6 +14,16 @@ description: 标准化更新 .ai/plan/{stage}/status.md 的子计划状态、责
 - 说明 `{note}`
 - 是否保持自动推进 `{keep_auto}`（默认保持原值）
 
+### 可选输入（Worktree / 并行 管理）
+
+当阶段以 worktree 模式运行时，可额外传入以下字段：
+
+- `worktree_branch`：worktree 分支名（如 `auto-stage-02`）
+- `parallel_batch`：并行批次标识（如 `batch-2026-05-15-001`），同一批次并行启动的 worktree 共享此标识
+- `parallel_stages`：同批次并行阶段列表（如 `[stage-04]`）
+- `merge_status`：合并状态（`not_started` / `pending_merge` / `merged` / `cleanup_ready` / `cleaned`）
+- `depends_status`：依赖状态（`pending` / `satisfied` / `blocked`），当依赖阶段完成时更新
+
 ## 执行步骤
 
 ### 1. 读取状态文件
@@ -34,17 +44,29 @@ planned | ready_for_code | coding | ready_for_review | review_failed | review_pa
 
 ### 3. 更新字段
 
-更新以下字段：
+**常规更新**（每次状态变更必须更新）：
 
 - `状态`
 - `当前责任 Agent`
 - `上一责任 Agent`
 - `更新时间`
 
+**Worktree / 并行 更新**（仅在可选输入传入时更新，位于 `## Worktree / Session` 块）：
+
+- `分支名` → `worktree_branch`（如 `auto-stage-02`）
+- `并行批次` → `parallel_batch`
+- `并行阶段` → `parallel_stages`
+- `合并状态` → `merge_status`
+
+**依赖状态更新**（位于文件顶部字段）：
+
+- `依赖状态` → `depends_status`（当 Architect 检测到依赖阶段完成时更新，典型值：`pending → satisfied`）
+
 除非用户明确要求，否则不得改变：
 
 - `执行模式`
 - `自动推进`
+- `前置依赖`（由 Architect 在 Phase 3.5 中声明，运行时不应修改）
 
 ### 4. 追加状态记录
 
