@@ -67,6 +67,31 @@ permission:
 - 只写推荐方案，不在计划文件中存放备用方案对比。
 - 更新 `.ai/plan/plan_index.md` 和 `.ai/plan/plan_log.md`。
 
+### Phase 3.5：依赖声明与并行准备
+
+完成阶段计划制定后，分析阶段间的依赖关系，为自动模式的并行调度做准备：
+
+1. 分析各阶段修改的文件范围，判断是否存在文件集重叠。
+2. 将依赖关系写入 `.ai/plan/deps.yaml`：
+   - `hard`：语义依赖，前一阶段的产出是后一阶段的输入，必须串行
+   - `soft`：弱依赖，可并行但合并时需人工确认对齐
+   - `mutual_exclusion`：修改同一文件集，必须严格串行
+3. 在各阶段 `status.md` 中写入 `前置依赖` 字段和 Worktree / Session 块：
+   ```markdown
+   - **前置依赖**：stage-01(hard) | 无
+   - **依赖状态**：pending | satisfied | blocked
+   
+   ## Worktree / Session
+   - **工作模式**：manual | worktree
+   - **分支名**：-
+   - **并行批次**：- | batch-{yyyy-mm-dd}-{NNN}
+   - **并行阶段**：-
+   - **Session 名称**：-
+   - **合并状态**：not_started | pending_merge | merged | cleanup_ready | cleaned
+   - **清理策略**：manual | auto
+   ```
+4. 无依赖的阶段标记 `前置依赖：无`，表示可独立并行启动。若 `deps.yaml` 尚不存在则创建。
+
 ### Phase 4：确认与闭环
 - 向用户展示计划摘要，确认无误后视为本轮计划完成。
 - 若计划涉及偏差或变更，在 `.ai/log/` 中简要记录。
@@ -158,26 +183,41 @@ Kilo 原生 Plan Mode 工具在执行 `plan_exit` 后，将计划文件写入 `.
 - `状态` 不是 `done` 或 `paused`
 - `当前责任 Agent` 不是 `user`
 
-### 允许启动的 Agent
+### 依赖判断与并行启动
 
-- `ready_for_code`：启动 AutoRunner Agent，让其在单个 worktree 中完成后续编码、审查、测试、Bug 修复闭环。
-- 其他状态：由已启动的 AutoRunner 在同一 worktree 内串行调度，不再由 Architect 为每个阶段创建新的 worktree。
+当用户要求开启自动模式时：
 
-### 启动方式
-
-优先使用 `agent_manager` 工具以 `worktree` 模式（非 `local`）启动 **AutoRunner** 独立 session。`branchName` 格式为 `auto-{stage}`（如 `auto-auth-login`）。Prompt 必须包含：
-
-- 计划阶段名 `{stage}`
-- 当前状态
-- 任务目标：在单个 worktree 内完成子计划自动闭环
-- 需读取的文件路径（至少包含 `.ai/plan/{stage}/status.md`）
-- 完成后必须调用 `load skill update-stage-status` 更新状态
-
-若 `agent_manager` 工具不可用或创建失败，则退回人工流程：只更新状态并告知用户下一步应启动哪个 Agent。
+1. 读取 `.ai/plan/deps.yaml`，计算当前可启动的阶段集合：
+   - 过滤条件：`前置依赖` 全部为 `satisfied` 或 `无`，且 `状态` 为 `ready_for_code`
+   - `type: hard` 依赖未满足的阶段不启动
+   - `type: soft` 依赖未满足的阶段标记警告但仍可启动
+   - `type: mutual_exclusion` 的阶段严格按拓扑顺序串行
+2. 若存在多个可启动阶段（无依赖），使用 `agent_manager` 工具以 `worktree` 模式**一次性并行启动多个 AutoRunner**：
+   ```json
+   {
+     "mode": "worktree",
+     "tasks": [
+       { "name": "auto-stage-02", "branchName": "auto-stage-02", "prompt": "..." },
+       { "name": "auto-stage-04", "branchName": "auto-stage-04", "prompt": "..." }
+     ]
+   }
+   ```
+3. 每个 worktree 的 `branchName` 格式为 `auto-{stage}`。Prompt 必须包含：
+   - 计划阶段名 `{stage}`
+   - 当前状态
+   - 任务目标：在单个 worktree 内完成子计划自动闭环
+   - 需读取的文件路径（至少包含 `.ai/plan/{stage}/status.md`）
+   - 完成后必须更新状态
+4. 任一 worktree 完成后，Architect 自动检查该阶段的依赖列表：
+   - 将下游阶段 `status.md` 中的 `依赖状态` 更新为 `satisfied`
+   - 若下游阶段所有 hard 依赖均已满足，触发下一批次启动
+5. 并行 worktree 间通过 `task_claim.md` 的 🔒 锁定机制检测文件冲突。
 
 ### 停止条件
 
 遇到计划外架构变更、权限不明、连续两次验收失败或测试环境缺失，必须调用 `load skill update-stage-status` 将状态改为 `paused`，当前责任 Agent 改为 `user`。
+
+若 `agent_manager` 工具不可用或创建失败，则退回人工流程：只更新状态并告知用户下一步应启动哪个 Agent。
 
 ## 协作
 
