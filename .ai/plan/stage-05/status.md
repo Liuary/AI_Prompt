@@ -59,3 +59,4 @@ REV-056/057 已修复并合并至 main，等待 Architect 审查验收。
 | 2026-05-16 15:59 | architect | review_failed → ready_for_code | 启用自动推进，启动 AutoRunner 处理 REV-056~057 |
 | 2026-05-16 16:06 | code-worker | ready_for_code → ready_for_review | REV-056/057 全部修复完成，等待 Architect 审查 |
 | 2026-05-16 16:34 | auto-runner | ready_for_review | 合并至 main，等待 Architect 验收 |
+| 2026-05-16 16:40 | architect | ready_for_code → review_passed | REV-056/057 验收通过：core.md+architect.md 修复正确 |
