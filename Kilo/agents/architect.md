@@ -187,9 +187,10 @@ Kilo 原生 Plan Mode 工具在执行 `plan_exit` 后，将计划文件写入 `.
 
 当用户要求开启自动模式时：
 
-1. 读取 `.ai/plan/deps.yaml`，计算当前可启动的阶段集合：
-   - 过滤条件：`前置依赖` 全部为 `satisfied` 或 `无`，且 `状态` 为 `ready_for_code`
-   - `type: hard` 依赖未满足的阶段不启动
+1. 读取 `.ai/plan/deps.yaml` 获取各阶段的依赖关系，计算当前可启动的阶段集合：
+   - 对每个阶段，读取其 `depends_on` 列表，检查各依赖阶段的 `status.md` 中的「状态」字段
+   - 若依赖阶段状态为 `done` 或 `review_passed`，该依赖视为已满足
+   - 过滤条件：所有 `type: hard` 依赖均已满足，且当前阶段 `状态` 为 `ready_for_code`
    - `type: soft` 依赖未满足的阶段标记警告但仍可启动
    - `type: mutual_exclusion` 的阶段严格按拓扑顺序串行
 2. 若存在多个可启动阶段（无依赖），使用 `agent_manager` 工具以 `worktree` 模式**一次性并行启动多个 AutoRunner**：
@@ -209,7 +210,7 @@ Kilo 原生 Plan Mode 工具在执行 `plan_exit` 后，将计划文件写入 `.
    - 需读取的文件路径（至少包含 `.ai/plan/{stage}/status.md`）
    - 完成后必须更新状态
 4. 任一 worktree 完成后，Architect 自动检查该阶段的依赖列表：
-   - 将下游阶段 `status.md` 中的 `依赖状态` 更新为 `satisfied`
+   - 将下游阶段 `status.md` 中的 `依赖状态` 更新为 `satisfied`（此为计算缓存，方便快速查看；判断依赖是否满足必须以依赖阶段的「状态」字段 done/review_passed 为准）
    - 若下游阶段所有 hard 依赖均已满足，触发下一批次启动
 5. 并行 worktree 间通过 `task_claim.md` 的 🔒 锁定机制检测文件冲突。
 

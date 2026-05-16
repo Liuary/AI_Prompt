@@ -197,8 +197,7 @@
 - `paused`：流程暂停，必须等待用户决策。
 
 自动推进规则：
-- 默认 `执行模式=manual` 且 `自动推进=disabled`，不允许 Agent 自行启动其他会话。
-- 仅当 `执行模式=auto` 且 `自动推进=enabled` 时，允许 Architect 启动 AutoRunner Agent Manager worktree session。
+- 默认值来自 `.ai/config.yaml` defaults 字段（部署模板默认为 `manual + disabled`，仓库自身为 `auto + enabled` 以支持自驱动）。仅当 `执行模式=auto` 且 `自动推进=enabled` 时，允许 Architect 启动 AutoRunner 或 Agent Manager worktree session。
 - 自动流程采用"每个独立的子计划一个 worktree"：Architect 根据 `.ai/plan/deps.yaml` 判断阶段依赖，**无依赖的阶段可并行启动多个 AutoRunner worktree**；AutoRunner 在单个 worktree 内调度 CodeWorker / ReviewWorker / TestWriter / Tester / Debug，其中部分阶段允许内部并行（如审查和测试编写并行调度）。
 - **并行安全规则**：
   - 并行 worktree 不得修改同一文件；若可能冲突，Architect 必须在 `deps.yaml` 中标记为 `mutual_exclusion` 使其串行

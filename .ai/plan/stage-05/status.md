@@ -5,19 +5,19 @@
 - **状态**：ready_for_review
 - **当前责任 Agent**：architect
 - **上一责任 Agent**：code-worker
-- **更新时间**：2026-05-16 13:00
+- **更新时间**：2026-05-16 16:06
 
 ## Worktree / Session
 
 - **工作模式**：worktree
-- **分支名**：auto-stage05-rev051
-- **Session 名称**：auto-stage05-rev051
-- **合并状态**：merged
+- **分支名**：auto-stage05-rev056
+- **Session 名称**：auto-stage05-rev056
+- **合并状态**：pending_merge
 - **清理策略**：manual
 
 ## 当前任务
 
-并行支持改造 6 项文件修改完成，REV-051~055 全部修复。等待 Architect 审查验收。
+REV-056/057 已由 CodeWorker 修复完成。等待 Architect 审查验收。
 
 ## 任务清单
 
@@ -37,10 +37,12 @@
 - [x] REV-053：tester.agent.md 移除代码审查职责，仅保留 Bug 提交和验收
 - [x] REV-054：deploy/copilot.md 补充 agents/skills/instructions/scripts 子目录
 - [x] REV-055：统一 Agent Hook 路径为正斜杠
+- [x] REV-056：core.md L200 默认值声明改为引用 config.yaml defaults
+- [x] REV-057：architect.md 依赖判断维度改为读取 status.md 状态字段 (done/review_passed)
 
 ## 阻塞 / 暂停原因
 
-等待 Architect 审查验收 REV-051~055。
+REV-056/057 已修复，等待 Architect 审查验收。
 
 ## 状态记录
 
@@ -53,5 +55,6 @@
 | 2026-05-16 00:30 | auto-runner | ready_for_code → coding | 创建 worktree，开始处理 REV-051~055 |
 | 2026-05-16 00:30 | code-worker | coding → ready_for_review | 5/5 全部修复完成，等待 Architect 审查 |
 | 2026-05-16 13:00 | auto-runner | ready_for_review | 合并至 main，冲突已解决 |
-
-| 2026-05-16 13:05 | architect | paused -> review_passed | REV-051~055 全部通过验收，worktree 合并完成 |
+| 2026-05-16 13:05 | architect | review_passed → review_failed | REV-056 (core.md默认值矛盾), REV-057 (deps/architect 判断维度不一致) |
+| 2026-05-16 15:59 | architect | review_failed → ready_for_code | 启用自动推进，启动 AutoRunner 处理 REV-056~057 |
+| 2026-05-16 16:06 | code-worker | ready_for_code → ready_for_review | REV-056/057 全部修复完成，等待 Architect 审查 |
