@@ -96,11 +96,11 @@ planned | ready_for_code | coding | ready_for_review | review_failed | review_pa
 
 ### 6. 合并状态处理
 
-当子计划状态变为 `done` 时，根据 `.ai/config.yaml` 中的 `merge_mode` 决定合并行为：
+当子计划状态变为 `done` 或 `review_passed`（且 Architect 验收完毕）时，根据 `.ai/config.yaml` 中的 `merge_mode` 决定合并行为：
 
 - **`merge_mode=auto`**：
-  1. 自动将 `合并状态` 更新为 `merged`
-  2. 自动将 `合并状态` 更新为 `cleaned`（无需等待人工确认）
+  1. 将 `合并状态` 更新为 `merged`（实际合并由 AutoRunner 或 Architect 执行 git 操作，Skill 仅更新状态字段）
+  2. 将 `合并状态` 更新为 `cleaned`
   3. 在状态记录中注明"自动合并"
 - **`merge_mode=manual`**：
   1. 将 `合并状态` 设为 `pending_merge`

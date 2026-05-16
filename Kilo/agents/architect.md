@@ -214,6 +214,24 @@ Kilo 原生 Plan Mode 工具在执行 `plan_exit` 后，将计划文件写入 `.
    - 若下游阶段所有 hard 依赖均已满足，触发下一批次启动
 5. 并行 worktree 间通过 `task_claim.md` 的 🔒 锁定机制检测文件冲突。
 
+### 验收后的自动合并
+
+当 Architect 验收通过（阶段状态为 `review_passed`）且该阶段所有 REV 均已 close 时：
+
+1. 读取 `.ai/config.yaml` 的 `merge_mode`
+2. **`merge_mode=auto`**：
+   - 切换回主分支：`git checkout main`
+   - 合并 worktree 分支：`git merge {worktree_branch}`
+   - 若非 fast-forward 且无冲突则继续
+   - 删除 worktree 分支：`git branch -d {worktree_branch}`
+   - 删除 worktree 目录：`git worktree remove {worktree_path} --force`
+   - 推送到远端：`git push origin main`
+   - 调用 `load skill update-stage-status` 更新「合并状态」→ `cleaned`，状态 → `done`
+3. **`merge_mode=manual`**：
+   - 不执行任何 git 操作
+   - 调用 `load skill update-stage-status` 将「合并状态」设为 `pending_merge`
+   - 输出提示：合并与清理需在 Agent Manager 中手动完成
+
 ### 停止条件
 
 遇到计划外架构变更、权限不明、连续两次验收失败或测试环境缺失，必须调用 `load skill update-stage-status` 将状态改为 `paused`，当前责任 Agent 改为 `user`。

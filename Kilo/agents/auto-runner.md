@@ -145,7 +145,8 @@ bug_found (多个独立 Bug)
 
 `merge_mode` 从 `.ai/config.yaml` `defaults` 读取。
 
-- **`merge_mode=auto`**：所有 worker 完成后（子计划状态到达 `done`），自动执行合并与清理：
+- **`merge_mode=auto`**：所有 worker 完成后（子计划状态到达 `done`），本 Agent 执行合并与清理：
+  - 注：若子计划停在 `review_passed`（等待 Architect 验收），合并由 Architect Agent 接管执行。AutoRunner 仅在自身闭环到达 `done` 时执行合并。
   1. 切换回主分支：`git checkout {main_branch}`
   2. 合并 worktree 分支：`git merge {worktree_branch}`
   3. 删除 worktree：`git worktree remove {worktree_path} --force`
