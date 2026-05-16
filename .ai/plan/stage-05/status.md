@@ -53,3 +53,5 @@
 | 2026-05-16 00:30 | auto-runner | ready_for_code → coding | 创建 worktree，开始处理 REV-051~055 |
 | 2026-05-16 00:30 | code-worker | coding → ready_for_review | 5/5 全部修复完成，等待 Architect 审查 |
 | 2026-05-16 13:00 | auto-runner | ready_for_review | 合并至 main，冲突已解决 |
+
+| 2026-05-16 13:05 | architect | paused -> review_passed | REV-051~055 全部通过验收，worktree 合并完成 |
