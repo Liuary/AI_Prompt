@@ -2,22 +2,22 @@
 
 - **执行模式**：auto
 - **自动推进**：disabled
-- **状态**：ready_for_review
-- **当前责任 Agent**：architect
-- **上一责任 Agent**：auto-runner
-- **更新时间**：2026-05-16 16:54
+- **状态**：done
+- **当前责任 Agent**：none
+- **上一责任 Agent**：architect
+- **更新时间**：2026-05-16 17:05
 
 ## Worktree / Session
 
 - **工作模式**：worktree
 - **分支名**：auto-stage05-merge
 - **Session 名称**：auto-stage05-merge
-- **合并状态**：pending_merge
-- **清理策略**：auto
+- **合并状态**：merged
+- **清理策略**：manual
 
 ## 当前任务
 
-修复 merge_mode=auto 自动合并不生效问题：Architect 验收后应自动执行 git merge + 清理。已完成 3 个文件修改，等待 Architect 审查验收。
+REV-058~060 验收通过。merge_mode=auto 自动合并改造完成：Architect 验收后自动 merge+push+清理。
 
 ## 任务清单
 
@@ -48,7 +48,7 @@
 
 ## 阻塞 / 暂停原因
 
-3 个 merge_mode=auto 合并修复文件已修改完成，等待 Architect 审查验收。
+全部 REV closed（051~060），stage-05 done。
 
 ## 状态记录
 
@@ -67,3 +67,4 @@
 | 2026-05-16 16:34 | auto-runner | ready_for_review | 合并至 main，等待 Architect 验收 |
 | 2026-05-16 16:40 | architect | ready_for_code → review_passed | REV-056/057 验收通过：core.md+architect.md 修复正确 |
 | 2026-05-16 16:54 | auto-runner | review_passed → ready_for_review | merge_mode=auto 合并修复：3/3 文件修改完成，等待 Architect 审查 |
+| 2026-05-16 17:05 | architect | ready_for_review → done | REV-058~060 验收通过，自动合并改造完成，已 git push |
