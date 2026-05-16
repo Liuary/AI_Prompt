@@ -9,7 +9,7 @@
 | pending | 0 |
 | fixing | 0 |
 | resolved | 0 |
-| closed | 0 |
+| closed | 5 |
 
 ## 阶段
 
@@ -28,3 +28,7 @@
 ### stage-04：规范体系整理
 - 审查文件：[stage-04.md](stage-04.md)
 - 无审查条目
+
+### stage-05：审查闭环与工作区清理
+- 审查文件：[stage-05.md](stage-05.md)
+- REV-051~055：5 closed

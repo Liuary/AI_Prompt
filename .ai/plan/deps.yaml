@@ -1,0 +1,57 @@
+# ============================================================================
+# 阶段依赖配置
+#
+# 定义各计划阶段的依赖关系与完成判定标准。
+# 完成判定：阶段状态为 "done" 或 "review_passed" 均视为已完成。
+# ============================================================================
+
+meta:
+  schema: "ai-prompt-plan-deps"
+  version: "1.0.0"
+  generated: "2026-05-16T00:30+08:00"
+
+# 完成判定标准
+completion_criteria:
+  - status: "done"
+  - status: "review_passed"
+  description: >
+    阶段的最终状态可能为 done 或 review_passed。
+    done 表示实现完成但未经过正式审查；
+    review_passed 表示已通过 Architect 审查验收。
+    两者均视为阶段已完成，下游阶段可在任一状态下启动。
+
+# 阶段依赖关系
+dependencies:
+  stage-05:
+    description: "审查闭环与工作区清理"
+    depends_on:
+      - stage: "stage-01"
+        required_status: ["done", "review_passed"]
+      - stage: "stage-02"
+        required_status: ["done", "review_passed"]
+      - stage: "stage-03"
+        required_status: ["done", "review_passed"]
+      - stage: "stage-04"
+        required_status: ["done", "review_passed"]
+
+  stage-04:
+    description: "规范体系整理"
+    depends_on:
+      - stage: "stage-03"
+        required_status: ["done", "review_passed"]
+
+  stage-03:
+    description: "多工具适配扩展"
+    depends_on:
+      - stage: "stage-02"
+        required_status: ["done", "review_passed"]
+
+  stage-02:
+    description: "多人协作基础"
+    depends_on:
+      - stage: "stage-01"
+        required_status: ["done", "review_passed"]
+
+  stage-01:
+    description: "约束引擎 + 记忆系统"
+    depends_on: []

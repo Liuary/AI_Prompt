@@ -14,3 +14,4 @@
 | 2026-05-13 15:20 | code | 阶段三 coding → done，5/6 完成（CLAUDE/Copilot/ADAPTER_SPEC/deploy.py） |
 | 2026-05-13 15:24 | architect | 阶段三 done → review_failed，REV-024~029 pending |
 | 2026-05-13 15:35 | code | 处理 REV-024~029：状态修正/日志补全/文档同步 |
+| 2026-05-16 00:30 | auto-runner | 创建 stage-05，处理 REV-051~055（deps.yaml/审查路径/职责分离/部署目录/Hook路径） |
