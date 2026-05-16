@@ -1,6 +1,6 @@
 ﻿# 计划索引
 
-> 最后更新：2026-05-13
+> 最后更新：2026-05-16
 
 ## 活跃计划
 
@@ -14,7 +14,7 @@
 | 阶段二 | review_passed | [stage-02/](stage-02/) | 任务归属 + 冲突检测 + 进度同步 |
 | 阶段三 | review_passed | [stage-03/](stage-03/) | Claude Code 适配器 + Copilot 适配器 + 标准接口 |
 | 阶段四 | review_passed | [stage-04/](stage-04/) | 规范文档体系 + 模板市场储备 |
-| 阶段五 | review_failed | [stage-05/](stage-05/) | Architect/AutoRunner 并行支持改造 |
+| 阶段五 | ready_for_review | [stage-05/](stage-05/) | 审查闭环与工作区清理 |
 
 ### 已完成
 

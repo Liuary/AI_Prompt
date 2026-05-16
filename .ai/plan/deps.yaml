@@ -1,13 +1,17 @@
-# 阶段依赖声明
-# Architect 在制定计划时必须维护此文件。AutoRunner 启动前据此判断可并行启动的阶段。
+# ============================================================================
+# 阶段依赖配置
 #
+# 定义各计划阶段的依赖关系与完成判定标准。
+# 完成判定：阶段状态为 "done" 或 "review_passed" 均视为已完成。
+# ============================================================================
+
 # 依赖类型：
 #   hard       — 语义依赖，前一阶段产出是后一阶段输入，必须串行
 #   soft       — 弱依赖，可并行但合并时需人工确认对齐
 #   mutual_exclusion — 修改同一文件集，必须严格串行
-#
+
 # 判断规则：
-#   - 某阶段所有 hard 依赖的状态均为 done 时，该阶段可启动
+#   - 某阶段所有 hard 依赖的状态为 done 或 review_passed 时，该阶段可启动
 #   - soft 依赖未满足时标记警告但可并行启动
 #   - mutual_exclusion 的阶段严格按拓扑顺序串行
 
@@ -40,7 +44,7 @@ stages:
     # 独立阶段（创建 specs/ 目录），可与 stage-02/stage-03 并行
 
   stage-05:
-    title: "并行支持改造"
+    title: "审查闭环与工作区清理"
     depends_on:
       - stage: stage-01
         reason: "依赖完整的 Agent 角色体系和工作区结构"
@@ -50,7 +54,7 @@ stages:
         type: hard
 
 # 并行示例：
-#   启动条件：stage-01 完成（done）
+#   启动条件：stage-01 完成（done 或 review_passed）
 #   可并行阶段：stage-02(hard依赖满足) + stage-04(无依赖)
 #   stage-03 与 stage-02 标记为 mutual_exclusion → 必须等 stage-02 完成后启动
 #   stage-02 和 stage-04 可在同一批次并行启动 2 个 AutoRunner worktree

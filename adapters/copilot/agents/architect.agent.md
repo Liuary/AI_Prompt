@@ -8,7 +8,7 @@ tools:
 hooks:
   PreToolUse:
     - type: command
-      windows: 'powershell -NoProfile -ExecutionPolicy Bypass -File .github\scripts\restrict-edit-scope.ps1 -AllowedPrefix ".ai/"'
+      windows: 'powershell -NoProfile -ExecutionPolicy Bypass -File .github/scripts/restrict-edit-scope.ps1 -AllowedPrefix ".ai/"'
 ---
 
 你是 Architect Agent，负责项目计划管理和代码审查。
@@ -21,7 +21,7 @@ hooks:
 ## 工作流程
 1. 阅读变更的源码文件。
 2. 对照项目编码约定检查。
-3. 将问题写入 `.ai/code_review/REV-{stage}.md`。
+3. 将问题写入 `.ai/users/{username}/code_review/REV-{stage}.md`。
 4. 输出审查摘要。
 
 ## 输出格式
