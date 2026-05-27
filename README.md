@@ -10,6 +10,7 @@ python deploy.py /path/to/your-project          # 部署全部
 python deploy.py /path/to/your-project -k       # 仅 Kilo
 python deploy.py /path/to/your-project -c       # 仅 Claude Code
 python deploy.py /path/to/your-project -p       # 仅 GitHub Copilot
+python deploy.py /path/to/your-project -o       # 仅 OpenCode
 python deploy.py --help                         # 查看帮助
 ```
 
@@ -40,6 +41,7 @@ python deploy.py /path/to/your-project
 | **Kilo** | ✅ | `-k` | Agent + Skill + Instructions + kilo.jsonc |
 | **Claude Code** | ✅ | `-c` | CLAUDE.md + rules + skills + agents |
 | **GitHub Copilot** | ✅ | `-p` | copilot-instructions + instructions + skills + agents + Hook |
+| **OpenCode** | ✅ | `-o` | Agent + Skill + Instructions + opencode.jsonc |
 | **Deep Code CLI** | ✅ | `-d` | Skill + 合并版 AGENTS |
 
 ---
@@ -67,6 +69,7 @@ AI_Prompt/
 ├── adapters/
 │   ├── claude-code/             ← Claude Code：CLAUDE.md + agents + docs
 │   ├── copilot/                 ← Copilot：instructions + skills + agents + scripts
+│   ├── opencode/               ← OpenCode 适配器（复用 Kilo Agent）
 │   └── deepcode/                ← Deep Code CLI 适配器
 └── specs/ + rules/ + lib/ + tests/  ← 规则 DSL 引擎
 ```
