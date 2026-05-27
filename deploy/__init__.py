@@ -14,12 +14,14 @@ from .kilo import KILO_DIRS, deploy_kilo
 from .deepcode import DEEPCODE_DIRS, deploy_deepcode
 from .claude import CLAUDE_DIRS, deploy_claude
 from .copilot import COPILOT_DIRS, deploy_copilot
+from .opencode import OPENCODE_DIRS, deploy_opencode
 
 TOOLS = {
     "kilo":    {"dirs": KILO_DIRS,    "label": "Kilo",           "fn": deploy_kilo,    "tip": "重启 Kilo 会话后 Subagent 和 Skill 生效。"},
     "deepcode":{"dirs": DEEPCODE_DIRS, "label": "Deep Code CLI", "fn": deploy_deepcode, "tip": "启动 Deep Code CLI 后使用 /skills 查看可用 Skill。"},
     "claude":  {"dirs": CLAUDE_DIRS,  "label": "Claude Code",    "fn": deploy_claude,   "tip": "Claude Code 同时加载 CLAUDE.md 和 AGENTS.md。"},
     "copilot": {"dirs": COPILOT_DIRS, "label": "GitHub Copilot", "fn": deploy_copilot,  "tip": "GitHub Copilot 将自动读取 .github/copilot-instructions.md。"},
+    "opencode":{"dirs": OPENCODE_DIRS, "label": "OpenCode",       "fn": deploy_opencode, "tip": "重启 OpenCode 会话后 Subagent 和 Skill 生效。"},
 }
 
 
@@ -55,7 +57,7 @@ def main():
 
     if not args.target:
         print("错误: 需要指定目标项目路径\n")
-        print("用法：python deploy.py <目标路径> [-k | -d | -c | -p]")
+        print("用法：python deploy.py <目标路径> [-k | -d | -c | -p | -o]")
         print("      python deploy.py --help 查看完整帮助")
         sys.exit(1)
 

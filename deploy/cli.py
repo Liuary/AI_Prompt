@@ -18,6 +18,7 @@ def show_help():
   -d, --deepcode      仅部署 Deep Code CLI 框架（合并版 AGENTS.md + Skill → .agents/）
   -c, --claude        仅部署 Claude Code 适配器（CLAUDE.md + .claude/commands/）
   -p, --copilot       仅部署 GitHub Copilot 适配器（.github/copilot-instructions.md）
+  -o, --opencode      仅部署 OpenCode 适配器（Agent/Skill → .opencode/）
   -l, --list          列出所有支持的 AI 工具
   -h, --help          显示本帮助信息
   --source <路径>     指定模板源路径（默认为脚本所在目录）
@@ -34,7 +35,8 @@ def show_list():
     print("  deepcode    Deep Code CLI — 终端 AI 编码助手，通过 Skill + AGENTS.md 提供核心治理能力")
     print("  claude      Claude Code — Anthropic 的终端 Agent 工具，通过 CLAUDE.md + 命令提供治理能力")
     print("  copilot     GitHub Copilot — IDE 内嵌 AI 助手，通过 copilot-instructions.md 提供行为约束")
-    print("\n用法：python deploy.py <目标路径> [-k | -d | -c | -p]")
+    print("  opencode    OpenCode — 开源终端 Agent 工具（Kilo 上游），支持完整 Agent 角色体系")
+    print("\n用法：python deploy.py <目标路径> [-k | -d | -c | -p | -o]")
     print("不指定选项时默认部署全部。")
     sys.exit(0)
 
@@ -52,6 +54,7 @@ def build_parser():
     tool_group.add_argument("-d", "--deepcode", action="store_true", help=argparse.SUPPRESS)
     tool_group.add_argument("-c", "--claude",   action="store_true", help=argparse.SUPPRESS)
     tool_group.add_argument("-p", "--copilot",  action="store_true", help=argparse.SUPPRESS)
+    tool_group.add_argument("-o", "--opencode", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("-l", "--list", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("-h", "--help", action="store_true", help=argparse.SUPPRESS)
     return parser
@@ -63,4 +66,5 @@ def resolve_tool(args) -> str:
     if args.deepcode: return "deepcode"
     if args.claude:   return "claude"
     if args.copilot:  return "copilot"
+    if args.opencode: return "opencode"
     return "all"

@@ -2,74 +2,63 @@
 # AI_Prompt 部署脚本 — OpenCode 适配器
 
 from pathlib import Path
-from .common import report, copy_files, deploy_resources
+from .common import report, copy_files
 
 OPENCODE_FILES = {
-    "OpenCode/agents/architect.md": ".opencode/agents/architect.md",
-    "OpenCode/agents/auto-runner.md": ".opencode/agents/auto-runner.md",
-    "OpenCode/agents/code.md": ".opencode/agents/code.md",
-    "OpenCode/agents/code-worker.md": ".opencode/agents/code-worker.md",
-    "OpenCode/agents/ask.md": ".opencode/agents/ask.md",
-    "OpenCode/agents/debug.md": ".opencode/agents/debug.md",
-    "OpenCode/agents/review-worker.md": ".opencode/agents/review-worker.md",
-    "OpenCode/agents/tester.md": ".opencode/agents/tester.md",
-    "OpenCode/agents/test-writer.md": ".opencode/agents/test-writer.md",
+    "adapters/opencode/opencode.md": ".opencode/opencode.md",
+}
+
+OPENCODE_INSTRUCTIONS = {
+    "adapters/opencode/instructions/workspace.instructions.md": ".opencode/instructions/workspace.instructions.md",
+}
+
+OPENCODE_SKILLS = {
+    "adapters/opencode/skills/get-bugs/SKILL.md": ".opencode/skills/get-bugs/SKILL.md",
+    "adapters/opencode/skills/check-kb/SKILL.md": ".opencode/skills/check-kb/SKILL.md",
+    "adapters/opencode/skills/bug-acceptance/SKILL.md": ".opencode/skills/bug-acceptance/SKILL.md",
+    "adapters/opencode/skills/sync-status/SKILL.md": ".opencode/skills/sync-status/SKILL.md",
+}
+
+OPENCODE_AGENTS = {
+    "adapters/opencode/agents/architect.agent.md": ".opencode/agents/architect.agent.md",
+    "adapters/opencode/agents/code.agent.md": ".opencode/agents/code.agent.md",
+    "adapters/opencode/agents/tester.agent.md": ".opencode/agents/tester.agent.md",
+    "adapters/opencode/agents/debug.agent.md": ".opencode/agents/debug.agent.md",
 }
 
 OPENCODE_DIRS = [
-    ".opencode/agents",
+    ".opencode",
     ".opencode/instructions",
-    ".opencode/skills",
+    ".opencode/skills/get-bugs",
+    ".opencode/skills/check-kb",
+    ".opencode/skills/bug-acceptance",
+    ".opencode/skills/sync-status",
+    ".opencode/agents",
 ]
-
-OPENCODE_JSONC_CONTENT = """\
-{
-  "$schema": "https://opencode.ai/config.json",
-  "default_agent": "code",
-  "instructions": [
-    "AGENTS.md",
-    ".opencode/instructions/core.md"
-  ],
-  "skills": {
-    "get-bugs": ".opencode/skills/get-bugs",
-    "check-kb": ".opencode/skills/check-kb",
-    "bug-acceptance": ".opencode/skills/bug-acceptance",
-    "sync-status": ".opencode/skills/sync-status",
-    "get-stage-status": ".opencode/skills/get-stage-status",
-    "update-stage-status": ".opencode/skills/update-stage-status"
-  },
-  "experimental": {
-    "agent_manager_tool": true
-  }
-}
-"""
-
-
-def configure_opencode_jsonc(target: Path) -> list[str]:
-    path = target / "opencode.jsonc"
-    if path.exists():
-        return [report("skipped", "opencode.jsonc", "已存在")]
-    path.write_text(OPENCODE_JSONC_CONTENT, encoding="utf-8")
-    return [report("created", "opencode.jsonc")]
 
 
 def deploy_opencode(source: Path, target: Path) -> list[str]:
-    """部署 OpenCode：通用资源 → .opencode/ 下，Agent → .opencode/agents/"""
+    """部署 OpenCode：适配层 + Instructions + Skills + Agents。"""
     lines = []
     lines.append("\n[OpenCode]")
-    lines.append("  [通用资源 → .opencode/]")
 
-    # Instructions + Skills 部署到 .opencode/
-    res_lines, rc, rs = deploy_resources(source, target, ".kilo")
-    lines.extend(res_lines)
-    lines.append(report("info", f"资源: 复制 {rc}, 跳过 {rs}"))
+    lines.append("  [全局适配层]")
+    c_lines, cc, cs, cm = copy_files(source, target, OPENCODE_FILES)
+    lines.extend(c_lines)
 
-    # Agent 定义
-    lines.append("  [Agent 定义 → .opencode/agents/]")
-    a_lines, ac, as_skip, am = copy_files(source, target, OPENCODE_FILES)
+    lines.append("  [文件级 Instructions]")
+    i_lines, ic, iskip, im = copy_files(source, target, OPENCODE_INSTRUCTIONS)
+    lines.extend(i_lines)
+
+    lines.append("  [Skills]")
+    s_lines, sc, sskip, sm = copy_files(source, target, OPENCODE_SKILLS)
+    lines.extend(s_lines)
+
+    lines.append("  [Agents]")
+    a_lines, ac, a_skip, am = copy_files(source, target, OPENCODE_AGENTS)
     lines.extend(a_lines)
-    lines.append(report("info", f"Agent: 复制 {ac}, 跳过 {as_skip}" + (f", 缺失 {am}" if am else "")))
 
-    lines.append("\n[OpenCode 配置]")
-    lines.extend(configure_opencode_jsonc(target))
+    total = cc + ic + sc + ac
+    lines.append(report("info", f"总计: 复制 {total}, 跳过 {cs + iskip + sskip + a_skip}" +
+                 (f", 缺失 {cm + im + sm + am}" if cm or im or sm or am else "")))
     return lines

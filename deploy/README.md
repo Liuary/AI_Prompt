@@ -13,7 +13,8 @@ deploy/
 ├── kilo.py            # Kilo 适配器
 ├── deepcode.py        # Deep Code CLI 适配器
 ├── claude.py          # Claude Code 适配器
-└── copilot.py         # GitHub Copilot 适配器
+├── copilot.py         # GitHub Copilot 适配器
+└── opencode.py        # OpenCode 适配器
 ```
 
 ## 部署文档
@@ -25,6 +26,7 @@ deploy/
 | Deep Code CLI | [deepcode.md](deepcode.md) | `-d` / `--deepcode` |
 | Claude Code | [claude.md](claude.md) | `-c` / `--claude` |
 | GitHub Copilot | [copilot.md](copilot.md) | `-p` / `--copilot` |
+| OpenCode | [opencode.md](opencode.md) | `-o` / `--opencode` |
 
 ## 新增工具指南
 
