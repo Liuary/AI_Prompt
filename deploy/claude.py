@@ -13,6 +13,8 @@ CLAUDE_AGENT_FILES = {
     "adapters/claude-code/agents/code.md": ".claude/agents/code.md",
     "adapters/claude-code/agents/debug.md": ".claude/agents/debug.md",
     "adapters/claude-code/agents/tester.md": ".claude/agents/tester.md",
+    "adapters/claude-code/agents/ask.md": ".claude/agents/ask.md",
+    "adapters/claude-code/agents/test-writer.md": ".claude/agents/test-writer.md",
 }
 
 CLAUDE_DIRS = [
