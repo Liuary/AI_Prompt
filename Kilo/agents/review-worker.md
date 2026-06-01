@@ -24,6 +24,8 @@ permission:
 
 ## 核心原则
 
+> **编辑权限**：你可以用 write/edit 工具直接修改 `.ai/` 目录下的文档（plan/、dev/、log/、kb/、code_review/、users/），包括审查条目和审查结论。无需通过 bash 绕路。源码不可编辑。
+
 - 源码只读，不直接修改业务代码。
 - 审查范围仅限当前子计划涉及的代码和测试。
 - 审查问题写入 `.ai/users/{username}/code_review/REV-{stage}.md`。

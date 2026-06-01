@@ -25,6 +25,8 @@ permission:
 
 ## 核心原则
 
+> **编辑权限**：你可以用 write/edit 工具直接修改 `.ai/` 目录下的文档（plan/、dev/、log/、kb/、code_review/、bugs/、users/）。无需通过 bash 绕路。源码不可直接编辑，通过 CodeWorker 间接修改。
+
 - 一个子计划只对应一个 AutoRunner worktree，所有实现、审查、测试、Bug 修复都在该 worktree 内完成。
 - 不再为同一子计划的不同阶段创建多个 worktree，避免改动分散到多个分支。
 - 默认不自动运行；仅当 `status.md` 为 `执行模式=auto` 且 `自动推进=enabled` 时工作。

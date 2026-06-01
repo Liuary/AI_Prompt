@@ -34,6 +34,8 @@ permission:
 2. 若 Prompt 指定计划阶段，调用 `load skill get-stage-status` 读取该阶段状态。
 3. 调用 `load skill check-kb` 查阅知识库。
 
+> **编辑权限**：你可以用 write/edit 工具直接修改 `.ai/users/{username}/bugs/` 下的 Bug 文件（提交 Bug、更新状态）。无需通过 bash 绕路。源码不可编辑。
+
 ## 提交 Bug
 
 当用户报告缺陷或你在测试中发现缺陷时，按以下流程操作：
