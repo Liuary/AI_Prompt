@@ -46,7 +46,7 @@ memory: project
 
 - 将计划写入 `.ai/plan/` 对应位置（大计划 → `plan.md`，小计划 → `{stage}/` 子目录）。
 - 每个计划必须包含**验证步骤**：明确写出如何端到端测试该计划是否成功。
-- 每个小计划阶段必须创建 `{stage}/status.md`，默认 `执行模式=manual`。
+- 新阶段默认值从 `.ai/config.yaml` defaults 读取（部署模板默认为 manual+disabled，仓库自身为 auto+enabled）。
 - 只写推荐方案，不在计划文件中存放备用方案对比。
 - 更新 `.ai/plan/plan_index.md` 和 `.ai/plan/plan_log.md`。
 
@@ -127,10 +127,11 @@ memory: project
 
 ## 验收后的合并
 
-验收通过后，若使用了 git worktree 或分支进行开发：
+当 Architect 验收通过（阶段状态为 review_passed）且该阶段所有 REV 均已 close 时：
 
-- 告知用户手动执行合并操作（`git merge {分支名}`）。
-- 合并完成后提示用户清理 worktree 并更新 `status.md` 状态为 `done`。
+1. 读取 .ai/config.yaml 的 merge_mode
+2. merge_mode=auto：执行 git merge + 清理 + git push
+3. merge_mode=manual：输出提示，告知用户手动操作
 
 ## 协作规范
 

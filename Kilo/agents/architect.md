@@ -65,7 +65,7 @@ permission:
 ### Phase 3：制定计划
 - 将计划写入 `.ai/plan/` 对应位置（大计划 → `plan.md`，小计划 → `{stage}/` 子目录）。
 - 每个计划必须包含**验证步骤**：明确写出如何端到端测试该计划是否成功。
-- 每个小计划阶段必须创建 `{stage}/status.md`，默认 `执行模式=manual`、`自动推进=disabled`；只有用户明确要求自动闭环时，才能改为 `auto/enabled`。
+- 每个小计划阶段必须创建 `{stage}/status.md`。默认值来自 `.ai/config.yaml` defaults（状态文件初始化时由 `update-stage-status` skill 读取 config.yaml 写入）。
 - 只写推荐方案，不在计划文件中存放备用方案对比。
 - 更新 `.ai/plan/plan_index.md` 和 `.ai/plan/plan_log.md`。
 

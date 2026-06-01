@@ -12,6 +12,10 @@ description: 读取 .ai/plan/{stage}/status.md，判断当前子计划状态、�
 
 ## 执行步骤
 
+### 0. 读取全局配置
+
+读取 `.ai/config.yaml`，获取 `defaults` 中的 `execution_mode`、`auto_advance`、`test_enabled`。
+
 ### 1. 定位状态文件
 
 读取 `.ai/plan/{stage}/status.md`。
@@ -59,6 +63,11 @@ description: 读取 .ai/plan/{stage}/status.md，判断当前子计划状态、�
 
 ## 下一步建议
 {根据状态给出下一步，例如：启动 Code、等待用户、启动 Tester、停止流程}
+
+> 回退说明：
+> - 若 `执行模式` 为空，回退到 config.yaml defaults.execution_mode
+> - 若 `自动推进` 为空，回退到 config.yaml defaults.auto_advance
+> - 若 `test_enabled` 未在 status.md 声明，从 config.yaml defaults.test_enabled 取值
 ```
 
 ## 状态到下一步映射

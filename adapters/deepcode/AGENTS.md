@@ -151,8 +151,8 @@ AI Agent 项目级行为约束与编码规范。本文件为永久性约束，�
 ```markdown
 # {stage} 状态
 
-- **执行模式**：manual | auto
-- **自动推进**：disabled | enabled
+- **执行模式**：manual | auto  <!-- 初始值从 .ai/config.yaml defaults 读取 -->
+- **自动推进**：disabled | enabled  <!-- 初始值从 .ai/config.yaml defaults 读取 -->
 - **状态**：planned | ready_for_code | coding | ready_for_review | review_failed | review_passed | ready_for_test | test_writing | testing | bug_found | bug_fixing | done | paused
 - **当前责任人**：ai | user
 - **更新时间**：yyyy-mm-dd HH:MM
@@ -183,7 +183,7 @@ AI Agent 项目级行为约束与编码规范。本文件为永久性约束，�
 - `done`：完成
 - `paused`：暂停，需用户决策
 
-**默认模式**：`执行模式=manual`，`自动推进=disabled`。仅在用户明确开启时改为 `auto` + `enabled`。暂停条件：计划外架构变更、修改范围超出计划、测试环境缺失、连续两次验收失败。
+**默认模式**：默认值来自 `.ai/config.yaml` defaults。
 
 ### 知识库
 
