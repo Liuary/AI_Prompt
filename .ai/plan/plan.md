@@ -2,7 +2,7 @@
 
 > 制定时间：2026-05-13
 > 版本：v2.0
-> 状态：planning
+> 状态：done（全部 5 阶段完成）
 
 ## 一、项目定位
 
@@ -22,10 +22,10 @@ AI_Prompt 是**跨 AI 工具的 Agent 开发治理框架**，为 AI 辅助软件
 ```
 ┌─────────────────────────────────────────────────┐
 │                  CLI 工具层                       │
-│  deploy.py (-k/-d/-c/-p)  rule compile/validate  │
+│  deploy.py (-k/-d/-c/-p/-o)  rule compile/validate  │
 ├─────────────────────────────────────────────────┤
 │                 适配器层                          │
-│  kilo/  deepcode/  claude-code/  copilot/       │
+│  kilo/  deepcode/  claude-code/  copilot/  opencode/│
 │  ── 标准化适配器接口 (ADAPTER_SPEC.md) ──        │
 ├─────────────────────────────────────────────────┤
 │                 核心层（工具无关）                  │

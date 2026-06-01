@@ -61,6 +61,7 @@ meta:
 
 # ---- 工作流默认值 ----
 # 创建新阶段或 status.md 未填写时应用以下默认值
+# 注：此为部署模板默认值（manual+disabled），仓库自身 config.yaml 可能不同
 defaults:
   # 执行模式：manual=人工驱动，auto=Agent 驱动
   # 仅 auto+enabled 的阶段参与自动闭环
