@@ -17,3 +17,4 @@
 | 2026-05-15 23:28 | code | 创建阶段五（并行支持改造）：依赖图 + 多 WorkTree 并行 + AutoRunner 内部并行 |
 | 2026-05-15 23:35 | code | 阶段五 coding → ready_for_review，6/6 文件改造完成 |
 | 2026-05-16 00:30 | auto-runner | 创建 stage-05，处理 REV-051~055（deps.yaml/审查路径/职责分离/部署目录/Hook路径） |
+| 2026-06-04 12:45 | auto-runner | 创建 stage-08，多模型后端解耦：7项任务全部完成，状态 ready_for_review |

@@ -5,6 +5,34 @@
 meta:
   version: 1.0.0
 
+# ---- 模型后端配置 ----
+# 将 Agent 能力描述与具体模型后端解耦
+# 优先级：Agent 级覆盖 > role 级覆盖 > default
+models:
+  # 默认模型后端（所有 Agent 未指定时使用）
+  default:
+    provider: openai
+    model_name: gpt-4o
+    base_url: https://api.openai.com/v1
+    api_key_env: OPENAI_API_KEY
+
+  # 按角色指定模型（role 名称对应 Agent 定义中的 agent_id）
+  roles:
+    architect:
+      provider: anthropic
+      model_name: claude-sonnet-4-20250514
+      base_url: https://api.anthropic.com
+      api_key_env: ANTHROPIC_API_KEY
+
+  # 按 Agent 实例指定（可覆盖 role 级默认）
+  agents: {}
+    # 示例：
+    # code:
+    #   provider: ollama
+    #   model_name: hermes-3:8b
+    #   base_url: http://localhost:11434/v1
+    #   api_key_env: ""
+
 # ---- 工作流默认值 ----
 # 创建新阶段或 status.md 未填写时应用以下默认值
 defaults:

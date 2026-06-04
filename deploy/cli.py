@@ -19,11 +19,13 @@ def show_help():
   -c, --claude        仅部署 Claude Code 适配器（CLAUDE.md + .claude/commands/）
   -p, --copilot       仅部署 GitHub Copilot 适配器（.github/copilot-instructions.md）
   -o, --opencode      仅部署 OpenCode 适配器（Agent/Skill → .opencode/）
+  --model-backend <B>  设置默认模型后端: openai / anthropic / ollama
+                       部署时生成对应的 .ai/config.yaml models 配置节
   -l, --list          列出所有支持的 AI 工具
   -h, --help          显示本帮助信息
   --source <路径>     指定模板源路径（默认为脚本所在目录）
 
-不指定工具选项时默认部署全部框架。
+不指定工具选项时默认部署全部框架。不指定 --model-backend 时使用默认 openai。
 项目: https://github.com/Liuary/AI_Prompt""")
     sys.exit(0)
 
@@ -49,6 +51,9 @@ def build_parser():
     )
     parser.add_argument("target", nargs="?", help=argparse.SUPPRESS)
     parser.add_argument("--source", help=argparse.SUPPRESS, default=None)
+    parser.add_argument("--model-backend", help=argparse.SUPPRESS, default=None,
+                        choices=["openai", "anthropic", "ollama"],
+                        metavar="BACKEND")
     tool_group = parser.add_mutually_exclusive_group()
     tool_group.add_argument("-k", "--kilo",    action="store_true", help=argparse.SUPPRESS)
     tool_group.add_argument("-d", "--deepcode", action="store_true", help=argparse.SUPPRESS)

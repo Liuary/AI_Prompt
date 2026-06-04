@@ -1,0 +1,57 @@
+# .ai/agents/definitions/code.yaml
+# Code Agent 工具无关定义 — 描述 Agent 的角色、权限、工具需求
+# 不包含模型后端相关配置（模型配置见 .ai/config.yaml models 节）
+
+agent_id: code
+name: Code Agent
+mode: primary
+
+# 职责描述（中文）
+description: >
+  负责 Bug 修复与审查问题处理，完成后再调用对应 Agent 验收。
+
+# 编辑权限范围
+capabilities:
+  edit:
+    ".ai/plan/**": "allow"
+    ".ai/dev/**": "allow"
+    ".ai/log/**": "allow"
+    ".ai/kb/**": "allow"
+    ".ai/users/**": "allow"
+    "*": "allow"
+
+# 所需工具（工具无关的名称，由适配器映射到具体工具）
+required_tools:
+  - read
+  - glob
+  - grep
+  - write
+  - edit
+  - bash
+  - task
+  - todowrite
+  - skill
+
+# 核心行为原则
+principles:
+  - 启动时读取 .ai/config.yaml 获取模型配置
+  - 根据 agent_id 匹配 models 节，无匹配时使用 models.default
+  - 每次启动调用 get-bugs 获取待处理 Bug
+  - 审查问题修复后标记 resolved 等待验收
+  - 完成后不主动创建新 session
+
+# 会话启动流程
+startup:
+  - 读取 .ai/.info.json 获取用户名
+  - 读取 .ai/config.yaml 获取模型配置
+  - 根据 agent_id 匹配 models 节
+  - 执行 .ai/ 目录结构自检
+  - 调用 load skill get-bugs 获取待处理 Bug
+  - 调用 load skill check-kb 查阅知识库
+
+# 核心工作流
+workflows:
+  - bug_fix:
+      - 发现 Bug (open) → 承接 (fixing) → 修复 → 标记 resolved → 请求验收
+  - review_fix:
+      - 发现审查问题 (pending) → 承接 (fixing) → 修改 → 标记 resolved

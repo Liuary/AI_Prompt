@@ -23,9 +23,15 @@ permission:
 
 1. 读取 `.ai/.info.json` 获取用户名，后续所有 `.ai/users/` 路径基于此构造。
 2. 执行 `.ai/` 目录结构自检（见 `instructions/core.md` 会话启动自检章节），缺失则自动补建。
-3. 调用 `load skill get-bugs` 获取待处理 Bug，调用 `load skill check-kb` 查阅知识库。
-4. 若用户或启动 Prompt 指定计划阶段，调用 `load skill get-stage-status` 读取 `.ai/plan/{stage}/status.md`。
-5. 分析用户指令是否需要计划化，若涉及多步骤 / 跨会话 / 多模块，主动更新 `.ai/plan/plan.md` 或 `.ai/dev/current.md`。
+3. **读取模型配置**：读取 `.ai/config.yaml` 的 `models` 节，按以下优先级匹配当前 Agent 的模型后端：
+   - `models.agents.{agent_id}` → Agent 级覆盖（最高优先级）
+   - `models.roles.{agent_id}` → 按 Agent 角色查找
+   - `models.default` → 默认配置（兜底）
+   - 匹配结果中的 `provider`、`model_name`、`base_url`、`api_key_env` 字段用于配置模型连接。
+   - 若配置文件不存在或 `models` 节缺失，使用会话默认模型（工具内置）。
+4. 调用 `load skill get-bugs` 获取待处理 Bug，调用 `load skill check-kb` 查阅知识库。
+5. 若用户或启动 Prompt 指定计划阶段，调用 `load skill get-stage-status` 读取 `.ai/plan/{stage}/status.md`。
+6. 分析用户指令是否需要计划化，若涉及多步骤 / 跨会话 / 多模块，主动更新 `.ai/plan/plan.md` 或 `.ai/dev/current.md`。
 
 ---
 

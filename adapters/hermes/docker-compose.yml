@@ -1,0 +1,47 @@
+# Hermes-3 鏈湴閮ㄧ讲 docker-compose 閰嶇疆
+# 浣跨敤 Ollama 瀹瑰櫒閮ㄧ讲鏀寔 function calling 鐨?Hermes-3 妯″瀷
+#
+# 鍚姩: docker-compose -f adapters/hermes/docker-compose.yml up -d
+# 楠岃瘉: python scripts/verify_hermes.py
+
+version: "3.8"
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: hermes-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      # 鎸佷箙鍖栨ā鍨嬫暟鎹?      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+      - OLLAMA_KEEP_ALIVE=24h
+    restart: unless-stopped
+#    deploy:
+#      resources:
+#        reservations:
+#          devices:
+            # GPU 鍔犻€燂紙濡傛湁 NVIDIA GPU锛?#            - driver: nvidia
+#              count: 1
+#              capabilities: [gpu]
+
+  # Open WebUI 鈥?鍙€夛紝鎻愪緵 Web 鐣岄潰绠＄悊妯″瀷
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: hermes-webui
+    ports:
+      - "3000:8080"
+    volumes:
+      - open-webui_data:/app/backend/data
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+    restart: unless-stopped
+    depends_on:
+      - ollama
+
+volumes:
+  ollama_data:
+    driver: local
+  open-webui_data:
+    driver: local

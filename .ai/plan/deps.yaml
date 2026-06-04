@@ -53,6 +53,17 @@ stages:
         reason: "依赖 task_claim.md 🔒 锁定机制（用于并行安全）"
         type: hard
 
+  stage-08:
+    title: "多模型后端解耦"
+    depends_on:
+      - stage: stage-01
+        reason: "依赖完整的 Agent 角色体系和工作区结构"
+        type: hard
+      - stage: stage-05
+        reason: "依赖完整的部署框架和计划体系"
+        type: soft
+    # 模型配置与 Agent 解耦独立模块
+
 # 并行示例：
 #   启动条件：stage-01 完成（done 或 review_passed）
 #   可并行阶段：stage-02(hard依赖满足) + stage-04(无依赖)
