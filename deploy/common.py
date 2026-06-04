@@ -16,6 +16,7 @@ SKILL_SOURCES = [
     "skills/bug-acceptance/SKILL.md",
     "skills/get-bugs/SKILL.md",
     "skills/check-kb/SKILL.md",
+    "skills/search-kb/SKILL.md",
     "skills/sync-status/SKILL.md",
     "skills/get-stage-status/SKILL.md",
     "skills/update-stage-status/SKILL.md",
