@@ -2,14 +2,29 @@
 
 > 环境搭建、构建流程、依赖管理。
 
-## [+] Python 环境配置
+## [+] 前置依赖安装 (2026-06-04)
 
-项目使用 Python 3.12+，推荐使用虚拟环境。部署脚本依赖标准库（argparse, json, shutil, pathlib），无需额外安装。向量化检索功能可选安装 sentence-transformers（`pip install sentence-transformers`），模型使用 bge-small-zh-v1.5。首次运行时会自动下载模型文件（约 100MB），建议在网络畅通时执行。
+项目开发环境的前置依赖，包含 [[Agent 体系架构决策]] 运行所需的基础组件。
 
-## [+] 部署命令速查
+### Python 依赖
 
-- 部署全部工具：`python deploy.py <目标路径>`
-- 仅部署 Kilo：`python deploy.py <目标路径> -k`
-- 同时部署向量化检索：`python deploy.py <目标路径> --with-vectors`
-- 列出支持工具：`python deploy.py --list`
-- 查看帮助：`python deploy.py --help`
+```bash
+pip install sentence-transformers pyyaml
+```
+
+`sentence-transformers` 用于 [[Vector 索引重建问题]] 中的语义检索能力。模型首次运行时会自动下载 `bge-small-zh-v1.5`（约 100MB）。
+
+### 环境变量
+
+- `HF_ENDPOINT`：HuggingFace 镜像地址，国内环境可设为 `https://hf-mirror.com` 加速模型下载
+- `PYTHONIOENCODING`：建议设为 `utf-8`，确保文件读写编码正确
+
+### 验证安装
+
+```bash
+python -c "from sentence_transformers import SentenceTransformer; print('OK')"
+python scripts/build_kb_index.py --dry-run
+python scripts/build_kb_index.py --graph --stats
+```
+
+若安装失败或模型下载超时，参考 [[Vector 索引重建问题]] 中的网络配置说明。

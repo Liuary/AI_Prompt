@@ -2,10 +2,26 @@
 
 > 项目架构设计理由、技术选型背景、设计权衡。
 
-## [+] 多工具适配器架构
+## [+] Agent 体系架构决策 (2026-06-04)
 
-项目采用工具适配器模式，通过 `deploy/` 包实现一套模板同时支持 Kilo、Claude Code、Deep Code CLI、GitHub Copilot、OpenCode 五种 AI 工具。每个工具适配器负责将通用 Instructions 和 Skills 转换为该工具的原生目录结构和配置格式。通用逻辑（目录创建、文件拷贝、gitignore 配置等）集中在 `deploy/common.py`，各工具适配器通过 `deploy/__init__.py` 统一调度。新增工具时，只需在 `deploy/` 下创建 `{tool}.py` 并在 `TOOLS` 字典中注册即可。
+项目采用多 Agent 协作体系，包含 9 个 Agent 角色，按职责划分为设计、编码、审查、测试四个层次。
 
-## [+] 知识库文件系统优先原则
+架构设计遵循 [[状态机模式约定]] 进行状态流转管理，各 Agent 通过 `status.md` 文件通信。
 
-知识库 `.ai/kb/` 采用 Markdown 文件系统作为 single source of truth，向量索引存储在 `.ai/tmp/vectors/` 作为可选的语义加速缓存层。Agent 查阅知识库时应先通过 `check-kb` 技能做精确匹配，无结果时回退到 `search-kb` 做语义检索。向量索引可随时从 Markdown 文件重建，不纳入版本管理。
+相关依赖参考 [[环境搭建#前置依赖安装]] 中的运行环境说明。
+
+### 设计理由
+
+- 职责分离：每个 Agent 专注于单一领域，降低耦合
+- 状态驱动：基于 [[状态机模式约定]] 实现明确的流程控制
+- 可扩展性：新增 Agent 只需实现约定接口
+
+## [+] Wikilink 双向链接设计 (2026-06-04)
+
+知识库条目之间通过 Obsidian 兼容的 `[[wikilink]]` 语法建立双向链接网络，使 [[状态机模式约定]] 和 [[知识图谱构建流程]] 等条目形成可遍历的知识图谱。
+
+### 设计考量
+
+- 链接图是索引缓存，Markdown 文件是 single source of truth
+- 遵循 [[Wikilink 写作模式]] 规范，确保链接一致性
+- 图谱可通过 `python scripts/build_kb_index.py --graph` 重建

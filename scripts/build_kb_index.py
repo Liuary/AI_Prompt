@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""閻儴鐦戞惔鎾虫倻闁插繒鍌ㄥ鏇熺€楦垮壖閺堫兙鈧?
-鐠囪褰?.ai/kb/*.md 娑擃厽澧嶉張?[+] 閺夛紕娲伴敍灞煎▏閻?bge-small-zh-v1.5 閻㈢喐鍨氶崥鎴﹀櫤缁便垹绱╅敍?鐎涙ê鍋嶉崚?.ai/tmp/vectors/閵嗗倿鈧俺绻冮弬鍥︽閸愬懎顔愰崫鍫濈瑖閸嬫艾顤冮柌蹇旀纯閺傚府绱濈捄瀹犵箖閺堫亜褰夐崠鏍ㄦ瀮娴犺翰鈧?
-娓氭繆绂嗛敍姝眎p install sentence-transformers
-"""
+# scripts/build_kb_index.py
+# 知识库索引构建工具：向量索引 + 图谱索引
+#
+# 功能：
+#   - 默认模式：读取 .ai/kb/*.md 中的 [+] 条目，生成向量索引（BGE-small-zh-v1.5）
+#   - --graph 模式：解析 [[wikilink]] 链接，构建有向图谱，输出 .ai/tmp/graph.json
+#
+# 依赖：pip install sentence-transformers
 
 import hashlib
 import json
@@ -14,29 +18,28 @@ import time
 from pathlib import Path
 
 
-# 閳光偓閳光偓 鐠侯垰绶炵敮鎼佸櫤 閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓
+# ── 路径常量 ────────────────────────────────────────────────────
 
 KB_DIR = Path(__file__).resolve().parent.parent / ".ai" / "kb"
 VECTORS_DIR = Path(__file__).resolve().parent.parent / ".ai" / "tmp" / "vectors"
 INDEX_FILE = VECTORS_DIR / "index.json"
 HASHES_FILE = VECTORS_DIR / "file_hashes.json"
+GRAPH_FILE = Path(__file__).resolve().parent.parent / ".ai" / "tmp" / "graph.json"
 
-# BGE-small 娑擃厽鏋冨Ο鈥崇€烽敍灞灸侀崹瀣毈閿涘瀫100MB閿涘鈧浇宸濋柌蹇撱偨閿涘矂鈧倸鎮庨張顒€婀存潪濠氬櫤鐠囶厺绠熷Λ鈧槐?MODEL_NAME = "BAAI/bge-small-zh-v1.5"
+MODEL_NAME = "BAAI/bge-small-zh-v1.5"
 
-# HuggingFace 闂€婊冨剼缁旑垳鍋ｉ敍鍫濇禇閸愬懐缍夌紒婊呭箚婢у啫褰茬拋鍙ヨ礋 https://hf-mirror.com閿?HF_ENDPOINT = os.environ.get("HF_ENDPOINT", "https://huggingface.co")
+HF_ENDPOINT = os.environ.get("HF_ENDPOINT", "https://huggingface.co")
 
 
-# 閳光偓閳光偓 閺夛紕娲扮憴锝嗙€?閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓
+# ── 条目提取 ────────────────────────────────────────────────────
 
 def extract_entries(file_path: Path) -> list[dict]:
-    """娴犲骸宕熸稉?kb 閺傚洣娆㈡稉顓熷絹閸欐牗澧嶉張?[+] 閺夛紕娲伴妴?
-    閺夛紕娲伴弽鐓庣础閿?        ## [+] 閺夛紕娲伴弽鍥暯
-        閸愬懎顔愬▓浣冩儰閿涘牆褰茬捄銊ヮ樋鐞涘矉绱濋惄鏉戝煂娑撳绔存稉?## 閹存牗鏋冩禒鍓佺波閺夌噦绱?
-    鏉╂柨娲栭弶锛勬窗閸掓銆冮敍灞剧槨妞ょ懓瀵橀崥?title閵嗕恭ontent閵嗕公ile閵嗕恭ategory閵?    """
+    """从单个 kb 文件提取所有 [+] 条目。
+    返回列表，每项含 file、category、title、content、full_text 字段。
+    """
     raw = file_path.read_text(encoding="utf-8")
     category = file_path.stem  # architecture / patterns / troubleshooting / setup
 
-    # 閸栧綊鍘?## [+] 瀵偓婢跺娈戦弽鍥暯閸欏﹤鍙鹃崘鍛啇
     pattern = re.compile(r'^##\s*\[\+\]\s*(.+?)$\n(.*?)(?=^##\s|\Z)', re.MULTILINE | re.DOTALL)
     entries = []
     for match in pattern.finditer(raw):
@@ -55,90 +58,87 @@ def extract_entries(file_path: Path) -> list[dict]:
 
 
 def compute_file_hash(file_path: Path) -> str:
-    """鐠侊紕鐣婚弬鍥︽閸愬懎顔愰惃?SHA-256 閸濆牆绗囬妴?""
+    """计算文件 SHA-256 哈希值。"""
     return hashlib.sha256(file_path.read_bytes()).hexdigest()
 
 
 def load_hashes() -> dict:
-    """閸旂姾娴囨稉濠冾偧閺嬪嫬缂撻弮鏈电箽鐎涙娈戦弬鍥︽閸濆牆绗囩悰銊ｂ偓?""
+    """加载文件哈希记录。"""
     if HASHES_FILE.exists():
         return json.loads(HASHES_FILE.read_text(encoding="utf-8"))
     return {}
 
 
 def save_hashes(hashes: dict) -> None:
-    """娣囨繂鐡ㄨぐ鎾冲閺傚洣娆㈤崫鍫濈瑖鐞涖劊鈧?""
+    """保存文件哈希记录。"""
     VECTORS_DIR.mkdir(parents=True, exist_ok=True)
     HASHES_FILE.write_text(json.dumps(hashes, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
-# 閳光偓閳光偓 閸氭垿鍣洪崠?閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓
+# ── 向量索引 ────────────────────────────────────────────────────
 
 def load_model():
-    """瀵ゆ儼绻滈崝鐘烘祰 sentence-transformers 濡€崇€烽妴?""
+    """延迟加载 sentence-transformers 模型。"""
     try:
         from sentence_transformers import SentenceTransformer
         return SentenceTransformer(MODEL_NAME, trust_remote_code=True)
     except ImportError:
-        print("闁挎瑨顕? 闂団偓鐟曚礁鐣ㄧ憗?sentence-transformers 娓氭繆绂?)
-        print("鏉╂劘顢? pip install sentence-transformers")
+        print("错误: 未安装 sentence-transformers 库")
+        print("请执行: pip install sentence-transformers")
         sys.exit(1)
     except Exception as e:
-        print(f"闁挎瑨顕? 閸旂姾娴囧Ο鈥崇€?{MODEL_NAME} 婢惰精瑙? {e}")
-        print("妫ｆ牗顐兼担璺ㄦ暏闂団偓娑撳娴囧Ο鈥崇€烽敍宀冾嚞濡偓閺屻儳缍夌紒婊嗙箾閹恒儱鑻熺粙宥呮倵闁插秷鐦?)
+        print(f"错误: 无法加载模型 {MODEL_NAME}: {e}")
         if HF_ENDPOINT == "https://huggingface.co":
-            print(f"閹绘劗銇? 閸ヨ棄鍞寸純鎴犵捕閸欘垵顔曠純顔惧箚婢у啫褰夐柌?HF_ENDPOINT=https://hf-mirror.com 娴ｈ法鏁ら梹婊冨剼")
+            print(f"提示: 可通过环境变量 HF_ENDPOINT=https://hf-mirror.com 使用镜像加速下载")
         sys.exit(1)
 
 
 def build_index(incremental: bool = True, kb_dir_override: Path = None) -> dict:
-    """閺嬪嫬缂撻崥鎴﹀櫤缁便垹绱╅妴?
-    閸欏倹鏆?
-        incremental: True 閺冭泛顕В鏃€鏋冩禒璺烘惐鐢矉绱濈捄瀹犵箖閺堫亜褰夐崠鏍ㄦ瀮娴?        kb_dir_override: 鐟曞棛娲婃妯款吇閻儴鐦戞惔鎾舵窗瑜版洜娈戠捄顖氱窞
+    """构建向量索引。
 
-    鏉╂柨娲栫槐銏犵穿鐎涙鍚€閿?        {
-            "entries": [ { file, category, title, content, full_text, embedding }, ... ],
-            "metadata": { model, total, updated_at, incremental }
-        }
+    参数：
+        incremental: True 时仅增量更新已变化的文件
+        kb_dir_override: 可选的自定义知识库目录
+
+    返回：
+        {"total": 条目总数, "changed": 变更数, "skipped": 跳过数, "removed_files": [...]}
     """
     src_dir = kb_dir_override if kb_dir_override else KB_DIR
 
     if not src_dir.exists():
-        print(f"闁挎瑨顕? 閻儴鐦戞惔鎾舵窗瑜版洑绗夌€涙ê婀? {src_dir}")
+        print(f"错误: 知识库目录不存在: {src_dir}")
         sys.exit(1)
 
     old_hashes = load_hashes() if incremental else {}
     new_hashes = {}
 
-    # 閸旂姾娴囧鍙夋箒缁便垹绱╅敍鍫濐杻闁插繑膩瀵繑妞傞敍?    existing = []
+    existing = []
     if incremental and INDEX_FILE.exists():
         try:
             data = json.loads(INDEX_FILE.read_text(encoding="utf-8"))
         except json.JSONDecodeError:
-            print(f"警告: 索引文件已损坏，将重建: {INDEX_FILE}")
             data = {"entries": []}
         existing = data.get("entries", [])
-        # 娴?(file, title) 娑撴椽鏁铏圭彌閺屻儲澹樼悰?
-    model = None  # 瀵ゆ儼绻滈崝鐘烘祰
+
+    model = None
     entries = []
     changed_count = 0
     skipped_count = 0
     total_count = 0
 
-    md_files = sorted(src_dir.glob("*.md"))
+    md_files = sorted([f for f in src_dir.glob("*.md") if f.name != "index.md"])
     for fp in md_files:
         file_hash = compute_file_hash(fp)
         new_hashes[fp.name] = file_hash
 
         if incremental and fp.name in old_hashes and old_hashes[fp.name] == file_hash:
-            # 閺傚洣娆㈤張顏勫綁閸栨牭绱濇径宥囨暏瀹稿弶婀侀弶锛勬窗
             reused = [e for e in existing if e["file"] == fp.name]
             entries.extend(reused)
             skipped_count += len(reused)
             total_count += len(reused)
             continue
 
-        # 閺傚洣娆㈤張澶婂綁閸栨牗鍨ㄦ＃鏍偧閺嬪嫬缂撻敍灞惧絹閸欐牗娼惄?        file_entries = extract_entries(fp)
+        file_entries = extract_entries(fp)
         if not file_entries:
             continue
 
@@ -154,7 +154,7 @@ def build_index(incremental: bool = True, kb_dir_override: Path = None) -> dict:
             changed_count += 1
             total_count += 1
 
-    # 缁夊娅庡鎻掑灩闂勩倖鏋冩禒鍓佹畱閺夛紕娲伴敍鍫熸＋閸濆牆绗囨稉顓熸箒娴ｅ棙鏌婇崫鍫濈瑖娑擃厽妫ら惃鍕瀮娴犺绱?    removed_files = set(old_hashes.keys()) - set(new_hashes.keys())
+    removed_files = set(old_hashes.keys()) - set(new_hashes.keys())
     if removed_files:
         entries = [e for e in entries if e["file"] not in removed_files]
 
@@ -181,26 +181,201 @@ def build_index(incremental: bool = True, kb_dir_override: Path = None) -> dict:
     }
 
 
-# 閳光偓閳光偓 閸涙垝鎶ょ悰灞藉弳閸?閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓
+# ── 图谱构建 ────────────────────────────────────────────────────
+
+def canonical_title(title: str) -> str:
+    """去除标题末尾的日期后缀，返回规范标题名。
+    例如 "OAuth2 登录流程 (2026-05-20)" → "OAuth2 登录流程"
+    """
+    return re.sub(r'\s*\(\d{4}-\d{2}-\d{2}\)\s*$', '', title).strip()
+
+
+def load_register(index_path: Path) -> dict:
+    """从 kb/index.md 加载条目标题注册表。
+    返回 {规范标题名: {"file": "xx.md", "category": "xx", "title": "完整标题"}}。
+
+    注册表同时支持完整标题和规范标题两种查找方式。
+    """
+    if not index_path.exists():
+        print(f"警告: kb/index.md 不存在: {index_path}")
+        return {}
+
+    register = {}
+
+    for fp in sorted((index_path.parent).glob("*.md")):
+        if fp.name == "index.md":
+            continue
+        category = fp.stem
+        entries = extract_entries(fp)
+        for e in entries:
+            full_title = e["title"].strip()
+            cid = canonical_title(full_title)
+            if cid not in register:
+                register[cid] = {
+                    "file": fp.name,
+                    "category": category,
+                    "title": full_title,
+                }
+
+    return register
+
+
+def parse_wikilinks(text: str) -> list[str]:
+    """从文本中提取所有 [[wikilink]] 引用。
+    返回目标条目名列表（不含锚点部分），已去重。
+    """
+    pattern = re.compile(r'(?<!\\)\[\[([^\]|#]+)(?:#[^\]]+)?(?:\|[^\]]+)?\]\]')
+    results = []
+    seen = set()
+    for match in pattern.finditer(text):
+        target = match.group(1).strip()
+        if target and target not in seen:
+            seen.add(target)
+            results.append(target)
+    return results
+
+
+def build_graph(kb_dir_override: Path = None) -> dict:
+    """解析所有 kb 文件中的 [[wikilink]] 链接，构建有向图谱。
+
+    返回：
+        {"nodes": [...], "edges": [{from, to}, ...]}
+    """
+    src_dir = kb_dir_override if kb_dir_override else KB_DIR
+
+    if not src_dir.exists():
+        print(f"错误: 知识库目录不存在: {src_dir}")
+        sys.exit(1)
+
+    index_path = src_dir / "index.md"
+    register = load_register(index_path)
+
+    if not register:
+        print("警告: 知识库注册表为空，图谱无节点")
+        return {"nodes": [], "edges": []}
+
+    nodes = []
+    nodes_set = set()
+    for title, info in register.items():
+        if title not in nodes_set:
+            nodes.append({
+                "id": title,
+                "file": info["file"],
+                "title": info.get("title", title),
+                "category": info.get("category", ""),
+            })
+            nodes_set.add(title)
+
+    edges = []
+    edges_set = set()
+    for fp in sorted([f for f in src_dir.glob("*.md") if f.name != "index.md"]):
+        raw = fp.read_text(encoding="utf-8")
+        links = parse_wikilinks(raw)
+
+        file_entries = extract_entries(fp)
+        source_cids = set(canonical_title(e["title"].strip()) for e in file_entries)
+
+        for source_cid in source_cids:
+            if source_cid not in register:
+                continue
+            for target in links:
+                target_cid = canonical_title(target)
+                if target_cid not in register:
+                    continue
+                if source_cid == target_cid:
+                    continue
+                edge_key = (source_cid, target_cid)
+                if edge_key not in edges_set:
+                    edges.append({"from": source_cid, "to": target_cid})
+                    edges_set.add(edge_key)
+
+    return {"nodes": nodes, "edges": edges}
+
+
+def save_graph(graph: dict, output_path: Path = None) -> Path:
+    """保存图谱到 JSON 文件。"""
+    dest = output_path if output_path else GRAPH_FILE
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_text(json.dumps(graph, ensure_ascii=False, indent=2), encoding="utf-8")
+    return dest
+
+
+def compute_graph_stats(graph: dict) -> dict:
+    """计算图谱统计信息。"""
+    nodes = graph.get("nodes", [])
+    edges = graph.get("edges", [])
+
+    out_degree = {}
+    in_degree = {}
+    for n in nodes:
+        nid = n["id"]
+        out_degree[nid] = 0
+        in_degree[nid] = 0
+
+    for edge in edges:
+        f = edge["from"]
+        t = edge["to"]
+        out_degree[f] = out_degree.get(f, 0) + 1
+        in_degree[t] = in_degree.get(t, 0) + 1
+
+    isolated = [nid for nid in out_degree if out_degree[nid] == 0 and in_degree.get(nid, 0) == 0]
+
+    return {
+        "node_count": len(nodes),
+        "edge_count": len(edges),
+        "isolated_count": len(isolated),
+        "isolated_nodes": isolated,
+        "max_out_degree": max(out_degree.values()) if out_degree else 0,
+        "max_in_degree": max(in_degree.values()) if in_degree else 0,
+    }
+
+
+# ── 命令行入口 ──────────────────────────────────────────────────
 
 def main():
     import argparse
 
-    parser = argparse.ArgumentParser(description="閺嬪嫬缂撻惌銉ㄧ槕鎼存挸鎮滈柌蹇曞偍瀵?)
+    parser = argparse.ArgumentParser(
+        description="知识库索引构建工具：向量索引 + 图谱索引",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+示例：
+  python scripts/build_kb_index.py                  # 构建/更新向量索引（增量）
+  python scripts/build_kb_index.py --full           # 全量重建向量索引
+  python scripts/build_kb_index.py --graph          # 构建知识图谱
+  python scripts/build_kb_index.py --graph --stats  # 构建图谱并输出统计
+  python scripts/build_kb_index.py --dry-run        # 预览文件变更
+        """,
+    )
     parser.add_argument(
         "--full",
         action="store_true",
-        help="閸忋劑鍣洪柌宥呯紦缁便垹绱╅敍鍫濇嫹閻ｃ儱顤冮柌蹇撴惐鐢本顥呴弻銉礆",
+        help="全量重建索引（默认：增量更新）",
     )
     parser.add_argument(
         "--dry-run",
         action="store_true",
-        help="娴犲懏顥呴弻銉ユ憿娴滄稒鏋冩禒鍫曟付鐟曚焦娲块弬甯礉娑撳秴鐤勯梽鍛€铏瑰偍瀵?,
+        help="预览变更，不实际写入",
     )
     parser.add_argument(
         "--kb-dir",
         default=None,
-        help=f"閻儴鐦戞惔鎾舵窗瑜版洝鐭惧鍕剁礄姒涙顓? {KB_DIR}閿?,
+        help=f"自定义知识库目录（默认: {KB_DIR}）",
+    )
+    parser.add_argument(
+        "--graph",
+        action="store_true",
+        help="构建知识图谱（解析 [[wikilink]] 链接），输出到 .ai/tmp/graph.json",
+    )
+    parser.add_argument(
+        "--stats",
+        action="store_true",
+        help="与 --graph 配合使用，输出图谱统计信息",
+    )
+    parser.add_argument(
+        "--graph-output",
+        default=None,
+        help="自定义图谱输出路径（默认: .ai/tmp/graph.json）",
     )
     args = parser.parse_args()
 
@@ -208,7 +383,7 @@ def main():
 
     if args.dry_run:
         old_hashes = load_hashes()
-        md_files = sorted(kb_dir.glob("*.md"))
+        md_files = sorted([f for f in kb_dir.glob("*.md") if f.name != "index.md"])
         changed = []
         unchanged = []
         new_files = []
@@ -222,32 +397,50 @@ def main():
                 unchanged.append(fp.name)
 
         removed = set(old_hashes.keys()) - {f.name for f in md_files}
-        print(f"閻儴鐦戞惔鎾舵窗瑜? {kb_dir}")
-        print(f"Markdown 閺傚洣娆? {len(md_files)} 娑?)
+        print(f"知识库目录: {kb_dir}")
+        print(f"Markdown 文件: {len(md_files)} 个")
         if new_files:
-            print(f"閺傛澘顤冮弬鍥︽: {', '.join(new_files)}")
+            print(f"新增文件: {', '.join(new_files)}")
         if changed:
-            print(f"閸欐ɑ娲块弬鍥︽: {', '.join(changed)}")
+            print(f"已修改文件: {', '.join(changed)}")
         if unchanged:
-            print(f"閺堫亜褰夐崠鏍ㄦ瀮娴? {', '.join(unchanged)}")
+            print(f"未变化文件: {', '.join(unchanged)}")
         if removed:
-            print(f"瀹告彃鍨归梽銈嗘瀮娴? {', '.join(removed)}")
+            print(f"已删除文件: {', '.join(removed)}")
         if not new_files and not changed and not removed:
-            print("閹碘偓閺堝鏋冩禒璺烘綆娑撶儤娓堕弬甯礉閺冪娀娓堕柌宥呯紦缁便垹绱?)
+            print("所有文件均为最新，无需重建索引")
+        return
+
+    if args.graph:
+        graph = build_graph(kb_dir_override=kb_dir)
+        output_path = Path(args.graph_output).resolve() if args.graph_output else None
+        dest = save_graph(graph, output_path)
+
+        print(f"图谱文件: {dest}")
+        print(f"  节点: {len(graph['nodes'])}")
+        print(f"  边: {len(graph['edges'])}")
+
+        if args.stats:
+            stats = compute_graph_stats(graph)
+            print(f"  孤立节点: {stats['isolated_count']}")
+            if stats['isolated_nodes']:
+                print(f"    无链接条目: {', '.join(stats['isolated_nodes'])}")
+            print(f"  最大出度: {stats['max_out_degree']}")
+            print(f"  最大入度: {stats['max_in_degree']}")
         return
 
     incremental = not args.full
     result = build_index(incremental=incremental, kb_dir_override=kb_dir)
 
-    print(f"缁便垹绱╅弸鍕紦鐎瑰本鍨? {INDEX_FILE}")
-    print(f"  濡€崇€? {MODEL_NAME}")
-    print(f"  閹粯娼惄? {result['total']}")
-    print(f"  閺傛壆绱惍? {result['changed']} 閺?)
+    print(f"索引文件: {INDEX_FILE}")
+    print(f"  模型: {MODEL_NAME}")
+    print(f"  总条目: {result['total']}")
+    print(f"  新增/更新: {result['changed']} 条")
     if result["skipped"]:
-        print(f"  鐠哄疇绻?閺堫亜褰夐崠?: {result['skipped']} 閺?)
+        print(f"  跳过（未变化）: {result['skipped']} 条")
     if result["removed_files"]:
-        print(f"  缁夊娅庨弬鍥︽: {', '.join(result['removed_files'])}")
-    print(f"  閺囧瓨鏌婇弮鍫曟？: {time.strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"  已删除文件: {', '.join(result['removed_files'])}")
+    print(f"  更新时间: {time.strftime('%Y-%m-%d %H:%M:%S')}")
 
 
 if __name__ == "__main__":
