@@ -1,0 +1,181 @@
+{
+    "folders": [
+        {
+            "path": "."
+        }
+    ],
+    "settings": {
+        "chat.includeApplyingInstructions": true,
+        "chat.useAgentsMdFile": true,
+        "chat.useCustomAgentHooks": true,
+        "files.encoding": "utf8",
+        "files.exclude": {
+            "__pycache__/": true,
+            "**/.git": true,
+            "**/node_modules": true
+        },
+        "markdown.preview.breaks": true,
+        "markdown.validate.enabled": false,
+        "editor.wordWrap": "wordWrapColumn",
+        "editor.wordWrapColumn": 120,
+        "editor.tabSize": 4,
+        "editor.insertSpaces": true
+    },
+    "extensions": {
+        "recommendations": [
+            "kortina.obsidian-md",
+            "blacksmithgu.dataview-obsidian",
+            "bierner.markdown-mermaid",
+            "christian-kohler.path-intellisense",
+            "yzhang.markdown-all-in-one",
+            "davidanson.vscode-markdownlint",
+            "ms-python.python",
+            "editorconfig.editorconfig",
+            "eamodio.gitlens",
+            "gruntfuggly.todo-tree"
+        ]
+    },
+    "tasks": {
+        "version": "2.0.0",
+        "tasks": [
+            {
+                "label": "ai: 阶段状态",
+                "type": "shell",
+                "command": "python",
+                "args": [
+                    "scripts/ai_cli.py",
+                    "status"
+                ],
+                "group": "ai",
+                "presentation": {
+                    "reveal": "always",
+                    "panel": "dedicated"
+                },
+                "problemMatcher": []
+            },
+            {
+                "label": "ai: 待处理审查",
+                "type": "shell",
+                "command": "python",
+                "args": [
+                    "scripts/ai_cli.py",
+                    "review"
+                ],
+                "group": "ai",
+                "presentation": {
+                    "reveal": "always",
+                    "panel": "dedicated"
+                },
+                "problemMatcher": []
+            },
+            {
+                "label": "ai: 待处理 Bug",
+                "type": "shell",
+                "command": "python",
+                "args": [
+                    "scripts/ai_cli.py",
+                    "bugs"
+                ],
+                "group": "ai",
+                "presentation": {
+                    "reveal": "always",
+                    "panel": "dedicated"
+                },
+                "problemMatcher": []
+            },
+            {
+                "label": "ai: 日志摘要",
+                "type": "shell",
+                "command": "python",
+                "args": [
+                    "scripts/ai_cli.py",
+                    "log"
+                ],
+                "group": "ai",
+                "presentation": {
+                    "reveal": "always",
+                    "panel": "dedicated"
+                },
+                "problemMatcher": []
+            },
+            {
+                "label": "ai: 搜索知识库",
+                "type": "shell",
+                "command": "python",
+                "args": [
+                    "scripts/ai_cli.py",
+                    "kb",
+                    "search",
+                    "${input:query}"
+                ],
+                "group": "ai",
+                "presentation": {
+                    "reveal": "always",
+                    "panel": "dedicated"
+                },
+                "problemMatcher": []
+            },
+            {
+                "label": "ai: 部署到项目",
+                "type": "shell",
+                "command": "python",
+                "args": [
+                    "deploy.py",
+                    "${input:target}",
+                    "--obsidian"
+                ],
+                "group": "ai",
+                "presentation": {
+                    "reveal": "always",
+                    "panel": "dedicated"
+                },
+                "problemMatcher": []
+            },
+            {
+                "label": "ai: 规则编译",
+                "type": "shell",
+                "command": "python",
+                "args": [
+                    "rule_cli.py",
+                    "compile",
+                    "-o",
+                    "output/rules.md"
+                ],
+                "group": "ai",
+                "presentation": {
+                    "reveal": "always",
+                    "panel": "dedicated"
+                },
+                "problemMatcher": []
+            },
+            {
+                "label": "ai: 规则校验",
+                "type": "shell",
+                "command": "python",
+                "args": [
+                    "rule_cli.py",
+                    "validate",
+                    "-v"
+                ],
+                "group": "ai",
+                "presentation": {
+                    "reveal": "always",
+                    "panel": "dedicated"
+                },
+                "problemMatcher": []
+            }
+        ],
+        "inputs": [
+            {
+                "id": "query",
+                "type": "promptString",
+                "description": "知识库搜索关键词"
+            },
+            {
+                "id": "target",
+                "type": "promptString",
+                "description": "目标项目路径"
+            }
+        ]
+    }
+}

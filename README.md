@@ -34,6 +34,25 @@ python deploy.py /path/to/your-project
 | **Skill 系统** | 6 个可复用技能模块，按需调用 |
 | **Hook 保护** | Copilot 目录级编辑控制，运行时强制限制 |
 
+## Obsidian 集成
+
+将 `.ai/` 工作区在 Obsidian 中打开为 Vault，即可在图形化界面中管理项目：
+
+```bash
+python deploy.py /path/to/your-project --obsidian
+```
+
+部署后在 Obsidian 中打开目标项目的 `.ai/` 目录，你将获得：
+
+| 能力 | 说明 |
+|------|------|
+| **双向链接** | `[[wikilink]]` 在计划、审查、Bug 文件之间自由跳转 |
+| **图谱视图** | 可视化工作区文件的关联关系网络 |
+| **仪表盘** | `.ai/obsidian/dashboard.md` 使用 Dataview 动态渲染阶段状态、审查条目和 Bug 列表 |
+| **全局搜索** | 跨所有 .ai/ 文件的全文本搜索 |
+
+详情参见 [.ai/obsidian/README.md](.ai/obsidian/README.md)。
+
 支持的 AI 工具：
 
 | 工具 | 状态 | 部署选项 | 适配内容 |
@@ -126,6 +145,17 @@ v2.0 四个阶段全部完成，详见 [`.ai/plan/plan.md`](.ai/plan/plan.md)：
 
 ---
 
+## CLI 工具
+
+```bash
+python scripts/ai_cli.py status              # 所有阶段状态概览
+python scripts/ai_cli.py review              # 待处理审查条目
+python scripts/ai_cli.py bugs                # 待处理 Bug
+python scripts/ai_cli.py log                 # 最近日志摘要
+python scripts/ai_cli.py kb search <查询>     # 知识库搜索
+python scripts/ai_cli.py kb list             # 知识库文件列表
+```
+
 ## 项目文档
 
 | 文档 | 说明 |
@@ -133,6 +163,7 @@ v2.0 四个阶段全部完成，详见 [`.ai/plan/plan.md`](.ai/plan/plan.md)：
 | [`.ai/plan/plan.md`](.ai/plan/plan.md) | v2.0 大计划 |
 | [`DEPLOY.md`](DEPLOY.md) | 部署指令与工具一览 |
 | [`ADAPTER_SPEC.md`](ADAPTER_SPEC.md) | 多工具适配器标准化接口 |
+| [`.ai/obsidian/README.md`](.ai/obsidian/README.md) | Obsidian Vault 集成指南 |
 | [`docs/claude/claude-config.md`](docs/claude/claude-config.md) | Claude Code 配置规范 |
 | [`docs/github/copilot-customization-guide.md`](docs/github/copilot-customization-guide.md) | Copilot 自定义配置指南 |
 | [`specs/OVERVIEW.md`](specs/OVERVIEW.md) | 规范体系概览 |

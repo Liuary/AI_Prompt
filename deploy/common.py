@@ -9,6 +9,12 @@ from pathlib import Path
 
 # 閳光偓閳光偓 闁氨鏁ょ挧鍕爱濠ф劖鏋冩禒璁圭礄闁劎璁查弮鑸靛瘻瀹搞儱鍙块崜宥囩磻婢跺秴鍩楅崚鎵窗閺嶅洨娲拌ぐ鏇礆閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓
 
+OBSIDIAN_RESOURCES = [
+    ".ai/obsidian/README.md",
+    ".ai/obsidian/dashboard.md",
+    ".ai/obsidian/.obsidian/obsidian.json",
+]
+
 INSTRUCTION_SOURCES = [
     "instructions/core.md",
 ]
