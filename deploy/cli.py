@@ -19,6 +19,7 @@ def show_help():
   -c, --claude        仅部署 Claude Code 适配器（CLAUDE.md + .claude/commands/）
   -p, --copilot       仅部署 GitHub Copilot 适配器（.github/copilot-instructions.md）
   -o, --opencode      仅部署 OpenCode 适配器（Agent/Skill → .opencode/）
+  --obsidian          部署 Obsidian Vault 模板（.ai/obsidian/ → 目标项目）
   -l, --list          列出所有支持的 AI 工具
   -h, --help          显示本帮助信息
   --source <路径>     指定模板源路径（默认为脚本所在目录）
@@ -55,6 +56,7 @@ def build_parser():
     tool_group.add_argument("-c", "--claude",   action="store_true", help=argparse.SUPPRESS)
     tool_group.add_argument("-p", "--copilot",  action="store_true", help=argparse.SUPPRESS)
     tool_group.add_argument("-o", "--opencode", action="store_true", help=argparse.SUPPRESS)
+    parser.add_argument("--obsidian", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("-l", "--list", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("-h", "--help", action="store_true", help=argparse.SUPPRESS)
     return parser
@@ -68,3 +70,8 @@ def resolve_tool(args) -> str:
     if args.copilot:  return "copilot"
     if args.opencode: return "opencode"
     return "all"
+
+
+def should_deploy_obsidian(args) -> bool:
+    """判断是否需要部署 Obsidian Vault 模板。"""
+    return args.obsidian

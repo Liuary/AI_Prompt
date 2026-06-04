@@ -1,4 +1,5 @@
 .kilo/
 __pycache__/
 *.code-workspace
+!AI_Prompt.code-workspace
 SESSION_SUMMARY.md

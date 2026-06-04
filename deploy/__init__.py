@@ -5,10 +5,11 @@ import shutil
 import sys
 from pathlib import Path
 
-from .cli import build_parser, show_help, show_list, resolve_tool
+from .cli import build_parser, show_help, show_list, resolve_tool, should_deploy_obsidian
 from .common import (
     report, create_directories, copy_files,
     configure_gitignore, configure_info_json, configure_config_yaml, generate_workspace,
+    OBSIDIAN_RESOURCES,
 )
 from .kilo import KILO_DIRS, deploy_kilo
 from .deepcode import DEEPCODE_DIRS, deploy_deepcode
@@ -38,6 +39,17 @@ def _configure_agents_md(source, target, tool):
     else:
         shutil.copy2(src_path, dst_path)
         lines.append(report("created", "AGENTS.md"))
+    return lines
+
+
+def _deploy_obsidian_resources(source, target):
+    """将 Obsidian Vault 模板复制到目标项目。"""
+    lines = []
+    lines.append("\n[Obsidian Vault]")
+    file_map = {s: s for s in OBSIDIAN_RESOURCES}
+    o_lines, copied, skipped, missing = copy_files(source, target, file_map)
+    lines.extend(o_lines)
+    lines.append(report("info", f"Obsidian: 复制 {copied}, 跳过 {skipped}" + (f", 缺失 {missing}" if missing else "")))
     return lines
 
 
@@ -107,6 +119,11 @@ def main():
     # 通用配置
     all_lines.append("\n[Git 配置]")
     all_lines.extend(configure_gitignore(target))
+
+    # Obsidian Vault 模板（仅当 --obsidian 标志启用时部署）
+    if should_deploy_obsidian(args):
+        all_lines.extend(_deploy_obsidian_resources(source, target))
+
     all_lines.append("\n[工作区]")
     all_lines.extend(configure_info_json(target))
     all_lines.append("\n[工作流配置]")

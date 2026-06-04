@@ -8,6 +8,12 @@ from pathlib import Path
 
 # ── 通用资源源文件（部署时按工具前缀复制到目标目录）───────
 
+OBSIDIAN_RESOURCES = [
+    ".ai/obsidian/README.md",
+    ".ai/obsidian/dashboard.md",
+    ".ai/obsidian/.obsidian/obsidian.json",
+]
+
 INSTRUCTION_SOURCES = [
     "instructions/core.md",
 ]

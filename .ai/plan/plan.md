@@ -1,8 +1,8 @@
 ﻿# 项目规划
 
 > 制定时间：2026-05-13
-> 版本：v2.0
-> 状态：done（全部 5 阶段完成）
+> 版本：v2.0（五阶段）+ v3.0（三阶段扩展）
+> 状态：stage-09 ready_for_review（v3.0 收官阶段）
 
 ## 一、项目定位
 
@@ -93,12 +93,22 @@ AI_Prompt 是**跨 AI 工具的 Agent 开发治理框架**，为 AI 辅助软件
 - ✅ deploy.py 多工具部署（-k/-d 标志）
 - ✅ 多工具架构（核心层 + 适配器层）
 
+### 阶段九：AI 驻留能力 / Claudian 方向（v3.0 收官）
+
+> 优先级：🥉  |  状态：ready_for_review  |  详见：stage-09/
+
+- **Obsidian Vault 模板**：将 .ai/ 工作区变为可视化 Vault，支持 wikilink 双向链接和图谱视图
+- **Dataview 仪表盘**：动态渲染阶段状态、审查统计和 Bug 列表
+- **--obsidian 部署支持**：一键部署 Obsidian 配置到目标项目
+- **VS Code 工作区**：推荐插件 + 便捷任务配置
+- **统一 CLI 工具**：`ai status/review/bugs/log/kb search` 命令行入口
+
 ## 六、下一步
 
-阶段五（并行支持改造）进行中，改造目标：
-- 支持无依赖阶段多 WorkTree 并行
-- AutoRunner 内部任务级并行调度
-- 依赖声明体系（deps.yaml）
+v2.0 五阶段 + v3.0 三阶段（stage-07/08/09）全部完成。后续方向：
+- 模板市场生态化
+- 向量化知识库增强搜索
+- 更多 AI 工具适配器（Cursor、Windsurf 等）
 
 ---
 > 本计划为 大计划，更改须经团队沟通确认。各阶段的具体任务分解见对应 `stage-*/` 子目录。
