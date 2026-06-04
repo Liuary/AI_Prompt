@@ -9,6 +9,7 @@ from .cli import build_parser, show_help, show_list, resolve_tool
 from .common import (
     report, create_directories, copy_files,
     configure_gitignore, configure_info_json, configure_config_yaml, generate_workspace,
+    VECTOR_SCRIPTS, VECTOR_DEPENDENCY_NOTICE,
 )
 from .kilo import KILO_DIRS, deploy_kilo
 from .deepcode import DEEPCODE_DIRS, deploy_deepcode
@@ -38,6 +39,18 @@ def _configure_agents_md(source, target, tool):
     else:
         shutil.copy2(src_path, dst_path)
         lines.append(report("created", "AGENTS.md"))
+    return lines
+
+
+def _deploy_vector_scripts(source: Path, target: Path) -> list[str]:
+    """部署向量化知识库脚本到目标目录。"""
+    lines = []
+    lines.append("\n[向量化知识库]")
+    script_map = {s: s for s in VECTOR_SCRIPTS}
+    s_lines, copied, skipped, missing = copy_files(source, target, script_map)
+    lines.extend(s_lines)
+    lines.append(report("info", f"向量脚本: 复制 {copied}, 跳过 {skipped}" + (f", 缺失 {missing}" if missing else "")))
+    lines.append(report("info", VECTOR_DEPENDENCY_NOTICE.replace("\n", "\n         ")))
     return lines
 
 
@@ -113,12 +126,18 @@ def main():
     all_lines.extend(configure_config_yaml(target))
     all_lines.extend(generate_workspace(target))
 
+    # 向量化知识库（可选）
+    if args.with_vectors:
+        all_lines.extend(_deploy_vector_scripts(source, target))
+
     for line in all_lines:
         print(line)
 
     print(f"\n部署完成。目标路径: {target}")
     for t in targets:
         print(TOOLS[t]["tip"])
+    if args.with_vectors:
+        print(VECTOR_DEPENDENCY_NOTICE)
 
 
 if __name__ == "__main__":

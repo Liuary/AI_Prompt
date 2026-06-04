@@ -14,3 +14,14 @@
 ## 最近更新
 
 暂无条目。知识库将随项目开发逐步充实。
+
+## 向量化检索（可选）
+
+本知识库支持基于语义的向量化检索能力，可与渐进式查阅配合使用：
+
+- **构建索引**：`python scripts/build_kb_index.py` — 读取所有 `[+]` 条目生成向量索引，存储于 `.ai/tmp/vectors/`
+- **语义搜索**：`python scripts/search_kb.py "查询文本"` — 语义相似度 + 精确匹配 + 时间衰减融合检索
+- **技能入口**：Agent 可通过 `check-kb` 技能的自动回退机制使用语义检索（当精确匹配无结果时自动触发），或直接调用 `search-kb` 技能进行语义搜索
+- **增量更新**：索引构建支持文件哈希增量更新，仅重新编码变化条目
+- **依赖**：`pip install sentence-transformers`（模型：bge-small-zh-v1.5）
+- **设计原则**：文件系统是 single source of truth，向量索引是加速缓存层，可随时重建

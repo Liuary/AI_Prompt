@@ -22,6 +22,7 @@ def show_help():
   -l, --list          列出所有支持的 AI 工具
   -h, --help          显示本帮助信息
   --source <路径>     指定模板源路径（默认为脚本所在目录）
+  --with-vectors      同时部署向量化知识库检索脚本（scripts/ + 依赖说明）
 
 不指定工具选项时默认部署全部框架。
 项目: https://github.com/Liuary/AI_Prompt""")
@@ -57,6 +58,7 @@ def build_parser():
     tool_group.add_argument("-o", "--opencode", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("-l", "--list", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("-h", "--help", action="store_true", help=argparse.SUPPRESS)
+    parser.add_argument("--with-vectors", action="store_true", help=argparse.SUPPRESS)
     return parser
 
 
