@@ -1,27 +1,37 @@
-# stage-08 状态
+# stage-08 状态 — 多模型后端解耦
 
 - **执行模式**：auto
 - **自动推进**：enabled
-- **状态**：done
-- **当前责任 Agent**：architect
-- **上一责任 Agent**：auto-runner
-- **更新时间**：2026-06-04 15:20
+- **状态**：ready_for_code
+- **当前责任 Agent**：auto-runner
+- **上一责任 Agent**：architect
+- **更新时间**：2026-06-04 12:43
+- **前置依赖**：无
+- **依赖状态**：satisfied
 
 ## Worktree / Session
 
 - **工作模式**：worktree
 - **分支名**：auto-stage-08
-- **Session 名称**：auto-stage-08
-- **合并状态**：ready_to_merge
+- **并行批次**：batch-2026-06-04-001
+- **并行阶段**：stage-06
+- **Session 名称**：-
+- **合并状态**：not_started
 - **清理策略**：auto
 
-## 审查结果
+## 当前任务
 
-Architect 审查：条件通过。已修复以下问题后标记 done：
-1. 统一模型名为 hermes-3:8b（Modelfile + deploy/common.py + docs）
-2. docker-compose.yml GPU 配置默认注释
-3. FUNCTION_CALL_SPEC.md required 字段位置修正
-4. hermes-integration.md 补充格式转换说明和部署路径
+将 Agent 能力描述与具体模型后端解耦，支持配置不同 LLM 后端，并提供 Hermes 本地模型部署支持。
+
+### 任务清单
+
+1. **模型配置层**：`.ai/config.yaml` 增加 models 节
+2. **Agent 角色标准化**：创建 `.ai/agents/definitions/`，工具无关 YAML 格式
+3. **Function Calling 标准格式**：写入 `specs/FUNCTION_CALL_SPEC.md`
+4. **Hermes 适配器**：`adapters/hermes/`，Ollama 部署配置模板
+5. **模型路由逻辑**：Agent 会话启动时按角色匹配模型
+6. **部署集成**：`deploy.py --model-backend`
+7. **文档与验证**：云端 API vs 本地 Hermes 对比
 
 ## 阻塞 / 暂停原因
 
@@ -31,6 +41,5 @@ Architect 审查：条件通过。已修复以下问题后标记 done：
 
 | 时间 | Agent | 状态变化 | 说明 |
 |------|-------|----------|------|
-| 2026-06-04 12:45 | auto-runner | ready_for_code → coding | 开始执行 tasks 1-7 |
-| 2026-06-04 12:50 | auto-runner | coding → ready_for_review | 全部 7 项任务完成，验证通过 |
-| 2026-06-04 15:20 | architect | ready_for_review → done | 审查条件通过，文档问题已修复，test_enabled=false 直接 done |
+| 2026-06-04 12:08 | architect | 创建 → planned | v3.0 阶段八计划制定 |
+| 2026-06-04 12:43 | architect | planned → ready_for_code | 切换为自动模式，移交 auto-runner |

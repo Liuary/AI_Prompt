@@ -1,7 +1,11 @@
-﻿# 计划变更日志
+# 计划变更日志
 
 | 时间 | 操作者 | 变更描述 |
 |------|--------|----------|
+| 2026-06-04 15:20 | architect | stage-08 审查条件通过，done；stage-06 审查 FAIL，退回修复 |
+| 2026-06-04 12:43 | architect | 切换 stage-06/07/08 为 auto+enabled，阶段九保持 planned（hard依赖未满足） |
+| 2026-06-04 12:08 | architect | v3.0 计划创建：阶段六~九（向量化/知识图谱/多模型/驻留），status.md + deps.yaml + plan.md 更新 |
+| 2026-06-04 11:57 | architect | v3.0 研究方向分析：创建 docs/research/v3-direction-analysis.md |
 | 2026-05-13 00:47 | architect | 创建 v2.0 大计划，四个阶段全部标记为 planned |
 | 2026-05-13 01:01 | code | 阶段一 planned → coding，开始 DSL Schema 设计与规则编码 |
 | 2026-05-13 10:50 | code | 阶段一 coding → done，7/7 全部完成（DSL/CLI/知识库/跨会话） |
@@ -17,4 +21,3 @@
 | 2026-05-15 23:28 | code | 创建阶段五（并行支持改造）：依赖图 + 多 WorkTree 并行 + AutoRunner 内部并行 |
 | 2026-05-15 23:35 | code | 阶段五 coding → ready_for_review，6/6 文件改造完成 |
 | 2026-05-16 00:30 | auto-runner | 创建 stage-05，处理 REV-051~055（deps.yaml/审查路径/职责分离/部署目录/Hook路径） |
-| 2026-06-04 12:45 | auto-runner | 创建 stage-08，多模型后端解耦：7项任务全部完成，状态 ready_for_review |

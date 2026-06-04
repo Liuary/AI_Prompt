@@ -1,40 +1,45 @@
-# stage-06 状态
+# stage-06 鐘舵€?鈥?鍚戦噺鍖栫煡璇嗗簱
 
-- **执行模式**：auto
-- **自动推进**：enabled
-- **状态**：ready_for_review
-- **当前责任 Agent**：architect
-- **上一责任 Agent**：code-worker
-- **更新时间**：2026-06-04 16:15
+- **鎵ц妯″紡**锛歛uto
+- **鑷姩鎺ㄨ繘**锛歟nabled
+- **鐘舵€?*锛歳eady_for_code
+- **褰撳墠璐ｄ换 Agent**锛歛uto-runner
+- **涓婁竴璐ｄ换 Agent**锛歛rchitect
+- **鏇存柊鏃堕棿**锛?026-06-04 12:43
+- **鍓嶇疆渚濊禆**锛氭棤
+- **渚濊禆鐘舵€?*锛歴atisfied
 
 ## Worktree / Session
 
-- **工作模式**：worktree
-- **分支名**：auto-stage-06
-- **Session 名称**：auto-stage-06
-- **合并状态**：not_started
-- **清理策略**：auto
+- **宸ヤ綔妯″紡**锛歸orktree
+- **鍒嗘敮鍚?*锛歛uto-stage-06
+- **骞惰鎵规**锛歜atch-2026-06-04-001
+- **骞惰闃舵**锛歴tage-08
+- **Session 鍚嶇О**锛?
+- **鍚堝苟鐘舵€?*锛歯ot_started
+- **娓呯悊绛栫暐**锛歛uto
 
-## 修复记录
+## 褰撳墠浠诲姟
 
-Architect 审查 FAIL 的问题已全部修复：
+鍦ㄧ幇鏈?`.ai/kb/` 鏂囦欢绯荤粺鍩虹涓婂鍔犲彲閫夌殑璇箟妫€绱㈠眰锛屾牳蹇冨師鍒欙細鏂囦欢绯荤粺鏄?single source of truth锛屽悜閲忕储寮曟槸鍔犻€熺紦瀛樸€?
 
-1. ✅ **Bug修复**：`scripts/build_kb_index.py` 第 128 行 — `KB_DIR.glob` → `src_dir.glob`，`--kb-dir` 功能恢复
-2. ✅ **死代码移除**：移除 `existing_lookup` 变量及其计算逻辑
-3. ✅ **JSON异常处理**：`search_kb.py` 的 `load_index()` 函数增加 `json.JSONDecodeError` 捕获
-4. ✅ **优雅降级**：`search_kb.py` 的 `load_index()` 中 `sys.exit(1)` 改为友好提示后返回空字典
-5. ✅ **冗余代码移除**：`build_kb_index.py` 中 `total_count += 0` 已删除
-6. ✅ **冗余目录移除**：`deploy/common.py` 中 `AI_DIRS` 移除冗余 `.ai/tmp/vectors` 条目
+### 浠诲姟娓呭崟
 
-## 阻塞 / 暂停原因
+1. **宓屽叆妯″瀷閫夊瀷涓庨泦鎴愯剼鏈?*锛氶€夌敤 bge-small-zh-v1.5锛堢害 130MB锛夛紝缂栧啓 `scripts/build_kb_index.py`
+2. **澧為噺鏇存柊鏈哄埗**锛氭瘮瀵规枃浠跺搱甯岋紝浠呭彉鍖栨枃浠堕噸寤虹储寮?
+3. **娣峰悎妫€绱㈡帴鍙?*锛氳涔夌浉浼煎害 + 鏂囦欢鍚嶅尮閰?+ 鏃堕棿琛板噺
+4. **search-kb Skill**锛氬垱寤?`skills/search-kb/SKILL.md`
+5. **check-kb Skill 澧炲己**锛氱簿纭尮閰嶆棤缁撴灉鏃跺洖閫€璇箟妫€绱?
+6. **閮ㄧ讲闆嗘垚**锛歚deploy.py` 鏀寔 `--with-vectors`
+7. **鏂囨。涓庨獙璇?*锛氭洿鏂扮储寮曪紝楠岃瘉妫€绱㈣鐩栫巼
 
-无
+## 闃诲 / 鏆傚仠鍘熷洜
 
-## 状态记录
+鏃?
 
-| 时间 | Agent | 状态变化 | 说明 |
+## 鐘舵€佽褰?
+
+| 鏃堕棿 | Agent | 鐘舵€佸彉鍖?| 璇存槑 |
 |------|-------|----------|------|
-| 2026-06-04 12:47 | auto-runner | ready_for_code → coding | 开始执行 stage-06 自动闭环 |
-| 2026-06-04 13:33 | auto-runner | coding → ready_for_review | 全部 7 项任务完成 |
-| 2026-06-04 15:20 | architect | ready_for_review → review_failed | 发现 1 高 + 3 中 + 2 低严重度问题 |
-| 2026-06-04 16:15 | code-worker | review_failed → ready_for_review | 全部 6 项问题已修复 |
+| 2026-06-04 12:08 | architect | 鍒涘缓 鈫?planned | v3.0 闃舵鍏鍒掑埗瀹?|
+| 2026-06-04 12:43 | architect | planned 鈫?ready_for_code | 鍒囨崲涓鸿嚜鍔ㄦā寮忥紝绉讳氦 auto-runner |

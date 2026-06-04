@@ -1,6 +1,6 @@
-﻿# 计划索引
+# 计划索引
 
-> 最后更新：2026-06-01
+> 最后更新：2026-06-04
 
 ## 活跃计划
 
@@ -16,6 +16,17 @@
 | 阶段四 | review_passed | [stage-04/](stage-04/) | 规范文档体系 + 模板市场储备 |
 | 阶段五 | done | [stage-05/](stage-05/) | 审查闭环 + 自动合并改造 + OpenCode 适配器 + Claude 适配器扩展 + 权限修复 |
 | 阶段八 | ready_for_review | [stage-08/](stage-08/) | 多模型后端解耦 — 模型配置层 / Agent 角色标准化 / Hermes 适配器 |
+
+## v3.0：环境型 Agent 治理
+
+大计划：[plan.md](plan.md)
+
+| 阶段 | 状态 | 目录 | 核心目标 |
+|------|------|------|----------|
+| 阶段六 | planned | [stage-06/](stage-06/) | 向量化知识库 + 语义检索 |
+| 阶段七 | planned | [stage-07/](stage-07/) | 知识图谱化 — Wikilink 双向引用 |
+| 阶段八 | planned | [stage-08/](stage-08/) | 多模型后端解耦 + Hermes 本地支持 |
+| 阶段九 | planned | [stage-09/](stage-09/) | AI 驻留能力 — Obsidian/VS Code/CLI |
 
 ### 已完成
 
