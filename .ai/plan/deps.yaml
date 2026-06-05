@@ -1,71 +1,86 @@
 # ============================================================================
-# 阶段依赖配置
+# 闃舵渚濊禆閰嶇疆
 #
-# 定义各计划阶段的依赖关系与完成判定标准。
-# 完成判定：阶段状态为 "done" 或 "review_passed" 均视为已完成。
+# 瀹氫箟鍚勮鍒掗樁娈电殑渚濊禆鍏崇郴涓庡畬鎴愬垽瀹氭爣鍑嗐€?
+# 瀹屾垚鍒ゅ畾锛氶樁娈电姸鎬佷负 "done" 鎴?"review_passed" 鍧囪涓哄凡瀹屾垚銆?
 # ============================================================================
 
-# 依赖类型：
-#   hard       — 语义依赖，前一阶段产出是后一阶段输入，必须串行
-#   soft       — 弱依赖，可并行但合并时需人工确认对齐
-#   mutual_exclusion — 修改同一文件集，必须严格串行
+# 渚濊禆绫诲瀷锛?
+#   hard       鈥?璇箟渚濊禆锛屽墠涓€闃舵浜у嚭鏄悗涓€闃舵杈撳叆锛屽繀椤讳覆琛?
+#   soft       鈥?寮变緷璧栵紝鍙苟琛屼絾鍚堝苟鏃堕渶浜哄伐纭瀵归綈
+#   mutual_exclusion 鈥?淇敼鍚屼竴鏂囦欢闆嗭紝蹇呴』涓ユ牸涓茶
 
-# 判断规则：
-#   - 某阶段所有 hard 依赖的状态为 done 或 review_passed 时，该阶段可启动
-#   - soft 依赖未满足时标记警告但可并行启动
-#   - mutual_exclusion 的阶段严格按拓扑顺序串行
+# 鍒ゆ柇瑙勫垯锛?
+#   - 鏌愰樁娈垫墍鏈?hard 渚濊禆鐨勭姸鎬佷负 done 鎴?review_passed 鏃讹紝璇ラ樁娈靛彲鍚姩
+#   - soft 渚濊禆鏈弧瓒虫椂鏍囪璀﹀憡浣嗗彲骞惰鍚姩
+#   - mutual_exclusion 鐨勯樁娈典弗鏍兼寜鎷撴墤椤哄簭涓茶
 
 stages:
   stage-01:
-    title: "约束引擎 + 记忆系统"
+    title: "绾︽潫寮曟搸 + 璁板繂绯荤粺"
     depends_on: []
-    # 基础阶段，无依赖，可立即启动
+    # 鍩虹闃舵锛屾棤渚濊禆锛屽彲绔嬪嵆鍚姩
 
   stage-02:
-    title: "多人协作基础"
+    title: "澶氫汉鍗忎綔鍩虹"
     depends_on:
       - stage: stage-01
-        reason: "依赖 stage-01 的 DSL 结构定义和 Instructions 框架"
+        reason: "渚濊禆 stage-01 鐨?DSL 缁撴瀯瀹氫箟鍜?Instructions 妗嗘灦"
         type: hard
 
   stage-03:
-    title: "多工具适配扩展"
+    title: "澶氬伐鍏烽€傞厤鎵╁睍"
     depends_on:
       - stage: stage-01
-        reason: "依赖 deploy.py 基架和核心层结构"
+        reason: "渚濊禆 deploy.py 鍩烘灦鍜屾牳蹇冨眰缁撴瀯"
         type: soft
       - stage: stage-02
-        reason: "共享 AGENTS.md / Instructions 内容，可能冲突"
+        reason: "鍏变韩 AGENTS.md / Instructions 鍐呭锛屽彲鑳藉啿绐?
         type: mutual_exclusion
 
   stage-04:
-    title: "规范体系整理"
+    title: "瑙勮寖浣撶郴鏁寸悊"
     depends_on: []
-    # 独立阶段（创建 specs/ 目录），可与 stage-02/stage-03 并行
+    # 鐙珛闃舵锛堝垱寤?specs/ 鐩綍锛夛紝鍙笌 stage-02/stage-03 骞惰
 
   stage-05:
-    title: "审查闭环与工作区清理"
+    title: "瀹℃煡闂幆涓庡伐浣滃尯娓呯悊"
     depends_on:
       - stage: stage-01
-        reason: "依赖完整的 Agent 角色体系和工作区结构"
+        reason: "渚濊禆瀹屾暣鐨?Agent 瑙掕壊浣撶郴鍜屽伐浣滃尯缁撴瀯"
         type: hard
       - stage: stage-02
-        reason: "依赖 task_claim.md 🔒 锁定机制（用于并行安全）"
+        reason: "渚濊禆 task_claim.md 馃敀 閿佸畾鏈哄埗锛堢敤浜庡苟琛屽畨鍏級"
         type: hard
 
   stage-08:
-    title: "多模型后端解耦"
+    title: "澶氭ā鍨嬪悗绔В鑰?
     depends_on:
       - stage: stage-01
-        reason: "依赖完整的 Agent 角色体系和工作区结构"
+        reason: "渚濊禆瀹屾暣鐨?Agent 瑙掕壊浣撶郴鍜屽伐浣滃尯缁撴瀯"
         type: hard
       - stage: stage-05
-        reason: "依赖完整的部署框架和计划体系"
+        reason: "渚濊禆瀹屾暣鐨勯儴缃叉鏋跺拰璁″垝浣撶郴"
         type: soft
-    # 模型配置与 Agent 解耦独立模块
+    # 妯″瀷閰嶇疆涓?Agent 瑙ｈ€︾嫭绔嬫ā鍧?
 
-# 并行示例：
-#   启动条件：stage-01 完成（done 或 review_passed）
-#   可并行阶段：stage-02(hard依赖满足) + stage-04(无依赖)
-#   stage-03 与 stage-02 标记为 mutual_exclusion → 必须等 stage-02 完成后启动
-#   stage-02 和 stage-04 可在同一批次并行启动 2 个 AutoRunner worktree
+# 骞惰绀轰緥锛?
+#   鍚姩鏉′欢锛歴tage-01 瀹屾垚锛坉one 鎴?review_passed锛?
+#   鍙苟琛岄樁娈碉細stage-02(hard渚濊禆婊¤冻) + stage-04(鏃犱緷璧?
+#   stage-03 涓?stage-02 鏍囪涓?mutual_exclusion 鈫?蹇呴』绛?stage-02 瀹屾垚鍚庡惎鍔?
+#   stage-02 鍜?stage-04 鍙湪鍚屼竴鎵规骞惰鍚姩 2 涓?AutoRunner worktree
+
+# v3.0 补全（2026-06-05 审计修复）
+  # stage-06/07/09 依赖定义补充
+  stage-06:
+    status: ready_for_code
+    dependencies: []
+    downstream: [stage-07]
+  stage-07:
+    status: done
+    dependencies: [{ stage: stage-06, type: soft }]
+    downstream: [stage-09]
+  stage-09:
+    status: ready_for_review
+    dependencies: [{ stage: stage-07, type: hard }, { stage: stage-08, type: hard }]
+    downstream: []

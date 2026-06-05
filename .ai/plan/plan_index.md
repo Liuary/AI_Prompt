@@ -1,24 +1,24 @@
-# 计划索引
+# 璁″垝绱㈠紩
 
-> 最后更新：2026-06-04
+> 鏈€鍚庢洿鏂帮細2026-06-04
 
-## 活跃计划
+## 娲昏穬璁″垝
 
-### v2.0：约束引擎 + 多人协作 + 多工具 + 规范整理
+### v2.0锛氱害鏉熷紩鎿?+ 澶氫汉鍗忎綔 + 澶氬伐鍏?+ 瑙勮寖鏁寸悊
 
-大计划：[plan.md](plan.md)
+澶ц鍒掞細[plan.md](plan.md)
 
-| 阶段 | 状态 | 目录 | 核心目标 |
+| 闃舵 | 鐘舵€?| 鐩綍 | 鏍稿績鐩爣 |
 |------|------|------|----------|
-| 阶段一 | review_passed | [stage-01/](stage-01/) | 规则 DSL + 编译器/校验器 + 知识库自动化 + 跨会话记忆 |
-| 阶段二 | review_passed | [stage-02/](stage-02/) | 任务归属 + 冲突检测 + 进度同步 |
-| 阶段三 | review_passed | [stage-03/](stage-03/) | Claude Code 适配器 + Copilot 适配器 + 标准接口 |
-| 阶段四 | review_passed | [stage-04/](stage-04/) | 规范文档体系 + 模板市场储备 |
-| 阶段五 | done | [stage-05/](stage-05/) | 审查闭环 + 自动合并改造 + OpenCode 适配器 + Claude 适配器扩展 + 权限修复 |
-| 阶段九 | ready_for_review | [stage-09/](stage-09/) | Obsidian Vault + Dataview 仪表盘 + 统一 CLI + VS Code 工作区 |
+| 闃舵涓€ | review_passed | [stage-01/](stage-01/) | 瑙勫垯 DSL + 缂栬瘧鍣?鏍￠獙鍣?+ 鐭ヨ瘑搴撹嚜鍔ㄥ寲 + 璺ㄤ細璇濊蹇?|
+| 闃舵浜?| review_passed | [stage-02/](stage-02/) | 浠诲姟褰掑睘 + 鍐茬獊妫€娴?+ 杩涘害鍚屾 |
+| 闃舵涓?| review_passed | [stage-03/](stage-03/) | Claude Code 閫傞厤鍣?+ Copilot 閫傞厤鍣?+ 鏍囧噯鎺ュ彛 |
+| 闃舵鍥?| review_passed | [stage-04/](stage-04/) | 瑙勮寖鏂囨。浣撶郴 + 妯℃澘甯傚満鍌ㄥ |
+| 闃舵浜?| done | [stage-05/](stage-05/) | 瀹℃煡闂幆 + 鑷姩鍚堝苟鏀归€?+ OpenCode 閫傞厤鍣?+ Claude 閫傞厤鍣ㄦ墿灞?+ 鏉冮檺淇 |
+| 闃舵涔?| ready_for_review | [stage-09/](stage-09/) | Obsidian Vault + Dataview 浠〃鐩?+ 缁熶竴 CLI + VS Code 宸ヤ綔鍖?|
 
-### 已完成
+### 宸插畬鎴?
 
-- v2.0 阶段一至五已完成（REV-051~060 closed）
-- v3.0 阶段七、八已完成（部署多工具 + 权限修复 + 技能扩展）
-- v3.0 阶段九（AI 驻留能力 / Claudian 方向）已提交审查
+- v2.0 闃舵涓€鑷充簲宸插畬鎴愶紙REV-051~060 closed锛?
+- v3.0 闃舵涓冦€佸叓宸插畬鎴愶紙閮ㄧ讲澶氬伐鍏?+ 鏉冮檺淇 + 鎶€鑳芥墿灞曪級
+- v3.0 闃舵涔濓紙AI 椹荤暀鑳藉姏 / Claudian 鏂瑰悜锛夊凡鎻愪氦瀹℃煡

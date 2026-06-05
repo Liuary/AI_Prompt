@@ -1,45 +1,54 @@
-# stage-06 鐘舵€?鈥?鍚戦噺鍖栫煡璇嗗簱
+# stage-06 状态 — 向量化知识库
 
-- **鎵ц妯″紡**锛歛uto
-- **鑷姩鎺ㄨ繘**锛歟nabled
-- **鐘舵€?*锛歳eady_for_code
-- **褰撳墠璐ｄ换 Agent**锛歛uto-runner
-- **涓婁竴璐ｄ换 Agent**锛歛rchitect
-- **鏇存柊鏃堕棿**锛?026-06-04 12:43
-- **鍓嶇疆渚濊禆**锛氭棤
-- **渚濊禆鐘舵€?*锛歴atisfied
+- **执行模式**：auto
+- **自动推进**：enabled
+- **状态**：ready_for_code
+- **当前责任 Agent**：user
+- **上一责任 Agent**：architect
+- **更新时间**：2026-06-05 11:14
+- **前置依赖**：无
+- **依赖状态**：satisfied
 
 ## Worktree / Session
 
-- **宸ヤ綔妯″紡**锛歸orktree
-- **鍒嗘敮鍚?*锛歛uto-stage-06
-- **骞惰鎵规**锛歜atch-2026-06-04-001
-- **骞惰闃舵**锛歴tage-08
-- **Session 鍚嶇О**锛?
-- **鍚堝苟鐘舵€?*锛歯ot_started
-- **娓呯悊绛栫暐**锛歛uto
+- **工作模式**：worktree
+- **分支名**：auto-stage-06（已清理）
+- **并行批次**：batch-2026-06-04-001
+- **Session 名称**：-
+- **合并状态**：merged
+- **清理策略**：manual
 
-## 褰撳墠浠诲姟
+## 当前任务
 
-鍦ㄧ幇鏈?`.ai/kb/` 鏂囦欢绯荤粺鍩虹涓婂鍔犲彲閫夌殑璇箟妫€绱㈠眰锛屾牳蹇冨師鍒欙細鏂囦欢绯荤粺鏄?single source of truth锛屽悜閲忕储寮曟槸鍔犻€熺紦瀛樸€?
+在现有 `.ai/kb/` 文件系统基础上增加可选的语义检索层。
 
-### 浠诲姟娓呭崟
+### 任务清单
 
-1. **宓屽叆妯″瀷閫夊瀷涓庨泦鎴愯剼鏈?*锛氶€夌敤 bge-small-zh-v1.5锛堢害 130MB锛夛紝缂栧啓 `scripts/build_kb_index.py`
-2. **澧為噺鏇存柊鏈哄埗**锛氭瘮瀵规枃浠跺搱甯岋紝浠呭彉鍖栨枃浠堕噸寤虹储寮?
-3. **娣峰悎妫€绱㈡帴鍙?*锛氳涔夌浉浼煎害 + 鏂囦欢鍚嶅尮閰?+ 鏃堕棿琛板噺
-4. **search-kb Skill**锛氬垱寤?`skills/search-kb/SKILL.md`
-5. **check-kb Skill 澧炲己**锛氱簿纭尮閰嶆棤缁撴灉鏃跺洖閫€璇箟妫€绱?
-6. **閮ㄧ讲闆嗘垚**锛歚deploy.py` 鏀寔 `--with-vectors`
-7. **鏂囨。涓庨獙璇?*锛氭洿鏂扮储寮曪紝楠岃瘉妫€绱㈣鐩栫巼
+1. ✅ `scripts/build_kb_index.py` — 向量索引构建（含增量哈希更新）
+2. ✅ `scripts/search_kb.py` — 混合检索（语义+精确+时间衰减）
+3. ✅ `skills/search-kb/SKILL.md` — 语义检索技能
+4. ✅ `skills/check-kb/SKILL.md` — 增强回退逻辑
+5. ✅ `deploy/` — `--with-vectors` 部署集成
+6. ✅ `.ai/kb/index.md` — 向量化检索说明
+7. ✅ 验证：7 条索引条目生成，增量更新正常
 
-## 闃诲 / 鏆傚仠鍘熷洜
+## 已知问题
 
-鏃?
+- worktree 已完成并合并到 main
+- 状态被手动设为 ready_for_code（待用户确认是否重新推进）
+- status.md 此前存在中文编码损坏，已修复
 
-## 鐘舵€佽褰?
+## 阻塞 / 暂停原因
 
-| 鏃堕棿 | Agent | 鐘舵€佸彉鍖?| 璇存槑 |
+无
+
+## 状态记录
+
+| 时间 | Agent | 状态变化 | 说明 |
 |------|-------|----------|------|
-| 2026-06-04 12:08 | architect | 鍒涘缓 鈫?planned | v3.0 闃舵鍏鍒掑埗瀹?|
-| 2026-06-04 12:43 | architect | planned 鈫?ready_for_code | 鍒囨崲涓鸿嚜鍔ㄦā寮忥紝绉讳氦 auto-runner |
+| 2026-06-04 12:08 | architect | 创建 → planned | v3.0 阶段六计划制定 |
+| 2026-06-04 12:43 | architect | planned → ready_for_code | 切换为自动模式 |
+| 2026-06-04 13:33 | auto-runner | coding → ready_for_review | 7/7 任务完成 |
+| 2026-06-04 15:20 | architect | ready_for_review → review_failed | 审查发现 Bug |
+| 2026-06-04 16:15 | code-worker | review_failed → done | 修复后合并到 main |
+| 2026-06-05 11:14 | architect | done → ready_for_code | 审计发现：状态被错误标记为 done，实际代码已合并但部署同步未完成 |
