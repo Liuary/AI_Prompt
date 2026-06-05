@@ -1,54 +1,49 @@
-# stage-10 鐘舵€?鈥?椤圭洰瀹¤淇
-
-- **鎵ц妯″紡**锛歮anual
-- **鑷姩鎺ㄨ繘**锛歞isabled
-- **鐘舵€?*锛歝oding
-- **褰撳墠璐ｄ换 Agent**锛歛rchitect
-- **涓婁竴璐ｄ换 Agent**锛歯one
-- **鏇存柊鏃堕棿**锛?026-06-05 11:14
-- **鍓嶇疆渚濊禆**锛氭棤
-- **渚濊禆鐘舵€?*锛歴atisfied
+# stage-10 閻樿埖鈧?閳?妞ゅ湱娲扮€孤ゎ吀娣囶喖顦?
+- **閹笛嗩攽濡€崇础**閿涙anual
+- **閼奉亜濮╅幒銊ㄧ箻**閿涙瓰isabled
+- **閻樿埖鈧?*閿涙瓭oding
+- **瑜版挸澧犵拹锝勬崲 Agent**閿涙瓫rchitect
+- **娑撳﹣绔寸拹锝勬崲 Agent**閿涙one
+- **閺囧瓨鏌婇弮鍫曟？**閿?026-06-05 11:14
+- **閸撳秶鐤嗘笟婵婄**閿涙碍妫?- **娓氭繆绂嗛悩鑸碘偓?*閿涙atisfied
 
 ## Worktree / Session
 
-- **宸ヤ綔妯″紡**锛歮anual
-- **鍒嗘敮鍚?*锛?
-- **骞惰鎵规**锛?
-- **骞惰闃舵**锛?
-- **Session 鍚嶇О**锛?
-- **鍚堝苟鐘舵€?*锛歯ot_started
-- **娓呯悊绛栫暐**锛歮anual
+- **瀹搞儰缍斿Ο鈥崇础**閿涙anual
+- **閸掑棙鏁崥?*閿?
+- **楠炴儼顢戦幍瑙勵偧**閿?
+- **楠炴儼顢戦梼鑸殿唽**閿?
+- **Session 閸氬秶袨**閿?
+- **閸氬牆鑻熼悩鑸碘偓?*閿涙ot_started
+- **濞撳懐鎮婄粵鏍殣**閿涙anual
 
-## 褰撳墠浠诲姟
+## 瑜版挸澧犳禒璇插
 
-鍏ㄩ」鐩璁″彂鐜扮殑 18 椤归棶棰橈紝鎸変紭鍏堢骇鍒嗘壒淇銆?
-### P0锛氱姸鎬佷竴鑷存€э紙Architect 鐩存帴淇锛?
-1. [x] 淇 `current.md` 鈥?鍘绘帀 "v3.0鍏ㄩ儴瀹屾垚" 鐨勯敊璇０鏄庯紝閫愰樁娈靛～鍐欑湡瀹炵姸鎬?2. [x] 琛ュ叏 `plan_index.md` 鈥?琛ヤ笂 stage-06/07/08 琛ㄨ
-3. [x] 鏇存柊 `plan.md` 鈥?v3.0 闃舵鐘舵€佷粠 planned 鏇存柊涓哄疄闄呭€?4. [x] 琛ュ叏 `deps.yaml` 鈥?娣诲姞 stage-06/07/09 渚濊禆瀹氫箟
-5. [x] 琛ュ叏 `plan_log.md` 鈥?琛ュ厖 2026-06-04 v3.0 鍙樻洿璁板綍
-6. [x] 淇 `stage-06/status.md` 鍜?`stage-09/status.md` 涓枃缂栫爜
+閸忋劑銆嶉惄顔碱吀鐠佲€冲絺閻滄壆娈?18 妞ゅ綊妫舵０姗堢礉閹稿绱崗鍫㈤獓閸掑棙澹掓穱顔碱槻閵?
+### P0閿涙氨濮搁幀浣风閼峰瓨鈧嶇礄Architect 閻╁瓨甯存穱顔碱槻閿?
+1. [x] 娣囶喗顒?`current.md` 閳?閸樼粯甯€ "v3.0閸忋劑鍎寸€瑰本鍨? 閻ㄥ嫰鏁婄拠顖氾紣閺勫函绱濋柅鎰版▉濞堥潧锝為崘娆戞埂鐎圭偟濮搁幀?2. [x] 鐞涖儱鍙?`plan_index.md` 閳?鐞涖儰绗?stage-06/07/08 鐞涖劏顢?3. [x] 閺囧瓨鏌?`plan.md` 閳?v3.0 闂冭埖顔岄悩鑸碘偓浣风矤 planned 閺囧瓨鏌婃稉鍝勭杽闂勫懎鈧?4. [x] 鐞涖儱鍙?`deps.yaml` 閳?濞ｈ濮?stage-06/07/09 娓氭繆绂嗙€规矮绠?5. [x] 鐞涖儱鍙?`plan_log.md` 閳?鐞涖儱鍘?2026-06-04 v3.0 閸欐ɑ娲跨拋鏉跨秿
+6. [x] 娣囶喖顦?`stage-06/status.md` 閸?`stage-09/status.md` 娑擃厽鏋冪紓鏍垳
 
-### P1锛氶儴缃插悓姝ヤ笌閫傞厤鍣ㄤ慨澶嶏紙闇€ Code Agent锛?
-7. [ ] 鏇存柊 `deploy/kilo.py` 鈥?妯℃澘 KILO_JSONC_CONTENT 娣诲姞 search-kb skill
-8. [ ] 琛ュ叏 Hermes 閫傞厤鍣?鈥?鍒涘缓 `deploy/hermes.py` + 鎸囦护鏂囦欢 + 鍦?`deploy/__init__.py` 娉ㄥ唽
-9. [ ] 淇 `deploy/common.py` 涓枃娉ㄩ噴缂栫爜鎹熷潖
-10. [ ] 鏇存柊鍚勯€傞厤鍣?skill 瑕嗙洊 鈥?DeepCode 琛?sync-status/search-kb锛孋opilot 琛?get-stage-status/update-stage-status/search-kb
-11. [ ] 琛ュ叏 `.kilo/agents/` 鈥?娣诲姞缂哄け鐨?4 涓?Agent锛坅uto-runner/code-worker/review-worker/test-writer锛?
-### P2锛氱洰褰曚笌缁撴瀯鏁寸悊
+### P1閿涙岸鍎寸純鎻掓倱濮濄儰绗岄柅鍌炲帳閸ｃ劋鎱ㄦ径宥忕礄闂団偓 Code Agent閿?
+7. [ ] 閺囧瓨鏌?`deploy/kilo.py` 閳?濡剝婢?KILO_JSONC_CONTENT 濞ｈ濮?search-kb skill
+8. [ ] 鐞涖儱鍙?Hermes 闁倿鍘ら崳?閳?閸掓稑缂?`deploy/hermes.py` + 閹稿洣鎶ら弬鍥︽ + 閸?`deploy/__init__.py` 濞夈劌鍞?9. [ ] 娣囶喖顦?`deploy/common.py` 娑擃厽鏋冨▔銊╁櫞缂傛牜鐖滈幑鐔锋綎
+10. [ ] 閺囧瓨鏌婇崥鍕偓鍌炲帳閸?skill 鐟曞棛娲?閳?DeepCode 鐞?sync-status/search-kb閿涘瓔opilot 鐞?get-stage-status/update-stage-status/search-kb
+11. [ ] 鐞涖儱鍙?`.kilo/agents/` 閳?濞ｈ濮炵紓鍝勩亼閻?4 娑?Agent閿涘潊uto-runner/code-worker/review-worker/test-writer閿?
+### P2閿涙氨娲拌ぐ鏇氱瑢缂佹挻鐎弫瀵告倞
 
-12. [ ] 缁熶竴 `log/` 鐩綍鏍煎紡 鈥?`2026-05-16/` 绉诲埌 `2026/05/16/`
-13. [ ] 琛ュ厖 `log/2026/06/04/day_index.md`
-14. [ ] 娓呯悊 `output/rules.md` 鍔犲叆 .gitignore
-15. [ ] 娓呯悊绌虹洰褰曟垨琛ュ唴瀹?16. [ ] `scripts/kb_graph.py` 鍔犲叆 deploy 绯荤粺寮曠敤
+12. [ ] 缂佺喍绔?`log/` 閻╊喖缍嶉弽鐓庣础 閳?`2026-05-16/` 缁夎鍩?`2026/05/16/`
+13. [ ] 鐞涖儱鍘?`log/2026/06/04/day_index.md`
+14. [ ] 濞撳懐鎮?`output/rules.md` 閸旂姴鍙?.gitignore
+15. [ ] 濞撳懐鎮婄粚铏规窗瑜版洘鍨ㄧ悰銉ュ敶鐎?16. [ ] `scripts/kb_graph.py` 閸旂姴鍙?deploy 缁崵绮哄鏇犳暏
 
-### P3锛氭牴鐩綍鏁寸悊锛堥渶璁ㄨ锛?
-17. [ ] 鏁寸悊鏍圭洰褰?25 涓潯鐩?鈥?灏?deploy.py/rule_cli.py/ADAPTER_SPEC.md 绛夊綊绫?18. [ ] 鏄庣‘ Kilo/agents/ 涓?.kilo/agents/ 鑱岃矗杈圭晫
+### P3閿涙碍鐗撮惄顔肩秿閺佸鎮婇敍鍫ユ付鐠併劏顔戦敍?
+17. [ ] 閺佸鎮婇弽鍦窗瑜?25 娑擃亝娼惄?閳?鐏?deploy.py/rule_cli.py/ADAPTER_SPEC.md 缁涘缍婄猾?18. [ ] 閺勫海鈥?Kilo/agents/ 娑?.kilo/agents/ 閼卞矁鐭楁潏鍦櫕
 
-## 闃诲 / 鏆傚仠鍘熷洜
+## 闂冭顢?/ 閺嗗倸浠犻崢鐔锋礈
 
-P0 鐢?Architect 鐩存帴澶勭悊锛汸1-P3 闇€绉讳氦 Code Agent
+P0 閻?Architect 閻╁瓨甯存径鍕倞閿涙备1-P3 闂団偓缁夎姘?Code Agent
 
-## 鐘舵€佽褰?
-| 鏃堕棿 | Agent | 鐘舵€佸彉鍖?| 璇存槑 |
+## 閻樿埖鈧浇顔囪ぐ?
+| 閺冨爼妫?| Agent | 閻樿埖鈧礁褰夐崠?| 鐠囧瓨妲?|
 |------|-------|----------|------|
-| 2026-06-05 11:14 | architect | 鍒涘缓 鈫?coding | 鍒跺畾淇ˉ璁″垝骞跺紑濮?P0 |
+| 2026-06-05 11:14 | architect | 閸掓稑缂?閳?coding | 閸掕泛鐣炬穱顔克夌拋鈥冲灊楠炶泛绱戞慨?P0 |
