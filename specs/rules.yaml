@@ -1,171 +1,122 @@
 # ============================================================================
-# AI_Prompt 规则 DSL Schema v1.0
+# AI_Prompt 瑙勫垯 DSL Schema v1.0
 #
-# 本文件定义 AI Agent 行为约束的结构化描述格式。
-# 将 AGENTS.md / dev_core.md / Instructions 中的自然语言约束
-# 编码为机器可处理的结构化规则，支持编译（→ 各工具原生格式）
-# 和校验（冲突/冗余/死规则检测）。
-# ============================================================================
+# 鏈枃浠跺畾涔?AI Agent 琛屼负绾︽潫鐨勭粨鏋勫寲鎻忚堪鏍煎紡銆?# 灏?AGENTS.md / dev_core.md / Instructions 涓殑鑷劧璇█绾︽潫
+# 缂栫爜涓烘満鍣ㄥ彲澶勭悊鐨勭粨鏋勫寲瑙勫垯锛屾敮鎸佺紪璇戯紙鈫?鍚勫伐鍏峰師鐢熸牸寮忥級
+# 鍜屾牎楠岋紙鍐茬獊/鍐椾綑/姝昏鍒欐娴嬶級銆?# ============================================================================
 
-# 元信息
-meta:
+# 鍏冧俊鎭?meta:
   schema: "ai-prompt-rule-dsl"
   version: "1.0.0"
   description: >
-    AI Agent 行为约束的结构化定义格式。
-     每条规则包含 9 个字段，覆盖规则的标识、级别、
-    适用范围、触发条件、行为要求、执行模式、理由和来源。
-
-# ── 规则字段定义 ──────────────────────────────────────────────
+    AI Agent 琛屼负绾︽潫鐨勭粨鏋勫寲瀹氫箟鏍煎紡銆?     姣忔潯瑙勫垯鍖呭惈 9 涓瓧娈碉紝瑕嗙洊瑙勫垯鐨勬爣璇嗐€佺骇鍒€?    閫傜敤鑼冨洿銆佽Е鍙戞潯浠躲€佽涓鸿姹傘€佹墽琛屾ā寮忋€佺悊鐢卞拰鏉ユ簮銆?
+# 鈹€鈹€ 瑙勫垯瀛楁瀹氫箟 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 
 rule_fields:
 
-  # 1. 唯一标识符
-  id:
+  # 1. 鍞竴鏍囪瘑绗?  id:
     type: string
     required: true
     pattern: "^[A-Z]{2,6}-\\d{3}$"
     description: >
-      规则唯一标识符。
-      格式：分类前缀（2-6 个大写字母）- 三位数字编号。
-      分类前缀约定：
-        CORE   — 核心行为约束（AGENTS.md § 核心约束）
-        BEH    — 行为准则（AGENTS.md § 行为准则）
-        STYLE  — 编码风格约束（AGENTS.md § 编码风格）
-        OPS    — 操作规范（AGENTS.md § 操作规范）
-        CMT    — 注释规范（AGENTS.md § 注释规范）
-        META   — 元规则/体系规则（AGENTS.md § 动态规则 / 写入规范 / 知识库）
-        DEV    — 开发期动态规则（dev_core.md）
-        INST   — Instructions 操作规则（Kilo/Instructions/）
-    examples:
+      瑙勫垯鍞竴鏍囪瘑绗︺€?      鏍煎紡锛氬垎绫诲墠缂€锛?-6 涓ぇ鍐欏瓧姣嶏級- 涓変綅鏁板瓧缂栧彿銆?      鍒嗙被鍓嶇紑绾﹀畾锛?        CORE   鈥?鏍稿績琛屼负绾︽潫锛圓GENTS.md 搂 鏍稿績绾︽潫锛?        BEH    鈥?琛屼负鍑嗗垯锛圓GENTS.md 搂 琛屼负鍑嗗垯锛?        STYLE  鈥?缂栫爜椋庢牸绾︽潫锛圓GENTS.md 搂 缂栫爜椋庢牸锛?        OPS    鈥?鎿嶄綔瑙勮寖锛圓GENTS.md 搂 鎿嶄綔瑙勮寖锛?        CMT    鈥?娉ㄩ噴瑙勮寖锛圓GENTS.md 搂 娉ㄩ噴瑙勮寖锛?        META   鈥?鍏冭鍒?浣撶郴瑙勫垯锛圓GENTS.md 搂 鍔ㄦ€佽鍒?/ 鍐欏叆瑙勮寖 / 鐭ヨ瘑搴擄級
+        DEV    鈥?寮€鍙戞湡鍔ㄦ€佽鍒欙紙dev_core.md锛?        INST   鈥?Instructions 鎿嶄綔瑙勫垯锛圞ilo/Instructions/锛?    examples:
       - "CORE-001"
       - "STYLE-003"
       - "DEV-001"
 
-  # 2. 严重级别
+  # 2. 涓ラ噸绾у埆
   level:
     type: enum
     required: true
     values:
-      - error     # 必须遵守；违反导致严重问题，校验器报错
-      - warning   # 应当遵守；违反需在日志中说明理由，校验器告警
-      - info      # 建议遵守；可根据实际情况灵活调整，校验器静默
+      - error     # 蹇呴』閬靛畧锛涜繚鍙嶅鑷翠弗閲嶉棶棰橈紝鏍￠獙鍣ㄦ姤閿?      - warning   # 搴斿綋閬靛畧锛涜繚鍙嶉渶鍦ㄦ棩蹇椾腑璇存槑鐞嗙敱锛屾牎楠屽櫒鍛婅
+      - info      # 寤鸿閬靛畧锛涘彲鏍规嵁瀹為檯鎯呭喌鐏垫椿璋冩暣锛屾牎楠屽櫒闈欓粯
     description: >
-      规则严重级别，决定校验时的处理方式。
-      error 级规则在编译器输出中以最高优先级呈现。
-
-  # 3. 适用范围
+      瑙勫垯涓ラ噸绾у埆锛屽喅瀹氭牎楠屾椂鐨勫鐞嗘柟寮忋€?      error 绾ц鍒欏湪缂栬瘧鍣ㄨ緭鍑轰腑浠ユ渶楂樹紭鍏堢骇鍛堢幇銆?
+  # 3. 閫傜敤鑼冨洿
   scope:
     type: enum
     required: true
     values:
-      - all            # 所有 Agent 活动
-      - conversation   # 对话交互行为（分析需求、回馈理解、展示选项）
-      - code           # 代码编写行为（新增、修改、重构代码）
-      - docs           # 文档编写行为（注释、README、API 文档、知识库）
-      - workflow       # 工作流操作（文件管理、git、构建、日志、计划更新）
+      - all            # 鎵€鏈?Agent 娲诲姩
+      - conversation   # 瀵硅瘽浜や簰琛屼负锛堝垎鏋愰渶姹傘€佸洖棣堢悊瑙ｃ€佸睍绀洪€夐」锛?      - code           # 浠ｇ爜缂栧啓琛屼负锛堟柊澧炪€佷慨鏀广€侀噸鏋勪唬鐮侊級
+      - docs           # 鏂囨。缂栧啓琛屼负锛堟敞閲娿€丷EADME銆丄PI 鏂囨。銆佺煡璇嗗簱锛?      - workflow       # 宸ヤ綔娴佹搷浣滐紙鏂囦欢绠＄悊銆乬it銆佹瀯寤恒€佹棩蹇椼€佽鍒掓洿鏂帮級
     description: >
-      规则适用的 Agent 活动范围。
-      编译器根据 scope 决定规则注入到哪个指令段落。
-
-  # 4. 触发条件
+      瑙勫垯閫傜敤鐨?Agent 娲诲姩鑼冨洿銆?      缂栬瘧鍣ㄦ牴鎹?scope 鍐冲畾瑙勫垯娉ㄥ叆鍒板摢涓寚浠ゆ钀姐€?
+  # 4. 瑙﹀彂鏉′欢
   condition:
     type: string
     required: true
     description: >
-      触发规则的条件或场景，使用自然语言描述。
-      可包含 when/if/always 等关键词明确触发时机。
-      对于始终生效的规则，填写 "always"。
-      对于元规则（影响其他规则的优先级规则），在此明确覆盖关系。
-
-  # 5. 行为要求
+      瑙﹀彂瑙勫垯鐨勬潯浠舵垨鍦烘櫙锛屼娇鐢ㄨ嚜鐒惰瑷€鎻忚堪銆?      鍙寘鍚?when/if/always 绛夊叧閿瘝鏄庣‘瑙﹀彂鏃舵満銆?      瀵逛簬濮嬬粓鐢熸晥鐨勮鍒欙紝濉啓 "always"銆?      瀵逛簬鍏冭鍒欙紙褰卞搷鍏朵粬瑙勫垯鐨勪紭鍏堢骇瑙勫垯锛夛紝鍦ㄦ鏄庣‘瑕嗙洊鍏崇郴銆?
+  # 5. 琛屼负瑕佹眰
   action:
     type: string
     required: true
     description: >
-      满足 condition 时 Agent 必须/应当/建议执行的行为。
-      使用自然语言描述。关键词约定：
-        must    — 强制行为（对应 enforcement: strict）
-        should  — 推荐行为（对应 enforcement: advisory）
-        may     — 可选行为（对应 enforcement: advisory 或 auto）
-      多行为时用分号分隔。
-
-  # 6. 执行模式
+      婊¤冻 condition 鏃?Agent 蹇呴』/搴斿綋/寤鸿鎵ц鐨勮涓恒€?      浣跨敤鑷劧璇█鎻忚堪銆傚叧閿瘝绾﹀畾锛?        must    鈥?寮哄埗琛屼负锛堝搴?enforcement: strict锛?        should  鈥?鎺ㄨ崘琛屼负锛堝搴?enforcement: advisory锛?        may     鈥?鍙€夎涓猴紙瀵瑰簲 enforcement: advisory 鎴?auto锛?      澶氳涓烘椂鐢ㄥ垎鍙峰垎闅斻€?
+  # 6. 鎵ц妯″紡
   enforcement:
     type: enum
     required: true
     values:
-      - strict      # 严格：Agent 必须遵循，编译器直接注入为指令
-      - advisory    # 建议：Agent 应主动提醒用户，由用户决定是否执行
-      - auto        # 自动：可在满足条件时自动执行（如格式化、自检、知识库写入）
-    description: >
-      规则执行模式，决定编译器输出格式和 Agent 运行时行为。
-      strict 规则在编译输出中使用 MUST 强调。
-      advisory 规则在编译输出中使用 SHOULD。
-      auto 规则编译器生成对应的自动化触发逻辑。
-
-  # 7. 存在理由
+      - strict      # 涓ユ牸锛欰gent 蹇呴』閬靛惊锛岀紪璇戝櫒鐩存帴娉ㄥ叆涓烘寚浠?      - advisory    # 寤鸿锛欰gent 搴斾富鍔ㄦ彁閱掔敤鎴凤紝鐢辩敤鎴峰喅瀹氭槸鍚︽墽琛?      - auto        # 鑷姩锛氬彲鍦ㄦ弧瓒虫潯浠舵椂鑷姩鎵ц锛堝鏍煎紡鍖栥€佽嚜妫€銆佺煡璇嗗簱鍐欏叆锛?    description: >
+      瑙勫垯鎵ц妯″紡锛屽喅瀹氱紪璇戝櫒杈撳嚭鏍煎紡鍜?Agent 杩愯鏃惰涓恒€?      strict 瑙勫垯鍦ㄧ紪璇戣緭鍑轰腑浣跨敤 MUST 寮鸿皟銆?      advisory 瑙勫垯鍦ㄧ紪璇戣緭鍑轰腑浣跨敤 SHOULD銆?      auto 瑙勫垯缂栬瘧鍣ㄧ敓鎴愬搴旂殑鑷姩鍖栬Е鍙戦€昏緫銆?
+  # 7. 瀛樺湪鐞嗙敱
   rationale:
     type: string
     required: true
     description: >
-      规则存在的理由和背景。
-      帮助 Agent 理解「为什么需要此规则」，而非机械执行。
-      在规则冲突时（参见 CORE-006 元规则），此为判断优先级的重要依据。
-
-  # 8. 来源追溯
+      瑙勫垯瀛樺湪鐨勭悊鐢卞拰鑳屾櫙銆?      甯姪 Agent 鐞嗚В銆屼负浠€涔堥渶瑕佹瑙勫垯銆嶏紝鑰岄潪鏈烘鎵ц銆?      鍦ㄨ鍒欏啿绐佹椂锛堝弬瑙?CORE-006 鍏冭鍒欙級锛屾涓哄垽鏂紭鍏堢骇鐨勯噸瑕佷緷鎹€?
+  # 8. 鏉ユ簮杩芥函
   source:
     type: string
     required: true
     description: >
-      规则来源文件的路径和章节，支持溯源审查。
-      格式："{file} § {section}" 或 "{file} § {section}.{subsection}"
+      瑙勫垯鏉ユ簮鏂囦欢鐨勮矾寰勫拰绔犺妭锛屾敮鎸佹函婧愬鏌ャ€?      鏍煎紡锛?{file} 搂 {section}" 鎴?"{file} 搂 {section}.{subsection}"
     examples:
-      - "AGENTS.md § 核心约束.1"
-      - "dev_core.md § 研究文档规范"
-      - "instructions/core.md § 会话启动自检"
+      - "AGENTS.md 搂 鏍稿績绾︽潫.1"
+      - "dev_core.md 搂 鐮旂┒鏂囨。瑙勮寖"
+      - "instructions/core.md 搂 浼氳瘽鍚姩鑷"
 
-  # 9. 规则关系
+  # 9. 瑙勫垯鍏崇郴
   relations:
     type: array
     required: false
     description: >
-      本规则与其他规则的关联关系，供校验器做结构化检测。
-      不填写时校验器回退到自然语言解析（按关系章节的 detected_by 规则）。
-    items:
+      鏈鍒欎笌鍏朵粬瑙勫垯鐨勫叧鑱斿叧绯伙紝渚涙牎楠屽櫒鍋氱粨鏋勫寲妫€娴嬨€?      涓嶅～鍐欐椂鏍￠獙鍣ㄥ洖閫€鍒拌嚜鐒惰瑷€瑙ｆ瀽锛堟寜鍏崇郴绔犺妭鐨?detected_by 瑙勫垯锛夈€?    items:
       type: object
       fields:
         type:
           type: enum
           values: ["hierarchy", "dependency", "conflict", "redundancy"]
-          description: "关系类型，对应关系章节的 types 定义"
+          description: "鍏崇郴绫诲瀷锛屽搴斿叧绯荤珷鑺傜殑 types 瀹氫箟"
         target:
           type: string
           pattern: "^[A-Z]{2,6}-\\d{3}$"
-          description: "目标规则 ID"
+          description: "鐩爣瑙勫垯 ID"
         description:
           type: string
-          description: "关系说明"
+          description: "鍏崇郴璇存槑"
     examples:
       - type: hierarchy
         target: "CORE-001"
-        description: "CORE-006（元规则）优先级高于 CORE-001"
+        description: "CORE-006锛堝厓瑙勫垯锛変紭鍏堢骇楂樹簬 CORE-001"
 
-# ── 规则间关系 ──────────────────────────────────────────────────
+# 鈹€鈹€ 瑙勫垯闂村叧绯?鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 
 relations:
   description: >
-    规则之间可能存在的关系，供校验器检测。
-  types:
-    - hierarchy:     # 优先级覆盖（如 CORE-006 覆盖所有其他规则）
-        description: "一条规则声明优先级高于另一条，冲突时以此为准"
-        detected_by: "condition 字段中提及其他规则 ID"
-    - dependency:    # 规则 A 的有效性依赖规则 B
-        description: "一条规则的 enforce 需要另一条规则先满足"
-        detected_by: "rationale 字段中提及其他规则 ID"
-    - conflict:      # 两条规则在同一条件下要求不同行为
-        description: "同一 scope + condition 下两个 action 矛盾"
-        detected_by: "校验器按 scope + condition 分组后对比 action"
-    - redundancy:    # 两条规则的 action 和 scope 高度重合
-        description: "规则 A 的约束完全被规则 B 覆盖"
-        detected_by: "校验器计算规则对的 Jaccard 相似度"
+    瑙勫垯涔嬮棿鍙兘瀛樺湪鐨勫叧绯伙紝渚涙牎楠屽櫒妫€娴嬨€?  types:
+    - hierarchy:     # 浼樺厛绾ц鐩栵紙濡?CORE-006 瑕嗙洊鎵€鏈夊叾浠栬鍒欙級
+        description: "涓€鏉¤鍒欏０鏄庝紭鍏堢骇楂樹簬鍙︿竴鏉★紝鍐茬獊鏃朵互姝や负鍑?
+        detected_by: "condition 瀛楁涓彁鍙婂叾浠栬鍒?ID"
+    - dependency:    # 瑙勫垯 A 鐨勬湁鏁堟€т緷璧栬鍒?B
+        description: "涓€鏉¤鍒欑殑 enforce 闇€瑕佸彟涓€鏉¤鍒欏厛婊¤冻"
+        detected_by: "rationale 瀛楁涓彁鍙婂叾浠栬鍒?ID"
+    - conflict:      # 涓ゆ潯瑙勫垯鍦ㄥ悓涓€鏉′欢涓嬭姹備笉鍚岃涓?        description: "鍚屼竴 scope + condition 涓嬩袱涓?action 鐭涚浘"
+        detected_by: "鏍￠獙鍣ㄦ寜 scope + condition 鍒嗙粍鍚庡姣?action"
+    - redundancy:    # 涓ゆ潯瑙勫垯鐨?action 鍜?scope 楂樺害閲嶅悎
+        description: "瑙勫垯 A 鐨勭害鏉熷畬鍏ㄨ瑙勫垯 B 瑕嗙洊"
+        detected_by: "鏍￠獙鍣ㄨ绠楄鍒欏鐨?Jaccard 鐩镐技搴?

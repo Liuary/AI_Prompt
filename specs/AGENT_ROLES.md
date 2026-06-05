@@ -1,48 +1,40 @@
-# Agent 角色规范 (AGENT_ROLES.md)
+# Agent 瑙掕壊瑙勮寖 (AGENT_ROLES.md)
 
-> AI_Prompt 定义 9 个 Agent 角色，覆盖计划→编码→审查→测试→Bug 全流程。
+> AI_Prompt 瀹氫箟 9 涓?Agent 瑙掕壊锛岃鐩栬鍒掆啋缂栫爜鈫掑鏌モ啋娴嬭瘯鈫払ug 鍏ㄦ祦绋嬨€?
+## 涓€銆佽鑹叉€昏
 
-## 一、角色总览
-
-| Agent | 类型 | 职责 | 权限范围 |
+| Agent | 绫诲瀷 | 鑱岃矗 | 鏉冮檺鑼冨洿 |
 |-------|------|------|----------|
-| **Architect** | 主 | 计划管理、代码审查（提交/验收） | `.ai/` 只读源码 |
-| **Code** | 主 | Bug 修复、审查问题处理 | `*` 全文件 |
-| **CodeWorker** | 子 | 自动闭环中的编码实现 | `*` 全文件 |
-| **Ask** | 主 | 回答技术问题、查阅资料 | 只读 |
-| **Debug** | 子 | 缺陷排查与根因分析 | 只读源码 |
-| **ReviewWorker** | 子 | 自动闭环中的代码审查 | `.ai/` 只读源码 |
-| **Tester** | 子 | Bug 提交与修复验收 | 只读源码 |
-| **TestWriter** | 子 | 自动闭环中的测试编写 | `*` 全文件 |
-| **AutoRunner** | 子 | 单 worktree 自动闭环调度 | `*` |
+| **Architect** | 涓?| 璁″垝绠＄悊銆佷唬鐮佸鏌ワ紙鎻愪氦/楠屾敹锛?| `.ai/` 鍙婧愮爜 |
+| **Code** | 涓?| Bug 淇銆佸鏌ラ棶棰樺鐞?| `*` 鍏ㄦ枃浠?|
+| **CodeWorker** | 瀛?| 鑷姩闂幆涓殑缂栫爜瀹炵幇 | `*` 鍏ㄦ枃浠?|
+| **Ask** | 涓?| 鍥炵瓟鎶€鏈棶棰樸€佹煡闃呰祫鏂?| 鍙 |
+| **Debug** | 瀛?| 缂洪櫡鎺掓煡涓庢牴鍥犲垎鏋?| 鍙婧愮爜 |
+| **ReviewWorker** | 瀛?| 鑷姩闂幆涓殑浠ｇ爜瀹℃煡 | `.ai/` 鍙婧愮爜 |
+| **Tester** | 瀛?| Bug 鎻愪氦涓庝慨澶嶉獙鏀?| 鍙婧愮爜 |
+| **TestWriter** | 瀛?| 鑷姩闂幆涓殑娴嬭瘯缂栧啓 | `*` 鍏ㄦ枃浠?|
+| **AutoRunner** | 瀛?| 鍗?worktree 鑷姩闂幆璋冨害 | `*` |
 
-## 二、人工流程
-
+## 浜屻€佷汉宸ユ祦绋?
 ```
-User → Architect（计划+审查提交）
-     → Code（编码+修复）
-     → Tester（验收）
+User 鈫?Architect锛堣鍒?瀹℃煡鎻愪氦锛?     鈫?Code锛堢紪鐮?淇锛?     鈫?Tester锛堥獙鏀讹級
 ```
 
-## 三、自动流程
-
+## 涓夈€佽嚜鍔ㄦ祦绋?
 ```
-Architect → AutoRunner（worktree 内串行）
-         → CodeWorker（编码）
-         → ReviewWorker（审查）
-         → TestWriter（测试）
-         → Tester（验收）
-         → Debug（排错）
+Architect 鈫?AutoRunner锛坵orktree 鍐呬覆琛岋級
+         鈫?CodeWorker锛堢紪鐮侊級
+         鈫?ReviewWorker锛堝鏌ワ級
+         鈫?TestWriter锛堟祴璇曪級
+         鈫?Tester锛堥獙鏀讹級
+         鈫?Debug锛堟帓閿欙級
 ```
 
-## 四、关键约束
+## 鍥涖€佸叧閿害鏉?
+- **鍙戠幇鑰呬笌淇鑰呭垎绂?*锛欰rchitect 鎻愪氦鐨勫鏌?娴嬭瘯 Agent 鎻愪氦鐨?Bug锛屼笉寰楄嚜琛屼慨澶?- **Code/CodeWorker 鍖哄垎**锛氫汉宸ユ祦绋嬬敤 Code锛岃嚜鍔ㄦ祦绋嬬敤 CodeWorker锛岃亴璐ｉ殧绂?- **AutoRunner 鍞竴鍚姩鑰?*锛欰rchitect 鍚姩 AutoRunner锛孉utoRunner 鍐呴儴涓嶅緱鍐嶅垱寤烘柊 worktree
+- 閬囧埌杩炵画涓ゆ楠屾敹澶辫触 鈫?`paused`锛岃矗浠昏浆 `user`
+- 璁″垝澶栨灦鏋勫彉鏇?鈫?`paused`
 
-- **发现者与修复者分离**：Architect 提交的审查/测试 Agent 提交的 Bug，不得自行修复
-- **Code/CodeWorker 区分**：人工流程用 Code，自动流程用 CodeWorker，职责隔离
-- **AutoRunner 唯一启动者**：Architect 启动 AutoRunner，AutoRunner 内部不得再创建新 worktree
-- 遇到连续两次验收失败 → `paused`，责任转 `user`
-- 计划外架构变更 → `paused`
+## 浜斻€丄gent 瀹氫箟浣嶇疆
 
-## 五、Agent 定义位置
-
-所有 Agent 提示词位于 `Kilo/agents/`，权限在 YAML 头 `permission` 字段声明。
+鎵€鏈?Agent 鎻愮ず璇嶄綅浜?`adapters/kilo/agents/`锛屾潈闄愬湪 YAML 澶?`permission` 瀛楁澹版槑銆?

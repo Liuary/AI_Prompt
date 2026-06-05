@@ -5,15 +5,15 @@ from pathlib import Path
 from .common import report, copy_files, deploy_resources
 
 OPENCODE_FILES = {
-    "Kilo/agents/architect.md": ".opencode/agents/architect.md",
-    "Kilo/agents/auto-runner.md": ".opencode/agents/auto-runner.md",
-    "Kilo/agents/code.md": ".opencode/agents/code.md",
-    "Kilo/agents/code-worker.md": ".opencode/agents/code-worker.md",
-    "Kilo/agents/ask.md": ".opencode/agents/ask.md",
-    "Kilo/agents/debug.md": ".opencode/agents/debug.md",
-    "Kilo/agents/review-worker.md": ".opencode/agents/review-worker.md",
-    "Kilo/agents/tester.md": ".opencode/agents/tester.md",
-    "Kilo/agents/test-writer.md": ".opencode/agents/test-writer.md",
+    "adapters/kilo/agents/architect.md": ".opencode/agents/architect.md",
+    "adapters/kilo/agents/auto-runner.md": ".opencode/agents/auto-runner.md",
+    "adapters/kilo/agents/code.md": ".opencode/agents/code.md",
+    "adapters/kilo/agents/code-worker.md": ".opencode/agents/code-worker.md",
+    "adapters/kilo/agents/ask.md": ".opencode/agents/ask.md",
+    "adapters/kilo/agents/debug.md": ".opencode/agents/debug.md",
+    "adapters/kilo/agents/review-worker.md": ".opencode/agents/review-worker.md",
+    "adapters/kilo/agents/tester.md": ".opencode/agents/tester.md",
+    "adapters/kilo/agents/test-writer.md": ".opencode/agents/test-writer.md",
 }
 
 OPENCODE_DIRS = [

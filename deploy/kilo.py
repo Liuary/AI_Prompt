@@ -5,15 +5,15 @@ from pathlib import Path
 from .common import report, copy_files, deploy_resources
 
 KILO_FILES = {
-    "Kilo/agents/architect.md": ".kilo/agents/architect.md",
-    "Kilo/agents/auto-runner.md": ".kilo/agents/auto-runner.md",
-    "Kilo/agents/code.md": ".kilo/agents/code.md",
-    "Kilo/agents/code-worker.md": ".kilo/agents/code-worker.md",
-    "Kilo/agents/ask.md": ".kilo/agents/ask.md",
-    "Kilo/agents/debug.md": ".kilo/agents/debug.md",
-    "Kilo/agents/review-worker.md": ".kilo/agents/review-worker.md",
-    "Kilo/agents/tester.md": ".kilo/agents/tester.md",
-    "Kilo/agents/test-writer.md": ".kilo/agents/test-writer.md",
+    "adapters/kilo/agents/architect.md": ".kilo/agents/architect.md",
+    "adapters/kilo/agents/auto-runner.md": ".kilo/agents/auto-runner.md",
+    "adapters/kilo/agents/code.md": ".kilo/agents/code.md",
+    "adapters/kilo/agents/code-worker.md": ".kilo/agents/code-worker.md",
+    "adapters/kilo/agents/ask.md": ".kilo/agents/ask.md",
+    "adapters/kilo/agents/debug.md": ".kilo/agents/debug.md",
+    "adapters/kilo/agents/review-worker.md": ".kilo/agents/review-worker.md",
+    "adapters/kilo/agents/tester.md": ".kilo/agents/tester.md",
+    "adapters/kilo/agents/test-writer.md": ".kilo/agents/test-writer.md",
 }
 
 KILO_DIRS = [

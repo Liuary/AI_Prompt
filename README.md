@@ -1,22 +1,22 @@
 # AI_Prompt
 
-**跨 AI 工具的 Agent 开发治理框架** — 为 AI 设定边界，让开发过程可控、可追溯、可协作。
+**璺?AI 宸ュ叿鐨?Agent 寮€鍙戞不鐞嗘鏋?* 鈥?涓?AI 璁惧畾杈圭晫锛岃寮€鍙戣繃绋嬪彲鎺с€佸彲杩芥函銆佸彲鍗忎綔銆?
 
 [![Status](https://img.shields.io/badge/status-active-brightgreen)](https://github.com/Liuary/AI_Prompt)
 [![Plan](https://img.shields.io/badge/plan-v2.0--done-blue)](.ai/plan/plan.md)
 
 ```bash
-python deploy.py /path/to/your-project          # 部署全部
-python deploy.py /path/to/your-project -k       # 仅 Kilo
-python deploy.py /path/to/your-project -c       # 仅 Claude Code
-python deploy.py /path/to/your-project -p       # 仅 GitHub Copilot
-python deploy.py /path/to/your-project -o       # 仅 OpenCode
-python deploy.py --help                         # 查看帮助
+python deploy.py /path/to/your-project          # 閮ㄧ讲鍏ㄩ儴
+python deploy.py /path/to/your-project -k       # 浠?Kilo
+python deploy.py /path/to/your-project -c       # 浠?Claude Code
+python deploy.py /path/to/your-project -p       # 浠?GitHub Copilot
+python deploy.py /path/to/your-project -o       # 浠?OpenCode
+python deploy.py --help                         # 鏌ョ湅甯姪
 ```
 
 ---
 
-## 快速开始
+## 蹇€熷紑濮?
 
 ```bash
 git clone https://github.com/Liuary/AI_Prompt.git
@@ -24,164 +24,164 @@ cd AI_Prompt
 python deploy.py /path/to/your-project
 ```
 
-部署后目标项目获得：
+閮ㄧ讲鍚庣洰鏍囬」鐩幏寰楋細
 
-| 能力 | 说明 |
+| 鑳藉姏 | 璇存槑 |
 |------|------|
-| **行为约束** | `AGENTS.md` 定义 AI 能做什么、不能做什么 |
-| **工作区** | `.ai/` 统一管理计划、日志、审查、Bug、知识库 |
-| **Agent 角色** | 多角色体系（architect / code / tester / debug），按工具适配 |
-| **Skill 系统** | 6 个可复用技能模块，按需调用 |
-| **Hook 保护** | Copilot 目录级编辑控制，运行时强制限制 |
+| **琛屼负绾︽潫** | `AGENTS.md` 瀹氫箟 AI 鑳藉仛浠€涔堛€佷笉鑳藉仛浠€涔?|
+| **宸ヤ綔鍖?* | `.ai/` 缁熶竴绠＄悊璁″垝銆佹棩蹇椼€佸鏌ャ€丅ug銆佺煡璇嗗簱 |
+| **Agent 瑙掕壊** | 澶氳鑹蹭綋绯伙紙architect / code / tester / debug锛夛紝鎸夊伐鍏烽€傞厤 |
+| **Skill 绯荤粺** | 6 涓彲澶嶇敤鎶€鑳芥ā鍧楋紝鎸夐渶璋冪敤 |
+| **Hook 淇濇姢** | Copilot 鐩綍绾х紪杈戞帶鍒讹紝杩愯鏃跺己鍒堕檺鍒?|
 
-## Obsidian 集成
+## Obsidian 闆嗘垚
 
-将 `.ai/` 工作区在 Obsidian 中打开为 Vault，即可在图形化界面中管理项目：
+灏?`.ai/` 宸ヤ綔鍖哄湪 Obsidian 涓墦寮€涓?Vault锛屽嵆鍙湪鍥惧舰鍖栫晫闈腑绠＄悊椤圭洰锛?
 
 ```bash
 python deploy.py /path/to/your-project --obsidian
 ```
 
-部署后在 Obsidian 中打开目标项目的 `.ai/` 目录，你将获得：
+閮ㄧ讲鍚庡湪 Obsidian 涓墦寮€鐩爣椤圭洰鐨?`.ai/` 鐩綍锛屼綘灏嗚幏寰楋細
 
-| 能力 | 说明 |
+| 鑳藉姏 | 璇存槑 |
 |------|------|
-| **双向链接** | `[[wikilink]]` 在计划、审查、Bug 文件之间自由跳转 |
-| **图谱视图** | 可视化工作区文件的关联关系网络 |
-| **仪表盘** | `.ai/obsidian/dashboard.md` 使用 Dataview 动态渲染阶段状态、审查条目和 Bug 列表 |
-| **全局搜索** | 跨所有 .ai/ 文件的全文本搜索 |
+| **鍙屽悜閾炬帴** | `[[wikilink]]` 鍦ㄨ鍒掋€佸鏌ャ€丅ug 鏂囦欢涔嬮棿鑷敱璺宠浆 |
+| **鍥捐氨瑙嗗浘** | 鍙鍖栧伐浣滃尯鏂囦欢鐨勫叧鑱斿叧绯荤綉缁?|
+| **浠〃鐩?* | `.ai/obsidian/dashboard.md` 浣跨敤 Dataview 鍔ㄦ€佹覆鏌撻樁娈电姸鎬併€佸鏌ユ潯鐩拰 Bug 鍒楄〃 |
+| **鍏ㄥ眬鎼滅储** | 璺ㄦ墍鏈?.ai/ 鏂囦欢鐨勫叏鏂囨湰鎼滅储 |
 
-详情参见 [.ai/obsidian/README.md](.ai/obsidian/README.md)。
+璇︽儏鍙傝 [.ai/obsidian/README.md](.ai/obsidian/README.md)銆?
 
-支持的 AI 工具：
+鏀寔鐨?AI 宸ュ叿锛?
 
-| 工具 | 状态 | 部署选项 | 适配内容 |
+| 宸ュ叿 | 鐘舵€?| 閮ㄧ讲閫夐」 | 閫傞厤鍐呭 |
 |------|:--:|------|------|
-| **Kilo** | ✅ | `-k` | Agent + Skill + Instructions + kilo.jsonc |
-| **Claude Code** | ✅ | `-c` | CLAUDE.md + rules + skills + agents |
-| **GitHub Copilot** | ✅ | `-p` | copilot-instructions + instructions + skills + agents + Hook |
-| **OpenCode** | ✅ | `-o` | Agent + Skill + Instructions + opencode.jsonc |
-| **Deep Code CLI** | ✅ | `-d` | Skill + 合并版 AGENTS |
+| **Kilo** | 鉁?| `-k` | Agent + Skill + Instructions + kilo.jsonc |
+| **Claude Code** | 鉁?| `-c` | CLAUDE.md + rules + skills + agents |
+| **GitHub Copilot** | 鉁?| `-p` | copilot-instructions + instructions + skills + agents + Hook |
+| **OpenCode** | 鉁?| `-o` | Agent + Skill + Instructions + opencode.jsonc |
+| **Deep Code CLI** | 鉁?| `-d` | Skill + 鍚堝苟鐗?AGENTS |
 
 ---
 
-## 解决什么问题
+## 瑙ｅ喅浠€涔堥棶棰?
 
-- **AI 容易改超范围、过度设计、忘记测试** → 约束体系（6 条核心准则 + 编码规范 + 操作规范）
-- **计划、日志、审查、Bug、知识散落各处** → 统一收进 `.ai/` 工作区，结构一致
-- **调试经验不该塞进行为约束** → 单独拆出 `.ai/kb/` 知识库，约束与知识分离
-- **人工和自动混在一起互相干扰** → 拆分主 Agent 与 Worker Agent，双轨隔离
-- **各工具配置格式不同，维护成本高** → 一键部署，按工具生成原生格式
+- **AI 瀹规槗鏀硅秴鑼冨洿銆佽繃搴﹁璁°€佸繕璁版祴璇?* 鈫?绾︽潫浣撶郴锛? 鏉℃牳蹇冨噯鍒?+ 缂栫爜瑙勮寖 + 鎿嶄綔瑙勮寖锛?
+- **璁″垝銆佹棩蹇椼€佸鏌ャ€丅ug銆佺煡璇嗘暎钀藉悇澶?* 鈫?缁熶竴鏀惰繘 `.ai/` 宸ヤ綔鍖猴紝缁撴瀯涓€鑷?
+- **璋冭瘯缁忛獙涓嶈濉炶繘琛屼负绾︽潫** 鈫?鍗曠嫭鎷嗗嚭 `.ai/kb/` 鐭ヨ瘑搴擄紝绾︽潫涓庣煡璇嗗垎绂?
+- **浜哄伐鍜岃嚜鍔ㄦ贩鍦ㄤ竴璧蜂簰鐩稿共鎵?* 鈫?鎷嗗垎涓?Agent 涓?Worker Agent锛屽弻杞ㄩ殧绂?
+- **鍚勫伐鍏烽厤缃牸寮忎笉鍚岋紝缁存姢鎴愭湰楂?* 鈫?涓€閿儴缃诧紝鎸夊伐鍏风敓鎴愬師鐢熸牸寮?
 
 ---
 
-## 架构
+## 鏋舵瀯
 
 ```
 AI_Prompt/
-├── AGENTS.md                    ← 核心约束（所有工具共用）
-├── instructions/                ← 通用工作区规范
-├── skills/                      ← 通用技能（6 个）
-├── deploy.py → deploy/          ← 模块化部署引擎
-├── .ai/                         ← 工作区框架（部署时创建）
-├── Kilo/agents/                  ← Kilo Agent 定义（9 个）
-├── adapters/
-│   ├── claude-code/             ← Claude Code：CLAUDE.md + agents + docs
-│   ├── copilot/                 ← Copilot：instructions + skills + agents + scripts
-│   ├── opencode/               ← OpenCode 适配器（复用 Kilo Agent）
-│   └── deepcode/                ← Deep Code CLI 适配器
-└── specs/ + rules/ + lib/ + tests/  ← 规则 DSL 引擎
+鈹溾攢鈹€ AGENTS.md                    鈫?鏍稿績绾︽潫锛堟墍鏈夊伐鍏峰叡鐢級
+鈹溾攢鈹€ instructions/                鈫?閫氱敤宸ヤ綔鍖鸿鑼?
+鈹溾攢鈹€ skills/                      鈫?閫氱敤鎶€鑳斤紙6 涓級
+鈹溾攢鈹€ deploy.py 鈫?deploy/          鈫?妯″潡鍖栭儴缃插紩鎿?
+鈹溾攢鈹€ .ai/                         鈫?宸ヤ綔鍖烘鏋讹紙閮ㄧ讲鏃跺垱寤猴級
+鈹溾攢鈹€ adapters/kilo/agents/                  鈫?Kilo Agent 瀹氫箟锛? 涓級
+鈹溾攢鈹€ adapters/
+鈹?  鈹溾攢鈹€ claude-code/             鈫?Claude Code锛欳LAUDE.md + agents + docs
+鈹?  鈹溾攢鈹€ copilot/                 鈫?Copilot锛歩nstructions + skills + agents + scripts
+鈹?  鈹溾攢鈹€ opencode/               鈫?OpenCode 閫傞厤鍣紙澶嶇敤 Kilo Agent锛?
+鈹?  鈹斺攢鈹€ deepcode/                鈫?Deep Code CLI 閫傞厤鍣?
+鈹斺攢鈹€ specs/ + rules/ + lib/ + tests/  鈫?瑙勫垯 DSL 寮曟搸
 ```
 
-**核心 + 适配器**：`AGENTS.md`、`instructions/`、`skills/` 是工具无关的核心层，`Kilo/` 和 `adapters/` 将治理体系翻译为各工具的原生格式。
+**鏍稿績 + 閫傞厤鍣?*锛歚AGENTS.md`銆乣instructions/`銆乣skills/` 鏄伐鍏锋棤鍏崇殑鏍稿績灞傦紝`Kilo/` 鍜?`adapters/` 灏嗘不鐞嗕綋绯荤炕璇戜负鍚勫伐鍏风殑鍘熺敓鏍煎紡銆?
 
 ---
 
-## 约束体系
+## 绾︽潫浣撶郴
 
-三层递进约束，优先级从低到高：
+涓夊眰閫掕繘绾︽潫锛屼紭鍏堢骇浠庝綆鍒伴珮锛?
 
-| 层级 | 文件 | 说明 |
+| 灞傜骇 | 鏂囦欢 | 璇存槑 |
 |------|------|------|
-| 永久约束 | `AGENTS.md` | 6 条核心行为准则 + 编码风格，跨工具通用 |
-| 流程约束 | `instructions/core.md` | .ai/ 工作区操作规范（会话自检、计划、审查、Bug 生命周期） |
-| 动态规则 | `.ai/dev/dev_core.md` | `[+]`/`[-]` 开关管理，项目级定制 |
+| 姘镐箙绾︽潫 | `AGENTS.md` | 6 鏉℃牳蹇冭涓哄噯鍒?+ 缂栫爜椋庢牸锛岃法宸ュ叿閫氱敤 |
+| 娴佺▼绾︽潫 | `instructions/core.md` | .ai/ 宸ヤ綔鍖烘搷浣滆鑼冿紙浼氳瘽鑷銆佽鍒掋€佸鏌ャ€丅ug 鐢熷懡鍛ㄦ湡锛?|
+| 鍔ㄦ€佽鍒?| `.ai/dev/dev_core.md` | `[+]`/`[-]` 寮€鍏崇鐞嗭紝椤圭洰绾у畾鍒?|
 
-约束（怎么做事）与知识库（项目是什么样）严格分离，互不混淆。
+绾︽潫锛堟€庝箞鍋氫簨锛変笌鐭ヨ瘑搴擄紙椤圭洰鏄粈涔堟牱锛変弗鏍煎垎绂伙紝浜掍笉娣锋穯銆?
 
 ---
 
-## 工作流程
+## 宸ヤ綔娴佺▼
 
-### 人工流程（默认）
+### 浜哄伐娴佺▼锛堥粯璁わ級
 
 ```text
-用户 → architect：制定计划
-用户 → code：实现功能
-用户 → architect：代码审查
-用户 → code：修复审查问题
-用户 → tester：测试、提交 Bug
-用户 → code：修复 Bug → 验收通过
+鐢ㄦ埛 鈫?architect锛氬埗瀹氳鍒?
+鐢ㄦ埛 鈫?code锛氬疄鐜板姛鑳?
+鐢ㄦ埛 鈫?architect锛氫唬鐮佸鏌?
+鐢ㄦ埛 鈫?code锛氫慨澶嶅鏌ラ棶棰?
+鐢ㄦ埛 鈫?tester锛氭祴璇曘€佹彁浜?Bug
+鐢ㄦ埛 鈫?code锛氫慨澶?Bug 鈫?楠屾敹閫氳繃
 ```
 
-默认 `执行模式=manual`，Agent 按用户指令工作，适合需求变动和风险较高的阶段。
+榛樿 `鎵ц妯″紡=manual`锛孉gent 鎸夌敤鎴锋寚浠ゅ伐浣滐紝閫傚悎闇€姹傚彉鍔ㄥ拰椋庨櫓杈冮珮鐨勯樁娈点€?
 
-### 自动闭环（可选）
+### 鑷姩闂幆锛堝彲閫夛級
 
-开启 `执行模式=auto` + `自动推进=enabled` 后，AutoRunner 在单个 worktree 内串行调度 Worker Agent：**编码 → 审查 → 修复 → 测试 → Bug 修复 → done**。自动流程只推进到子计划完成，最终合并仍由用户确认。
+寮€鍚?`鎵ц妯″紡=auto` + `鑷姩鎺ㄨ繘=enabled` 鍚庯紝AutoRunner 鍦ㄥ崟涓?worktree 鍐呬覆琛岃皟搴?Worker Agent锛?*缂栫爜 鈫?瀹℃煡 鈫?淇 鈫?娴嬭瘯 鈫?Bug 淇 鈫?done**銆傝嚜鍔ㄦ祦绋嬪彧鎺ㄨ繘鍒板瓙璁″垝瀹屾垚锛屾渶缁堝悎骞朵粛鐢辩敤鎴风‘璁ゃ€?
 
 ---
 
-## v2.0 完成
+## v2.0 瀹屾垚
 
-v2.0 四个阶段全部完成，详见 [`.ai/plan/plan.md`](.ai/plan/plan.md)：
+v2.0 鍥涗釜闃舵鍏ㄩ儴瀹屾垚锛岃瑙?[`.ai/plan/plan.md`](.ai/plan/plan.md)锛?
 
-| 阶段 | 目标 | 状态 |
+| 闃舵 | 鐩爣 | 鐘舵€?|
 |------|------|:--:|
-| 阶段一 | 规则 DSL + 编译器/校验器 + 知识库自动化 + 跨会话记忆 | ✅ done |
-| 阶段二 | 多人/多Agent 协作（任务归属、冲突检测、进度同步） | ✅ done |
-| 阶段三 | Claude Code + Copilot 适配器 + 标准化接口 | ✅ done |
-| 阶段四 | 规范文档体系 + 模板市场储备 | ✅ done |
+| 闃舵涓€ | 瑙勫垯 DSL + 缂栬瘧鍣?鏍￠獙鍣?+ 鐭ヨ瘑搴撹嚜鍔ㄥ寲 + 璺ㄤ細璇濊蹇?| 鉁?done |
+| 闃舵浜?| 澶氫汉/澶欰gent 鍗忎綔锛堜换鍔″綊灞炪€佸啿绐佹娴嬨€佽繘搴﹀悓姝ワ級 | 鉁?done |
+| 闃舵涓?| Claude Code + Copilot 閫傞厤鍣?+ 鏍囧噯鍖栨帴鍙?| 鉁?done |
+| 闃舵鍥?| 瑙勮寖鏂囨。浣撶郴 + 妯℃澘甯傚満鍌ㄥ | 鉁?done |
 
 ---
 
-## CLI 工具
+## CLI 宸ュ叿
 
 ```bash
-python scripts/ai_cli.py status              # 所有阶段状态概览
-python scripts/ai_cli.py review              # 待处理审查条目
-python scripts/ai_cli.py bugs                # 待处理 Bug
-python scripts/ai_cli.py log                 # 最近日志摘要
-python scripts/ai_cli.py kb search <查询>     # 知识库搜索
-python scripts/ai_cli.py kb list             # 知识库文件列表
+python scripts/ai_cli.py status              # 鎵€鏈夐樁娈电姸鎬佹瑙?
+python scripts/ai_cli.py review              # 寰呭鐞嗗鏌ユ潯鐩?
+python scripts/ai_cli.py bugs                # 寰呭鐞?Bug
+python scripts/ai_cli.py log                 # 鏈€杩戞棩蹇楁憳瑕?
+python scripts/ai_cli.py kb search <鏌ヨ>     # 鐭ヨ瘑搴撴悳绱?
+python scripts/ai_cli.py kb list             # 鐭ヨ瘑搴撴枃浠跺垪琛?
 ```
 
-## 项目文档
+## 椤圭洰鏂囨。
 
-| 文档 | 说明 |
+| 鏂囨。 | 璇存槑 |
 |------|------|
-| [`.ai/plan/plan.md`](.ai/plan/plan.md) | v2.0 大计划 |
-| [`DEPLOY.md`](DEPLOY.md) | 部署指令与工具一览 |
-| [`ADAPTER_SPEC.md`](ADAPTER_SPEC.md) | 多工具适配器标准化接口 |
-| [`.ai/obsidian/README.md`](.ai/obsidian/README.md) | Obsidian Vault 集成指南 |
-| [`docs/claude/claude-config.md`](docs/claude/claude-config.md) | Claude Code 配置规范 |
-| [`docs/github/copilot-customization-guide.md`](docs/github/copilot-customization-guide.md) | Copilot 自定义配置指南 |
-| [`specs/OVERVIEW.md`](specs/OVERVIEW.md) | 规范体系概览 |
+| [`.ai/plan/plan.md`](.ai/plan/plan.md) | v2.0 澶ц鍒?|
+| [`DEPLOY.md`](DEPLOY.md) | 閮ㄧ讲鎸囦护涓庡伐鍏蜂竴瑙?|
+| [`ADAPTER_SPEC.md`](ADAPTER_SPEC.md) | 澶氬伐鍏烽€傞厤鍣ㄦ爣鍑嗗寲鎺ュ彛 |
+| [`.ai/obsidian/README.md`](.ai/obsidian/README.md) | Obsidian Vault 闆嗘垚鎸囧崡 |
+| [`docs/claude/claude-config.md`](docs/claude/claude-config.md) | Claude Code 閰嶇疆瑙勮寖 |
+| [`docs/github/copilot-customization-guide.md`](docs/github/copilot-customization-guide.md) | Copilot 鑷畾涔夐厤缃寚鍗?|
+| [`specs/OVERVIEW.md`](specs/OVERVIEW.md) | 瑙勮寖浣撶郴姒傝 |
 
 ---
 
-## 示例项目
+## 绀轰緥椤圭洰
 
-- [novel_create](https://github.com/Liuary/novel_create) — 小说创作工具，使用 AI_Prompt 模板部署
+- [novel_create](https://github.com/Liuary/novel_create) 鈥?灏忚鍒涗綔宸ュ叿锛屼娇鐢?AI_Prompt 妯℃澘閮ㄧ讲
 
 ---
 
-## 手动部署（参考）
+## 鎵嬪姩閮ㄧ讲锛堝弬鑰冿級
 
-自动部署推荐使用 `deploy.py`。如需手动操作，详见 [`DEPLOY.md`](DEPLOY.md)：
+鑷姩閮ㄧ讲鎺ㄨ崘浣跨敤 `deploy.py`銆傚闇€鎵嬪姩鎿嶄綔锛岃瑙?[`DEPLOY.md`](DEPLOY.md)锛?
 
-1. 复制 `AGENTS.md` 到目标项目根目录
-2. 创建 `.ai/` 工作区目录结构
-3. 按工具复制指令 / 技能 / Agent 文件
-4. 配置 `.gitignore` 和 `.ai/.info.json`
-5. 逐项验证所有文件就位
+1. 澶嶅埗 `AGENTS.md` 鍒扮洰鏍囬」鐩牴鐩綍
+2. 鍒涘缓 `.ai/` 宸ヤ綔鍖虹洰褰曠粨鏋?
+3. 鎸夊伐鍏峰鍒舵寚浠?/ 鎶€鑳?/ Agent 鏂囦欢
+4. 閰嶇疆 `.gitignore` 鍜?`.ai/.info.json`
+5. 閫愰」楠岃瘉鎵€鏈夋枃浠跺氨浣?
