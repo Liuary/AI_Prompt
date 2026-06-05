@@ -1,65 +1,81 @@
-# Hermes-3 妯″瀷闆嗘垚鎸囧崡
+# Hermes-3 Model Integration Guide
 
-> 灏嗘湰鍦?Hermes-3 妯″瀷锛堥€氳繃 Ollama锛夋帴鍏?AI_Prompt 椤圭洰鐨勫畬鏁存祦绋嬨€?
-## 涓€銆佹灦鏋勬瑙?
-AI_Prompt 鏀寔涓夌妯″瀷鍚庣锛?
+> Complete workflow for integrating a local Hermes-3 model (via Ollama) into the AI_Prompt project.
+## I. Architecture Overview
+AI_Prompt supports three model backends:
 ```
-鈹屸攢鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹?鈹?                  Agent 灞傦紙宸ュ叿鏃犲叧锛?           鈹?鈹? .ai/agents/definitions/*.yaml                  鈹?鈹? Agent 瑙掕壊銆佹潈闄愩€佸伐鍏烽渶姹?                      鈹?鈹溾攢鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹?鈹?             妯″瀷閰嶇疆灞?(.ai/config.yaml)         鈹?鈹? models:                                        鈹?鈹?   default: { provider, model_name, ... }       鈹?鈹?   roles: { architect: {...}, code: {...} }     鈹?鈹?   agents: { code: {...} }                      鈹?鈹溾攢鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹攢鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹攢鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹?鈹?  OpenAI API     鈹?Anthropic API    鈹?Ollama    鈹?鈹?  (gpt-4o)       鈹?(claude-sonnet)  鈹?(hermes)  鈹?鈹斺攢鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹粹攢鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹粹攢鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹?```
+┌─────────────────────────────────────┐
+│      Agent Layer (tool-agnostic)    │
+│  .ai/agents/definitions/*.yaml     │
+│  Agent roles, permissions, tools   │
+├─────────────────────────────────────┤
+│   Model Config (.ai/config.yaml)   │
+│  models:                           │
+│    default: { provider, model }    │
+│    roles: { architect, code... }   │
+│    agents: { code: {...} }         │
+├──────────┬──────────┬──────────────┤
+│ OpenAI   │Anthropic │  Ollama      │
+│ (gpt-4o) │(claude)  │  (hermes)    │
+└──────────┴──────────┴──────────────┘
+```
 
-## 浜屻€佸墠缃潯浠?
-- [Docker](https://docs.docker.com/get-docker/) 宸插畨瑁咃紙鎴栧師鐢?Ollama锛?- GPU 椹卞姩锛堟帹鑽?NVIDIA GPU + CUDA 12+锛孋PU 妯″紡涔熷彲杩愯浣嗚緝鎱級
-- 鑷冲皯 8GB RAM锛?B 妯″瀷锛夛紝16GB 鎺ㄨ崘
+## II. Prerequisites
+- [Docker](https://docs.docker.com/get-docker/) installed (or native Ollama)
+- GPU drivers (NVIDIA GPU + CUDA 12+ recommended; CPU mode works but slower)
+- At least 8 GB RAM (8B model), 16 GB recommended
 
-## 涓夈€佸揩閫熼儴缃?
-### 姝ラ 1锛氬惎鍔?Ollama 瀹瑰櫒
+## III. Quick Setup
+### Step 1: Start Ollama Container
 
 ```bash
-# 鏂瑰紡 A锛欴ocker Compose锛堟帹鑽愶級
+# Option A: Docker Compose (recommended)
 cd adapters/hermes
 docker-compose up -d
 
-# 鏂瑰紡 B锛氬師鐢?Ollama锛堝宸插畨瑁咃級
+# Option B: Native Ollama (if already installed)
 ollama serve
 ```
 
-### 姝ラ 2锛氭媺鍙?Hermes-3 妯″瀷
+### Step 2: Pull Hermes-3 Model
 
 ```bash
-# Docker 鐜
+# Docker environment
 docker exec -it hermes-ollama ollama pull hermes-3:8b
 
-# 鍘熺敓 Ollama
+# Native Ollama
 ollama pull hermes-3:8b
 ```
 
-### 姝ラ 3锛氬垱寤?Ollama 鑷畾涔夋ā鍨嬶紙鎺ㄨ崘锛?
-浣跨敤椤圭洰鎻愪緵鐨?Modelfile 鍒涘缓甯︾郴缁熸彁绀鸿瘝鐨勬ā鍨嬪疄渚嬶細
+### Step 3: Create Custom Ollama Model (recommended)
+Use the project-provided Modelfile to create a model instance with system prompts:
 
 ```bash
 ollama create hermes-3 -f adapters/hermes/Modelfile
 ```
 
-### 姝ラ 4锛氶獙璇佹ā鍨嬪彲鐢ㄦ€?
+### Step 4: Verify Model Availability
 ```bash
-# 瀹夎渚濊禆
+# Install dependencies
 pip install requests
 
-# 杩愯楠岃瘉鑴氭湰
+# Run verification script
 python scripts/verify_hermes.py --base-url http://localhost:11434/v1 --model hermes-3:8b
 ```
 
-楠岃瘉閫氳繃鍚庤緭鍑猴細
+Expected output on success:
 ```
-鉁?鍏ㄩ儴楠岃瘉閫氳繃 鈥?Hermes-3 妯″瀷鍙甯镐娇鐢?function calling銆?```
+✓ All verifications passed — Hermes-3 model is operational with function calling.
+```
 
-## 鍥涖€侀」鐩厤缃?
-### 4.1 閮ㄧ讲鏃舵寚瀹氬悗绔?
+## IV. Project Configuration
+### 4.1 Specify Backend During Deployment
 ```bash
-# 閮ㄧ讲椤圭洰鏃舵寚瀹?Hermes 浣滀负鍚庣
+# Deploy project with Hermes as backend
 cd /path/to/AI_Prompt && python deploy.py /path/to/my-project --model-backend ollama
 ```
 
-鐢熸垚鐨?`.ai/config.yaml` 灏嗗寘鍚細
+The generated `.ai/config.yaml` will contain:
 ```yaml
 models:
   default:
@@ -71,9 +87,9 @@ models:
   agents: {}
 ```
 
-### 4.2 鎵嬪姩閰嶇疆锛堝凡鏈夐」鐩級
+### 4.2 Manual Configuration (Existing Projects)
 
-鍦?`.ai/config.yaml` 涓坊鍔狅細
+Add the following to `.ai/config.yaml`:
 
 ```yaml
 models:
@@ -84,13 +100,14 @@ models:
     api_key_env: ""
 ```
 
-## 浜斻€佹ā鍨嬮厤缃鍒?
-### 5.1 鍖归厤浼樺厛绾?
-Agent 浼氳瘽鍚姩鏃讹紝鎸変互涓嬩紭鍏堢骇鍖归厤妯″瀷閰嶇疆锛?
-1. `models.agents.{agent_id}` 鈥?Agent 瀹炰緥绾ц鐩栵紙鏈€楂橈級
-2. `models.roles.{agent_id}` 鈥?瑙掕壊绾ц鐩?3. `models.default` 鈥?榛樿閰嶇疆锛堝厹搴曪級
+## V. Model Configuration Rules
+### 5.1 Matching Priority
+When an agent session starts, model configuration is matched by the following priority:
+1. `models.agents.{agent_id}` — Agent instance-level override (highest)
+2. `models.roles.{agent_id}` — Role-level override
+3. `models.default` — Default configuration (fallback)
 
-### 5.2 鎸夎鑹插垎閰嶄笉鍚屾ā鍨?
+### 5.2 Role-Based Model Assignment
 ```yaml
 models:
   default:
@@ -111,27 +128,27 @@ models:
       api_key_env: ""
 ```
 
-浠ヤ笂閰嶇疆涓細Architect 浣跨敤 Claude锛屼唬鐮?Agent 浣跨敤鏈湴 Hermes-3锛屽叾浠?Agent 浣跨敤 GPT-4o銆?
-### 5.3 鐜鍙橀噺閰嶇疆
+In the above configuration: Architect uses Claude, the Code agent uses local Hermes-3, and all other agents use GPT-4o.
+### 5.3 Environment Variable Configuration
 
-- `OPENAI_API_KEY`锛歄penAI API 瀵嗛挜锛坧rovider=openai 鏃朵娇鐢級
-- `ANTHROPIC_API_KEY`锛欰nthropic API 瀵嗛挜锛坧rovider=anthropic 鏃朵娇鐢級
-- 鏈湴妯″瀷锛坥llama锛夐€氬父涓嶉渶瑕?API 瀵嗛挜锛宍api_key_env` 鐣欑┖鍗冲彲
+- `OPENAI_API_KEY`: OpenAI API key (used when provider=openai)
+- `ANTHROPIC_API_KEY`: Anthropic API key (used when provider=anthropic)
+- Local models (ollama) typically do not require an API key; leave `api_key_env` blank.
 
-## 鍏€丗unction Calling 鍏煎鎬?
-Hermes-3 蹇呴』鏀寔浠ヤ笅 function calling 鐗规€э細
+## VI. Function Calling Compatibility
+Hermes-3 must support the following function calling features:
 
-| 鐗规€?| 璇存槑 | 楠岃瘉鏂瑰紡 |
+| Feature | Description | Verified By |
 |------|------|----------|
-| 宸ュ叿瀹氫箟鎺ユ敹 | 鎺ユ敹 JSON Schema 鏍煎紡鐨勫伐鍏峰垪琛?| verify_hermes.py 娴嬭瘯3 |
-| tool_calls 鐢熸垚 | 鐢熸垚鏍囧噯 `tool_calls` 鏁扮粍 | verify_hermes.py 娴嬭瘯3 |
-| 娴佸紡杈撳嚭 | SSE 鏍煎紡澧為噺杩斿洖 | verify_hermes.py 娴嬭瘯4 |
-| finish_reason | 姝ｇ‘杩斿洖 `tool_calls` / `stop` | 娴嬭瘯3 杈撳嚭 |
+| Tool Definition Reception | Accepts a JSON Schema format tool list | verify_hermes.py test 3 |
+| tool_calls Generation | Generates standard `tool_calls` array | verify_hermes.py test 3 |
+| Streaming Output | Returns SSE format incremental responses | verify_hermes.py test 4 |
+| finish_reason | Correctly returns `tool_calls` / `stop` | test 3 output |
 
-璇︾粏瑙勮寖瑙?[specs/FUNCTION_CALL_SPEC.md](../specs/FUNCTION_CALL_SPEC.md)銆?
-## 涓冦€丏ocker Compose 鑷畾涔?
-`adapters/hermes/docker-compose.yml` 鍙嚜瀹氫箟锛?
-### 鍐呭瓨/CPU 闄愬埗
+See [specs/FUNCTION_CALL_SPEC.md](../specs/FUNCTION_CALL_SPEC.md) for detailed specification.
+## VII. Docker Compose Customization
+`adapters/hermes/docker-compose.yml` can be customized:
+### Memory / CPU Limits
 
 ```yaml
 services:
@@ -143,7 +160,7 @@ services:
           cpus: '4'
 ```
 
-### 鑷畾涔夋ā鍨嬫寕杞?
+### Custom Model Volume Mount
 ```yaml
 services:
   ollama:
@@ -151,50 +168,57 @@ services:
       - ./my-models:/root/.ollama
 ```
 
-### 绂佺敤 GPU锛堜粎 CPU锛?
-鍒犻櫎 `deploy.resources.reservations.devices` 鍧楀嵆鍙€?
-## 鍏€佹晠闅滄帓鏌?
-### 妯″瀷鏈姞杞?
+### Disabling GPU (CPU Only)
+Remove the `deploy.resources.reservations.devices` block.
+## VIII. Troubleshooting
+### Model Not Loaded
 ```
-閿欒: 妯″瀷 hermes-3:8b 鏈姞杞?```
+Error: model hermes-3:8b not loaded
+```
 
-瑙ｅ喅锛?```bash
+Solution:
+```bash
 # Docker
 docker exec -it hermes-ollama ollama pull hermes-3:8b
-# 鍘熺敓
+# Native
 ollama pull hermes-3:8b
 ```
 
-### API 杩炴帴澶辫触
+### API Connection Failed
 
 ```
-閿欒: 杩炴帴澶辫触 鈥?璇风‘璁?Ollama 宸插惎鍔?```
-
-瑙ｅ喅锛?```bash
-# 妫€鏌ュ鍣ㄧ姸鎬?docker ps | grep hermes-ollama
-# 妫€鏌ョ鍙?curl http://localhost:11434/api/tags
+Error: connection failed — please verify Ollama is running
 ```
 
-### Function Calling 涓嶅伐浣?
+Solution:
+```bash
+# Check container status
+docker ps | grep hermes-ollama
+# Check endpoint
+curl http://localhost:11434/api/tags
 ```
-閿欒: 妯″瀷鏈娇鐢ㄥ伐鍏疯皟鐢紝鑰屾槸鐩存帴鍥炲鏂囨湰
+
+### Function Calling Not Working
+```
+Error: model did not use tool call, but replied with plain text
 ```
 
-鍙兘鍘熷洜锛?1. 妯″瀷涓嶆敮鎸?function calling 鈫?纭浣跨敤 Hermes-3 (`nousresearch/hermes3:8b`)
-2. 绯荤粺鎻愮ず璇嶆湭姝ｇ‘寮曞 鈫?浣跨敤鎻愪緵鐨?Modelfile 鍒涘缓妯″瀷
-3. 妯″瀷鐗堟湰杩囨棫 鈫?`ollama pull hermes-3:8b` 鏇存柊
+Possible causes:
+1. Model does not support function calling → Confirm using Hermes-3 (`nousresearch/hermes3:8b`)
+2. System prompt not correctly guiding the model → Use the provided Modelfile to create the model
+3. Model version is outdated → `ollama pull hermes-3:8b` to update
 
-### 鍝嶅簲杩囨參
+### Response Too Slow
 
-1. 浣跨敤 GPU 鍔犻€燂細纭 `nvidia-smi` 鍙 GPU
-2. 璋冩暣 `num_predict` 鍙傛暟锛圡odelfile 涓級鍑忓皬 token 涓婇檺
-3. 浣跨敤鏇村皬鐨勬ā鍨嬶細`hermes-3:3b` 鏇夸唬 `8b`
+1. Use GPU acceleration: verify GPU is visible via `nvidia-smi`
+2. Adjust `num_predict` parameter (in Modelfile) to reduce token limit
+3. Use a smaller model: `hermes-3:3b` instead of `8b`
 
-## 涔濄€佺幆澧冨彉閲忓弬鑰?
-| 鍙橀噺 | 璇存槑 | 绀轰緥 |
+## IX. Environment Variable Reference
+| Variable | Description | Example |
 |------|------|------|
-| `OLLAMA_HOST` | Ollama 鐩戝惉鍦板潃 | `0.0.0.0` |
-| `OLLAMA_KEEP_ALIVE` | 妯″瀷椹荤暀鍐呭瓨鏃堕棿 | `24h` 鎴?`5m` |
-| `OLLAMA_NUM_PARALLEL` | 骞惰璇锋眰鏁?| `1` |
-| `OPENAI_API_KEY` | OpenAI 瀵嗛挜 | `sk-...` |
-| `ANTHROPIC_API_KEY` | Anthropic 瀵嗛挜 | `sk-ant-...` |
+| `OLLAMA_HOST` | Ollama listen address | `0.0.0.0` |
+| `OLLAMA_KEEP_ALIVE` | Model memory retention duration | `24h` or `5m` |
+| `OLLAMA_NUM_PARALLEL` | Concurrent request limit | `1` |
+| `OPENAI_API_KEY` | OpenAI API key | `sk-...` |
+| `ANTHROPIC_API_KEY` | Anthropic API key | `sk-ant-...` |

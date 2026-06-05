@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 # scripts/ai_cli.py
-# AI_Prompt 缁熶竴 CLI 宸ュ叿 鈥?宸ヤ綔鍖虹姸鎬佹煡璇笌鐭ヨ瘑搴撴悳绱?#
-# 鐢ㄦ硶锛?#   python scripts/ai_cli.py status             鏄剧ず鎵€鏈夐樁娈电姸鎬?#   python scripts/ai_cli.py review             鍒楀嚭寰呭鐞嗗鏌ユ潯鐩?#   python scripts/ai_cli.py bugs               鍒楀嚭寰呭鐞?Bug
-#   python scripts/ai_cli.py log                鏄剧ず鏈€杩戞棩蹇楁憳瑕?#   python scripts/ai_cli.py kb search <query>  鎼滅储鐭ヨ瘑搴?
+# AI_Prompt unified CLI tool — workspace status query and knowledge base search
+# Usage:
+#   python scripts/ai_cli.py status             Show all stage statuses
+#   python scripts/ai_cli.py review             List pending review items
+#   python scripts/ai_cli.py bugs               List pending bugs
+#   python scripts/ai_cli.py log                Show recent log summary
+#   python scripts/ai_cli.py kb search <query>  Search knowledge base
 import argparse
 import os
 import re
@@ -11,10 +15,10 @@ from pathlib import Path
 from datetime import datetime
 
 
-# 鈹€鈹€ 椤圭洰鏍圭洰褰曟娴?鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
+# ─── Project Root Detection ───
 
 def _find_project_root() -> Path:
-    """鍚戜笂鏌ユ壘椤圭洰鏍圭洰褰曪紙鍖呭惈 .ai/ 鐨勭洰褰曪級銆?""
+    """Walk up to find the project root (directory containing .ai/)."""
     current = Path(__file__).resolve().parent.parent
     while current != current.parent:
         if (current / ".ai").is_dir() and (current / "AGENTS.md").is_file():
@@ -31,59 +35,65 @@ KB_DIR = AI_DIR / "kb"
 USERS_DIR = AI_DIR / "users"
 
 
-# 鈹€鈹€ 鍛戒护琛岃В鏋?鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
+# ─── CLI Argument Parsing ───
 
 def build_parser():
     parser = argparse.ArgumentParser(
         prog="ai",
-        description="AI_Prompt 缁熶竴 CLI 鈥?宸ヤ綔鍖虹姸鎬佹煡璇笌鐭ヨ瘑搴撴悳绱?,
+        description="AI_Prompt unified CLI — workspace status and knowledge base search",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
-浣跨敤绀轰緥锛?  ai status                  鏄剧ず鎵€鏈夐樁娈电姸鎬?  ai review                  鍒楀嚭寰呭鐞嗗鏌ユ潯鐩?  ai bugs                    鍒楀嚭寰呭鐞?Bug
-  ai log                     鏄剧ず鏈€杩戞棩蹇楁憳瑕?  ai kb search <鍏抽敭璇?       鎼滅储鐭ヨ瘑搴?  ai kb list                 鍒楀嚭鐭ヨ瘑搴撴枃浠?        """,
+Examples:
+  ai status                  Show all stage statuses
+  ai review                  List pending review items
+  ai bugs                    List pending bugs
+  ai log                     Show recent log summary
+  ai kb search <keyword>     Search knowledge base
+  ai kb list                 List knowledge base files
+        """,
     )
 
-    sub = parser.add_subparsers(dest="command", help="瀛愬懡浠?)
+    sub = parser.add_subparsers(dest="command", help="subcommand")
 
     # status
-    sub.add_parser("status", help="鏄剧ず鎵€鏈夐樁娈电姸鎬?)
+    sub.add_parser("status", help="Show all stage statuses")
 
     # review
-    sub.add_parser("review", help="鍒楀嚭寰呭鐞嗗鏌ユ潯鐩?)
+    sub.add_parser("review", help="List pending review items")
 
     # bugs
-    sub.add_parser("bugs", help="鍒楀嚭寰呭鐞?Bug")
+    sub.add_parser("bugs", help="List pending bugs")
 
     # log
-    sub.add_parser("log", help="鏄剧ず鏈€杩戞棩蹇楁憳瑕?)
+    sub.add_parser("log", help="Show recent log summary")
 
     # kb
-    kb_parser = sub.add_parser("kb", help="鐭ヨ瘑搴撴搷浣?)
-    kb_sub = kb_parser.add_subparsers(dest="kb_command", help="鐭ヨ瘑搴撳瓙鍛戒护")
+    kb_parser = sub.add_parser("kb", help="Knowledge base operations")
+    kb_sub = kb_parser.add_subparsers(dest="kb_command", help="Knowledge base subcommand")
 
-    kb_search = kb_sub.add_parser("search", help="鎼滅储鐭ヨ瘑搴?)
-    kb_search.add_argument("query", help="鎼滅储鍏抽敭璇?)
+    kb_search = kb_sub.add_parser("search", help="Search knowledge base")
+    kb_search.add_argument("query", help="search query")
 
-    kb_sub.add_parser("list", help="鍒楀嚭鐭ヨ瘑搴撴枃浠?)
+    kb_sub.add_parser("list", help="List knowledge base files")
 
     return parser
 
 
-# 鈹€鈹€ 杈呭姪鍑芥暟 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
+# ─── Helper Functions ───
 
 def _read_status_md(filepath: Path) -> dict:
-    """璇诲彇 status.md 骞舵彁鍙栫粨鏋勫寲瀛楁銆?""
+    """Read status.md and extract structured fields."""
     if not filepath.exists():
         return None
     content = filepath.read_text(encoding="utf-8")
     info = {}
     patterns = {
-        "鎵ц妯″紡": r"-\s+\*\*鎵ц妯″紡\*\*[锛?]\s*(.+)",
-        "鑷姩鎺ㄨ繘": r"-\s+\*\*鑷姩鎺ㄨ繘\*\*[锛?]\s*(.+)",
-        "鐘舵€?: r"-\s+\*\*鐘舵€乗*\*[锛?]\s*(.+)",
-        "褰撳墠璐ｄ换 Agent": r"-\s+\*\*褰撳墠璐ｄ换 Agent\*\*[锛?]\s*(.+)",
-        "涓婁竴璐ｄ换 Agent": r"-\s+\*\*涓婁竴璐ｄ换 Agent\*\*[锛?]\s*(.+)",
-        "鏇存柊鏃堕棿": r"-\s+\*\*鏇存柊鏃堕棿\*\*[锛?]\s*(.+)",
+        "execution_mode": r"-\s+\*\*执行模式\*\*[：:]\s*(.+)",
+        "auto_advance": r"-\s+\*\*自动推进\*\*[：:]\s*(.+)",
+        "status": r"-\s+\*\*状态\*\*[：:]\s*(.+)",
+        "current_agent": r"-\s+\*\*当前责任 Agent\*\*[：:]\s*(.+)",
+        "previous_agent": r"-\s+\*\*上一责任 Agent\*\*[：:]\s*(.+)",
+        "update_time": r"-\s+\*\*更新时间\*\*[：:]\s*(.+)",
     }
     for key, pat in patterns.items():
         m = re.search(pat, content)
@@ -93,7 +103,7 @@ def _read_status_md(filepath: Path) -> dict:
 
 
 def _find_stage_status_files() -> list:
-    """鏌ユ壘鎵€鏈?stage-*/status.md 鏂囦欢銆?""
+    """Find all stage-*/status.md files."""
     result = []
     if not PLAN_DIR.is_dir():
         return result
@@ -109,7 +119,7 @@ def _find_stage_status_files() -> list:
 
 
 def _find_review_files() -> dict:
-    """鏌ユ壘绉佸煙瀹℃煡鏂囦欢锛岃繑鍥?{闃舵: {pending: [], fixing: [], resolved: []}}銆?""
+    """Find private review files, return {stage: [{file, title, status}]}."""
     reviews = {}
     if not USERS_DIR.is_dir():
         return reviews
@@ -122,14 +132,15 @@ def _find_review_files() -> dict:
         for rev_file in cr_dir.glob("REV-*.md"):
             content = rev_file.read_text(encoding="utf-8")
             stage = rev_file.stem.replace("REV-", "").rsplit("-", 1)[0] if "-" in rev_file.stem[4:] else "unknown"
-            # 妫€鏌ョ姸鎬佹爣璁?            status_match = re.search(r"-\s*\*\*鐘舵€乗*\*[锛?]\s*(pending|fixing|resolved|closed)", content)
+            # check status label
+            status_match = re.search(r"-\s+\*\*状态\*\*[：:]\s*(pending|fixing|resolved|closed)", content)
             if not status_match:
                 continue
             status = status_match.group(1)
             if status == "closed":
                 continue
-            # 璇诲彇鏍囬
-            title_match = re.search(r"##\s+REV-\d+[锛?]\s*(.+)", content)
+            # read title
+            title_match = re.search(r"##\s+REV-\d+[：:]\s*(.+)", content)
             title = title_match.group(1).strip() if title_match else rev_file.stem
             if stage not in reviews:
                 reviews[stage] = []
@@ -138,7 +149,7 @@ def _find_review_files() -> dict:
 
 
 def _find_bug_files() -> dict:
-    """鏌ユ壘绉佸煙 Bug 鏂囦欢锛岃繑鍥?{妯″潡: [{file, title, status}]}銆?""
+    """Find private bug files, return {module: [{file, title, status}]}."""
     bugs = {}
     if not USERS_DIR.is_dir():
         return bugs
@@ -153,13 +164,13 @@ def _find_bug_files() -> dict:
                 continue
             for bug_file in module_dir.glob("BUG-*.md"):
                 content = bug_file.read_text(encoding="utf-8")
-                status_match = re.search(r"-\s*\*\*鐘舵€乗*\*[锛?]\s*(open|fixing|resolved|closed)", content)
+                status_match = re.search(r"-\s+\*\*状态\*\*[：:]\s*(open|fixing|resolved|closed)", content)
                 if not status_match:
                     continue
                 status = status_match.group(1)
                 if status == "closed":
                     continue
-                title_match = re.search(r"##\s+BUG-\d+[锛?]\s*(.+)", content)
+                title_match = re.search(r"##\s+BUG-\d+[：:]\s*(.+)", content)
                 title = title_match.group(1).strip() if title_match else bug_file.stem
                 module = module_dir.name
                 if module not in bugs:
@@ -169,7 +180,7 @@ def _find_bug_files() -> dict:
 
 
 def _read_recent_logs(limit: int = 30) -> list:
-    """璇诲彇鍏叡鏃ュ織鏈€杩戞潯鐩€?""
+    """Read recent public log entries."""
     entries = []
     if not LOG_DIR.is_dir():
         return entries
@@ -186,7 +197,7 @@ def _read_recent_logs(limit: int = 30) -> list:
 
 
 def _search_kb(query: str) -> list:
-    """鎼滅储鐭ヨ瘑搴撴枃浠讹紙绾枃鏈尮閰嶏紝涓嶄緷璧栧悜閲忕储寮曪級銆?""
+    """Search knowledge base files (plain text match, no vector index dependency)."""
     results = []
     if not KB_DIR.is_dir():
         return results
@@ -204,7 +215,7 @@ def _search_kb(query: str) -> list:
             if line.startswith("# "):
                 title = line.lstrip("# ").strip()
                 break
-        # 鍦ㄥ唴瀹逛腑鎼滅储
+        # search in content
         matches = []
         for i, line in enumerate(lines):
             if query_lower in line.lower():
@@ -213,18 +224,19 @@ def _search_kb(query: str) -> list:
             results.append({
                 "file": kb_file,
                 "title": title or kb_file.stem,
-                "matches": matches[:5],  # 鏈€澶氭樉绀?5 鏉″尮閰?                "total_matches": len(matches),
+                "matches": matches[:5],  # show at most 5 matches
+                "total_matches": len(matches),
             })
     return results
 
 
-# 鈹€鈹€ 鍛戒护澶勭悊鍑芥暟 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
+# ─── Command Handlers ───
 
 def cmd_status():
-    """鏄剧ず鎵€鏈夐樁娈电姸鎬併€?""
+    """Show all stage statuses."""
     stages = _find_stage_status_files()
     if not stages:
-        print("鏈壘鍒伴樁娈电姸鎬佹枃浠讹紙.ai/plan/stage-*/status.md锛?)
+        print("No stage status files found (.ai/plan/stage-*/status.md)")
         return
 
     status_order = {
@@ -234,9 +246,9 @@ def cmd_status():
         "bug_found": 10, "bug_fixing": 11, "done": 12, "paused": 13,
     }
 
-    print("AI_Prompt 闃舵鐘舵€佹瑙?)
+    print("AI_Prompt Stage Status Overview")
     print("=" * 72)
-    print(f"{'闃舵':<12} {'鐘舵€?:<18} {'璐ｄ换 Agent':<14} {'鏇存柊鏃堕棿':<16}")
+    print(f"{'Stage':<12} {'Status':<18} {'Agent':<14} {'Updated':<16}")
     print("-" * 72)
 
     done_count = 0
@@ -244,23 +256,23 @@ def cmd_status():
     for stage_name, status_path in stages:
         info = _read_status_md(status_path)
         if info is None:
-            print(f"{stage_name:<12} {'鏃犳硶璇诲彇':<18}")
+            print(f"{stage_name:<12} {'unreadable':<18}")
             continue
-        status = info.get("鐘舵€?, "?")
-        agent = info.get("褰撳墠璐ｄ换 Agent", "?")
-        updated = info.get("鏇存柊鏃堕棿", "?")
+        status = info.get("status", "?")
+        agent = info.get("current_agent", "?")
+        updated = info.get("update_time", "?")
         status_display = {
-            "done": "鉁?done",
-            "review_passed": "鉁?review_passed",
-            "review_failed": "鉂?review_failed",
-            "paused": "鈴革笍 paused",
-            "ready_for_code": "馃搵 ready_for_code",
-            "ready_for_review": "馃搵 ready_for_review",
-            "coding": "馃敡 coding",
-            "review": "馃攳 review",
+            "done": "✅ done",
+            "review_passed": "✅ review_passed",
+            "review_failed": "❌ review_failed",
+            "paused": "⏸️ paused",
+            "ready_for_code": "📋 ready_for_code",
+            "ready_for_review": "📋 ready_for_review",
+            "coding": "🔨 coding",
+            "review": "🔍 review",
         }.get(status, f"  {status}")
 
-        status_padding = 18 - len(status.replace("鉁?", "").replace("鉂?", "").replace("鈴革笍 ", "").replace("馃搵 ", "").replace("馃敡 ", "").replace("馃攳 ", ""))
+        status_padding = 18 - len(status.replace("✅", "").replace("❌", "").replace("⏸️ ", "").replace("📋 ", "").replace("🔨 ", "").replace("🔍 ", ""))
         print(f"{stage_name:<12} {status_display:<24} {agent:<14} {updated:<16}")
         if status in ("done", "review_passed"):
             done_count += 1
@@ -269,58 +281,58 @@ def cmd_status():
 
     print("-" * 72)
     total = len(stages)
-    print(f"鍏?{total} 涓樁娈碉細{done_count} 宸插畬鎴愶紝{active_count} 杩涜涓?寰呭鐞?)
+    print(f"Total {total} stages: {done_count} done, {active_count} active/pending")
     print()
 
 
 def cmd_review():
-    """鍒楀嚭寰呭鐞嗗鏌ユ潯鐩€?""
+    """List pending review items."""
     reviews = _find_review_files()
     if not reviews:
-        print("鏈壘鍒板緟澶勭悊瀹℃煡鏉＄洰")
+        print("No pending review items found")
         return
 
     total = 0
-    print("寰呭鐞嗗鏌ユ潯鐩?)
+    print("Pending Review Items")
     print("=" * 60)
     for stage, items in sorted(reviews.items()):
         print(f"\n[{stage}]")
         for item in items:
-            tag = {"pending": "鈴?, "fixing": "馃敡", "resolved": "鉁?}.get(item["status"], "?")
+            tag = {"pending": "⏸", "fixing": "🔨", "resolved": "✅"}.get(item["status"], "?")
             print(f"  {tag} [{item['status']}] {item['title']}")
             total += 1
 
-    print(f"\n鍏?{total} 鏉″緟澶勭悊瀹℃煡")
+    print(f"\nTotal {total} pending review items")
 
 
 def cmd_bugs():
-    """鍒楀嚭寰呭鐞?Bug銆?""
+    """List pending bugs."""
     bugs = _find_bug_files()
     if not bugs:
-        print("鏈壘鍒板緟澶勭悊 Bug")
+        print("No pending bugs found")
         return
 
     total = 0
-    print("寰呭鐞?Bug")
+    print("Pending Bugs")
     print("=" * 60)
     for module, items in sorted(bugs.items()):
         print(f"\n[{module}]")
         for item in items:
-            tag = {"open": "馃悰", "fixing": "馃敡", "resolved": "鉁?}.get(item["status"], "?")
+            tag = {"open": "🐛", "fixing": "🔨", "resolved": "✅"}.get(item["status"], "?")
             print(f"  {tag} [{item['status']}] {item['title']}")
             total += 1
 
-    print(f"\n鍏?{total} 鏉″緟澶勭悊 Bug")
+    print(f"\nTotal {total} pending bugs")
 
 
 def cmd_log():
-    """鏄剧ず鏈€杩戞棩蹇楁憳瑕併€?""
+    """Show recent log summary."""
     entries = _read_recent_logs()
     if not entries:
-        print("鏈壘鍒版棩蹇楁潯鐩?)
+        print("No log entries found")
         return
 
-    print("鏈€杩戞棩蹇楁憳瑕?)
+    print("Recent Log Summary")
     print("=" * 60)
     for entry in entries[:20]:
         print(f"  {entry}")
@@ -328,11 +340,12 @@ def cmd_log():
 
 
 def cmd_kb_search(query):
-    """鎼滅储鐭ヨ瘑搴撱€?""
-    print(f"鎼滅储鐭ヨ瘑搴擄細\"{query}\"")
+    """Search knowledge base."""
+    print(f'Searching knowledge base: "{query}"')
     print("=" * 60)
 
-    # 棣栧厛灏濊瘯鍚戦噺鎼滅储锛堝鏋滃彲鐢級锛屽惁鍒欏洖閫€鍒版枃鏈尮閰?    vector_search_available = False
+    # First try vector search (if available), otherwise fall back to text match
+    vector_search_available = False
     try:
         import numpy
         vector_search_available = True
@@ -340,41 +353,42 @@ def cmd_kb_search(query):
         pass
 
     if not vector_search_available:
-        print("[鎻愮ず] 鍚戦噺绱㈠紩鏈惎鐢紝浣跨敤绾枃鏈尮閰嶆ā寮忋€?)
-        print("  瀹夎 numpy + sentence-transformers 鍙惎鐢ㄨ涔夋悳绱€俓n")
+        print("[Notice] Vector index not enabled, using plain text match mode.")
+        print("  Install numpy + sentence-transformers to enable semantic search.\n")
 
     results = _search_kb(query)
 
     if not results:
-        print("鏈壘鍒板尮閰嶇粨鏋溿€?)
-        print(f"鐭ヨ瘑搴撶洰褰曪細{KB_DIR}")
+        print("No matching results found.")
+        print(f"Knowledge base directory: {KB_DIR}")
         kb_files = [f.name for f in KB_DIR.glob("*.md") if f.name != "index.md"]
         if kb_files:
-            print(f"鍙敤鏂囦欢锛歿', '.join(kb_files)}")
+            print(f"Available files: {', '.join(kb_files)}")
         return
 
     for r in results:
-        print(f"\n馃搫 {r['title']}")
-        print(f"   鏂囦欢锛歿r['file'].relative_to(PROJECT_ROOT)}")
-        print(f"   鍖归厤 {r['total_matches']} 澶勶細")
+        print(f"\n📄 {r['title']}")
+        print(f"   File: {r['file'].relative_to(PROJECT_ROOT)}")
+        print(f"   {r['total_matches']} matches:")
         for lineno, line in r["matches"]:
-            # 鎴柇杩囬暱琛?            display = line[:100] + "..." if len(line) > 100 else line
+            # truncate long lines
+            display = line[:100] + "..." if len(line) > 100 else line
             print(f"   L{lineno:>3}: {display}")
     print()
 
 
 def cmd_kb_list():
-    """鍒楀嚭鐭ヨ瘑搴撴枃浠躲€?""
+    """List knowledge base files."""
     if not KB_DIR.is_dir():
-        print("鐭ヨ瘑搴撶洰褰曚笉瀛樺湪")
+        print("Knowledge base directory does not exist")
         return
 
     files = sorted(KB_DIR.glob("*.md"))
     if not files:
-        print("鐭ヨ瘑搴撲负绌?)
+        print("Knowledge base is empty")
         return
 
-    print("鐭ヨ瘑搴撴枃浠?)
+    print("Knowledge Base Files")
     print("=" * 60)
     for f in files:
         if f.name == "index.md":
@@ -386,11 +400,11 @@ def cmd_kb_list():
                 title = line.lstrip("# ").strip()
                 break
         size = len(content.splitlines())
-        print(f"  馃搫 {title or f.stem}  ({size} 琛?  [{f.name}]")
+        print(f"  📄 {title or f.stem}  ({size} lines)  [{f.name}]")
     print()
 
 
-# 鈹€鈹€ 涓诲嚱鏁?鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
+# ─── Main ───
 
 def main():
     if hasattr(sys.stdout, "reconfigure"):
@@ -414,8 +428,8 @@ def main():
         cmd_log()
     elif args.command == "kb":
         if args.kb_command is None:
-            print("璇锋寚瀹?kb 瀛愬懡浠わ細search 鎴?list")
-            print("  ai kb search <鍏抽敭璇?")
+            print("Please specify kb subcommand: search or list")
+            print("  ai kb search <query>")
             print("  ai kb list")
             return
         if args.kb_command == "search":

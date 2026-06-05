@@ -1,12 +1,12 @@
 # deploy/common.py
-# AI_Prompt 闁劎璁查懘姘拱 閳?闁氨鏁ら柅鏄忕帆
+# AI_Prompt deploy — common logic for file ops, config generation, and resource deployment
 
 import os
 import json
 import shutil
 from pathlib import Path
 
-# 閳光偓閳光偓 闁氨鏁ょ挧鍕爱濠ф劖鏋冩禒璁圭礄闁劎璁查弮鑸靛瘻瀹搞儱鍙块崜宥囩磻婢跺秴鍩楅崚鎵窗閺嶅洨娲拌ぐ鏇礆閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓
+# ── Resource Sources (deployed to target project) ──
 
 OBSIDIAN_RESOURCES = [
     ".ai/obsidian/README.md",
@@ -28,7 +28,7 @@ SKILL_SOURCES = [
     "skills/update-stage-status/SKILL.md",
 ]
 
-# 閸氭垿鍣洪崠鏍叀鐠囧棗绨遍懘姘拱閿涘牓鈧俺绻?--with-vectors 閹稿娓堕柈銊ц閿?
+# Vector KB scripts (deployed via --with-vectors flag)
 VECTOR_SCRIPTS = [
     "scripts/build_kb_index.py",
     "scripts/search_kb.py",
@@ -36,12 +36,12 @@ VECTOR_SCRIPTS = [
 ]
 
 VECTOR_DEPENDENCY_NOTICE = (
-    "閸氭垿鍣洪崠鏍梾缁鳖澀绶风挧? pip install sentence-transformers\n"
-    "  閺嬪嫬缂撶槐銏犵穿: python scripts/build_kb_index.py\n"
-    "  鐠囶厺绠熼幖婊呭偍: python scripts/search_kb.py \"閺屻儴顕楅弬鍥ㄦ拱\""
+    "Vector search dependencies: pip install sentence-transformers\n"
+    "  Build index: python scripts/build_kb_index.py\n"
+    "  Semantic search: python scripts/search_kb.py \"query text\""
 )
 
-# 閳光偓閳光偓 鐢悂鍣?閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓
+# ── Constants ──
 
 AI_DIRS = [
     ".ai/dev/note",
@@ -68,61 +68,61 @@ AI_GITIGNORE_CONTENT = """\
 .info.json
 users/
 tmp/
-# vectors/ 閻╊喖缍嶇痪鍐插弳 .gitignore 娴ｅ棔绻氶悾娆戞窗瑜版洜绮ㄩ弸鍕簰閸忎浇顔忕槐銏犵穿閺傚洣娆㈢€涙ê婀?
+# vectors/ 閻╊喖缍嶇痪鍐插弳 .gitignore 娴ｅ棔绻氶悾娆戞窗瑜版洜绮ㄩ弸鍕簰閸忎浇顔忕槐銏犵穿閺傚洣娆㈢€涙ê婀?
 # 閸氭垿鍣虹槐銏犵穿閺勵垳绱︾€涙ê鐪伴敍灞藉讲闂呭繑妞傛禒?Markdown 閺傚洣娆㈤柌宥呯紦
 """
 
 CONFIG_YAML_CONTENT = """\
 # .ai/config.yaml
 # AI_Prompt 瀹搞儰缍斿ù浣虹埠娑撯偓闁板秶鐤?
-# 閹绘劒绶甸幍鈧張澶愭▉濞堢數娈戦崗銊ョ湰姒涙顓婚崐?
-# 閸氬嫰妯佸▓?status.md 閸欘垰鐪柈銊洬閻?
+# 閹绘劒绶甸幍鈧張澶愭▉濞堢數娈戦崗銊ョ湰姒涙顓婚崐?
+# 閸氬嫰妯佸▓?status.md 閸欘垰鐪柈銊洬閻?
 
 meta:
   version: 1.0.0
 
-# ---- 瀹搞儰缍斿ù渚€绮拋銈呪偓?----
-# 閸掓稑缂撻弬浼存▉濞堝灚鍨?status.md 閺堫亜锝為崘娆愭鎼存梻鏁ゆ禒銉ょ瑓姒涙顓婚崐?
-# 濞夘煉绱板銈勮礋闁劎璁插Ο鈩冩緲姒涙顓婚崐纭风礄manual+disabled閿涘绱濇禒鎾崇氨閼奉亣闊?config.yaml 閸欘垵鍏樻稉宥呮倱
+# ---- 瀹搞儰缍斿ù渚€绮拋銈呪偓?----
+# 閸掓稑缂撻弬浼存▉濞堝灚鍨?status.md 閺堫亜锝為崘娆愭鎼存梻鏁ゆ禒銉ょ瑓姒涙顓婚崐?
+# 濞夘煉绱板銈勮礋闁劎璁插Ο鈩冩緲姒涙顓婚崐纭风礄manual+disabled閿涘绱濇禒鎾崇氨閼奉亣闊?config.yaml 閸欘垵鍏樻稉宥呮倱
 defaults:
-  # 閹笛嗩攽濡€崇础閿涙anual=娴滃搫浼愭す鍗炲З閿涘畮uto=Agent 妞瑰崬濮?
+  # 閹笛嗩攽濡€崇础閿涙anual=娴滃搫浼愭す鍗炲З閿涘畮uto=Agent 妞瑰崬濮?
   # 娴?auto+enabled 閻ㄥ嫰妯佸▓闈涘棘娑撳氦鍤滈崝銊╂４閻?
   execution_mode: manual
 
-  # 閼奉亜濮╅幒銊ㄧ箻閿涙瓰isabled=濮ｅ繑顒為弳鍌氫粻閿涘當nabled=閼奉亜濮╂稉瀣╃濮?
+  # 閼奉亜濮╅幒銊ㄧ箻閿涙瓰isabled=濮ｅ繑顒為弳鍌氫粻閿涘當nabled=閼奉亜濮╂稉瀣╃濮?
   # 闂団偓鐟?execution_mode=auto 閹靛秶鏁撻弫?
   auto_advance: disabled
 
-  # 閸楁洖鍘撳ù瀣槸闁炬崘鐭鹃敍姝燼lse=鐠哄疇绻?test_writing閳姲esting閳妼ug_fixing
+  # 閸楁洖鍘撳ù瀣槸闁炬崘鐭鹃敍姝燼lse=鐠哄疇绻?test_writing閳姲esting閳妼ug_fixing
   # 娑?false 閺?review_passed 閻╁瓨甯存潻鍥ㄦ诞閸?done
   test_enabled: false
 
-  # Worktree 閸氬牆鑻熼敍姝產nual=閸?Agent Manager 娑擃厾鈥樼拋?
-  # auto=AutoRunner 鐎瑰本鍨氶崥搴ゅ殰閸斻劍澧界悰?git merge + 濞撳懐鎮?
+  # Worktree merge mode: manual=confirm in Agent Manager
+  # auto=AutoRunner auto git merge + cleanup
   merge_mode: auto
 """
 
-# 閹稿膩閸ㄥ鎮楃粩顖滄畱 models 闁板秶鐤嗛懞鍌浤侀弶?
+# Model backend configuration templates
 MODELS_CONFIG_TEMPLATES = {
     "openai": """\
-# ---- 濡€崇€烽崥搴ｎ伂闁板秶鐤?----
-# 鐏?Agent 閼宠棄濮忛幓蹇氬牚娑撳骸鍙挎担鎾茨侀崹瀣倵缁旑垵袙閼?
-# 娴兼ê鍘涚痪褝绱癆gent 缁狙嗩洬閻?> role 缁狙嗩洬閻?> default
+# ---- Model Backend Config ----
+# Priority: Agent override > role override > default
+# If config missing or no models section, use session default (tool built-in)
 models:
-  # 姒涙顓诲Ο鈥崇€烽崥搴ｎ伂
+  # Default model backend (used when no Agent-specific config)
   default:
     provider: openai
     model_name: gpt-4o
     base_url: https://api.openai.com/v1
     api_key_env: OPENAI_API_KEY
 
-  # 閹稿顫楅懝鍙夊瘹鐎规碍膩閸ㄥ绱欑粈杞扮伐閿?
+  # Role-based model assignment (matches Agent definition agent_id)
   roles: {}
-  # 閹?Agent 鐎圭偘绶ラ幐鍥х暰閿涘牏銇氭笟瀣剁礆
+  # Per-Agent instance override (can override role default)
   agents: {}
 """,
     "anthropic": """\
-# ---- 濡€崇€烽崥搴ｎ伂闁板秶鐤?----
+# ---- Model Backend Config ----
 models:
   default:
     provider: anthropic
@@ -134,7 +134,7 @@ models:
   agents: {}
 """,
     "ollama": """\
-# ---- 濡€崇€烽崥搴ｎ伂闁板秶鐤?----
+# ---- Model Backend Config ----
 models:
   default:
     provider: ollama
@@ -148,7 +148,7 @@ models:
 }
 
 
-# 閳光偓閳光偓 瀹搞儱鍙块崙鑺ユ殶 閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓
+# ── Utility Functions ──
 
 def report(status: str, path: str, detail: str = "") -> str:
     prefix = {"created": "[+]", "skipped": "[=]", "warning": "[!]", "error": "[X]", "info": " i "}.get(status, "   ")

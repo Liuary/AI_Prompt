@@ -1,122 +1,173 @@
 # ============================================================================
-# AI_Prompt 瑙勫垯 DSL Schema v1.0
+# AI_Prompt Rule DSL Schema v1.0
 #
-# 鏈枃浠跺畾涔?AI Agent 琛屼负绾︽潫鐨勭粨鏋勫寲鎻忚堪鏍煎紡銆?# 灏?AGENTS.md / dev_core.md / Instructions 涓殑鑷劧璇█绾︽潫
-# 缂栫爜涓烘満鍣ㄥ彲澶勭悊鐨勭粨鏋勫寲瑙勫垯锛屾敮鎸佺紪璇戯紙鈫?鍚勫伐鍏峰師鐢熸牸寮忥級
-# 鍜屾牎楠岋紙鍐茬獊/鍐椾綑/姝昏鍒欐娴嬶級銆?# ============================================================================
+# Structured description format for AI Agent behavior constraints.
+# Encodes natural language constraints from AGENTS.md / dev_core.md / Instructions
+# into machine-processable structured rules, supporting compilation (→ native tool formats)
+# and validation (conflict / redundancy / dead-rule detection).
+# ============================================================================
 
-# 鍏冧俊鎭?meta:
+# Meta
+meta:
   schema: "ai-prompt-rule-dsl"
   version: "1.0.0"
   description: >
-    AI Agent 琛屼负绾︽潫鐨勭粨鏋勫寲瀹氫箟鏍煎紡銆?     姣忔潯瑙勫垯鍖呭惈 9 涓瓧娈碉紝瑕嗙洊瑙勫垯鐨勬爣璇嗐€佺骇鍒€?    閫傜敤鑼冨洿銆佽Е鍙戞潯浠躲€佽涓鸿姹傘€佹墽琛屾ā寮忋€佺悊鐢卞拰鏉ユ簮銆?
-# 鈹€鈹€ 瑙勫垯瀛楁瀹氫箟 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
+    Structured definition format for AI Agent behavior constraints.
+    Each rule contains 9 fields covering identification, severity,
+    scope, trigger condition, behavior requirement, enforcement mode,
+    rationale, and source.
+
+# ─── Rule Field Definitions ─────────────────────────────────────────────────
 
 rule_fields:
 
-  # 1. 鍞竴鏍囪瘑绗?  id:
+  # 1. Unique Identifier
+  id:
     type: string
     required: true
     pattern: "^[A-Z]{2,6}-\\d{3}$"
     description: >
-      瑙勫垯鍞竴鏍囪瘑绗︺€?      鏍煎紡锛氬垎绫诲墠缂€锛?-6 涓ぇ鍐欏瓧姣嶏級- 涓変綅鏁板瓧缂栧彿銆?      鍒嗙被鍓嶇紑绾﹀畾锛?        CORE   鈥?鏍稿績琛屼负绾︽潫锛圓GENTS.md 搂 鏍稿績绾︽潫锛?        BEH    鈥?琛屼负鍑嗗垯锛圓GENTS.md 搂 琛屼负鍑嗗垯锛?        STYLE  鈥?缂栫爜椋庢牸绾︽潫锛圓GENTS.md 搂 缂栫爜椋庢牸锛?        OPS    鈥?鎿嶄綔瑙勮寖锛圓GENTS.md 搂 鎿嶄綔瑙勮寖锛?        CMT    鈥?娉ㄩ噴瑙勮寖锛圓GENTS.md 搂 娉ㄩ噴瑙勮寖锛?        META   鈥?鍏冭鍒?浣撶郴瑙勫垯锛圓GENTS.md 搂 鍔ㄦ€佽鍒?/ 鍐欏叆瑙勮寖 / 鐭ヨ瘑搴擄級
-        DEV    鈥?寮€鍙戞湡鍔ㄦ€佽鍒欙紙dev_core.md锛?        INST   鈥?Instructions 鎿嶄綔瑙勫垯锛圞ilo/Instructions/锛?    examples:
+      Rule unique identifier.
+      Format: category prefix (2-6 uppercase letters) - three-digit number.
+      Category prefixes:
+        CORE    — core behavior constraints (AGENTS.md § Core Constraints)
+        BEH     — behavior guidelines (AGENTS.md § Behavior Guidelines)
+        STYLE   — coding style constraints (AGENTS.md § Coding Style)
+        OPS     — operational norms (AGENTS.md § Operational Norms)
+        CMT     — comment norms (AGENTS.md § Comment Norms)
+        META    — meta-rules / system rules (AGENTS.md § Dynamic Rules / Writing Norms / Knowledge Base)
+        DEV     — development dynamic rules (dev_core.md)
+        INST    — Instructions operational rules (instructions/)
+    examples:
       - "CORE-001"
       - "STYLE-003"
       - "DEV-001"
 
-  # 2. 涓ラ噸绾у埆
+  # 2. Severity Level
   level:
     type: enum
     required: true
     values:
-      - error     # 蹇呴』閬靛畧锛涜繚鍙嶅鑷翠弗閲嶉棶棰橈紝鏍￠獙鍣ㄦ姤閿?      - warning   # 搴斿綋閬靛畧锛涜繚鍙嶉渶鍦ㄦ棩蹇椾腑璇存槑鐞嗙敱锛屾牎楠屽櫒鍛婅
-      - info      # 寤鸿閬靛畧锛涘彲鏍规嵁瀹為檯鎯呭喌鐏垫椿璋冩暣锛屾牎楠屽櫒闈欓粯
+      - error     # Must comply; violation leads to serious issues, validator reports error
+      - warning   # Should comply; violation requires logging reason, validator warns
+      - info      # Recommended; flexible adjustment based on circumstances, validator silent
     description: >
-      瑙勫垯涓ラ噸绾у埆锛屽喅瀹氭牎楠屾椂鐨勫鐞嗘柟寮忋€?      error 绾ц鍒欏湪缂栬瘧鍣ㄨ緭鍑轰腑浠ユ渶楂樹紭鍏堢骇鍛堢幇銆?
-  # 3. 閫傜敤鑼冨洿
+      Rule severity level, determines validator handling behavior.
+      Error-level rules appear with highest priority in compiler output.
+
+  # 3. Scope
   scope:
     type: enum
     required: true
     values:
-      - all            # 鎵€鏈?Agent 娲诲姩
-      - conversation   # 瀵硅瘽浜や簰琛屼负锛堝垎鏋愰渶姹傘€佸洖棣堢悊瑙ｃ€佸睍绀洪€夐」锛?      - code           # 浠ｇ爜缂栧啓琛屼负锛堟柊澧炪€佷慨鏀广€侀噸鏋勪唬鐮侊級
-      - docs           # 鏂囨。缂栧啓琛屼负锛堟敞閲娿€丷EADME銆丄PI 鏂囨。銆佺煡璇嗗簱锛?      - workflow       # 宸ヤ綔娴佹搷浣滐紙鏂囦欢绠＄悊銆乬it銆佹瀯寤恒€佹棩蹇椼€佽鍒掓洿鏂帮級
+      - all            # All Agent activities
+      - conversation   # Conversation interaction behavior (requirement analysis, feedback understanding, presenting options)
+      - code           # Code writing behavior (creation, modification, refactoring)
+      - docs           # Documentation writing behavior (comments, README, API docs, knowledge base)
+      - workflow       # Workflow operations (file management, git, builds, logs, plan updates)
     description: >
-      瑙勫垯閫傜敤鐨?Agent 娲诲姩鑼冨洿銆?      缂栬瘧鍣ㄦ牴鎹?scope 鍐冲畾瑙勫垯娉ㄥ叆鍒板摢涓寚浠ゆ钀姐€?
-  # 4. 瑙﹀彂鏉′欢
+      Applicable scope of the rule.
+      The compiler determines which instruction segment to inject the rule into based on scope.
+
+  # 4. Trigger Condition
   condition:
     type: string
     required: true
     description: >
-      瑙﹀彂瑙勫垯鐨勬潯浠舵垨鍦烘櫙锛屼娇鐢ㄨ嚜鐒惰瑷€鎻忚堪銆?      鍙寘鍚?when/if/always 绛夊叧閿瘝鏄庣‘瑙﹀彂鏃舵満銆?      瀵逛簬濮嬬粓鐢熸晥鐨勮鍒欙紝濉啓 "always"銆?      瀵逛簬鍏冭鍒欙紙褰卞搷鍏朵粬瑙勫垯鐨勪紭鍏堢骇瑙勫垯锛夛紝鍦ㄦ鏄庣‘瑕嗙洊鍏崇郴銆?
-  # 5. 琛屼负瑕佹眰
+      Conditions or scenarios that trigger this rule, described in natural language.
+      May include keywords such as when/if/always to clarify trigger timing.
+      For always-effective rules, fill "always".
+      For meta-rules (priority rules affecting other rules), specify override relationships here.
+
+  # 5. Action
   action:
     type: string
     required: true
     description: >
-      婊¤冻 condition 鏃?Agent 蹇呴』/搴斿綋/寤鸿鎵ц鐨勮涓恒€?      浣跨敤鑷劧璇█鎻忚堪銆傚叧閿瘝绾﹀畾锛?        must    鈥?寮哄埗琛屼负锛堝搴?enforcement: strict锛?        should  鈥?鎺ㄨ崘琛屼负锛堝搴?enforcement: advisory锛?        may     鈥?鍙€夎涓猴紙瀵瑰簲 enforcement: advisory 鎴?auto锛?      澶氳涓烘椂鐢ㄥ垎鍙峰垎闅斻€?
-  # 6. 鎵ц妯″紡
+      The behavior that the Agent must/should/may execute when condition is met.
+      Described in natural language. Keyword conventions:
+        must     — mandatory behavior (corresponds to enforcement: strict)
+        should   — recommended behavior (corresponds to enforcement: advisory)
+        may      — optional behavior (corresponds to enforcement: advisory or auto)
+      Multiple actions separated by semicolons.
+
+  # 6. Enforcement Mode
   enforcement:
     type: enum
     required: true
     values:
-      - strict      # 涓ユ牸锛欰gent 蹇呴』閬靛惊锛岀紪璇戝櫒鐩存帴娉ㄥ叆涓烘寚浠?      - advisory    # 寤鸿锛欰gent 搴斾富鍔ㄦ彁閱掔敤鎴凤紝鐢辩敤鎴峰喅瀹氭槸鍚︽墽琛?      - auto        # 鑷姩锛氬彲鍦ㄦ弧瓒虫潯浠舵椂鑷姩鎵ц锛堝鏍煎紡鍖栥€佽嚜妫€銆佺煡璇嗗簱鍐欏叆锛?    description: >
-      瑙勫垯鎵ц妯″紡锛屽喅瀹氱紪璇戝櫒杈撳嚭鏍煎紡鍜?Agent 杩愯鏃惰涓恒€?      strict 瑙勫垯鍦ㄧ紪璇戣緭鍑轰腑浣跨敤 MUST 寮鸿皟銆?      advisory 瑙勫垯鍦ㄧ紪璇戣緭鍑轰腑浣跨敤 SHOULD銆?      auto 瑙勫垯缂栬瘧鍣ㄧ敓鎴愬搴旂殑鑷姩鍖栬Е鍙戦€昏緫銆?
-  # 7. 瀛樺湪鐞嗙敱
+      - strict      # Strict: Agent must comply, compiler directly injects as instruction
+      - advisory    # Advisory: Agent should proactively remind user, user decides whether to execute
+      - auto        # Auto: may execute automatically when conditions are met (formatting, self-check, knowledge base writing)
+    description: >
+      Rule enforcement mode, determines compiler output format and Agent runtime behavior.
+      Strict rules use MUST emphasis in compiler output.
+      Advisory rules use SHOULD in compiler output.
+      Auto rules generate corresponding automated trigger logic.
+
+  # 7. Rationale
   rationale:
     type: string
     required: true
     description: >
-      瑙勫垯瀛樺湪鐨勭悊鐢卞拰鑳屾櫙銆?      甯姪 Agent 鐞嗚В銆屼负浠€涔堥渶瑕佹瑙勫垯銆嶏紝鑰岄潪鏈烘鎵ц銆?      鍦ㄨ鍒欏啿绐佹椂锛堝弬瑙?CORE-006 鍏冭鍒欙級锛屾涓哄垽鏂紭鍏堢骇鐨勯噸瑕佷緷鎹€?
-  # 8. 鏉ユ簮杩芥函
+      Reason and background for the rule's existence.
+      Helps Agent understand "why this rule is needed" rather than mechanical execution.
+      When rules conflict (see CORE-006 meta-rule), this is an important basis for determining priority.
+
+  # 8. Source
   source:
     type: string
     required: true
     description: >
-      瑙勫垯鏉ユ簮鏂囦欢鐨勮矾寰勫拰绔犺妭锛屾敮鎸佹函婧愬鏌ャ€?      鏍煎紡锛?{file} 搂 {section}" 鎴?"{file} 搂 {section}.{subsection}"
+      Path and section of the rule's source document, supporting source tracing.
+      Format: "{file} § {section}" or "{file} § {section}.{subsection}"
     examples:
-      - "AGENTS.md 搂 鏍稿績绾︽潫.1"
-      - "dev_core.md 搂 鐮旂┒鏂囨。瑙勮寖"
-      - "instructions/core.md 搂 浼氳瘽鍚姩鑷"
+      - "AGENTS.md § Core Constraints.1"
+      - "dev_core.md § Research Document Norms"
+      - "instructions/core.md § Session Startup Self-Check"
 
-  # 9. 瑙勫垯鍏崇郴
+  # 9. Relations
   relations:
     type: array
     required: false
     description: >
-      鏈鍒欎笌鍏朵粬瑙勫垯鐨勫叧鑱斿叧绯伙紝渚涙牎楠屽櫒鍋氱粨鏋勫寲妫€娴嬨€?      涓嶅～鍐欐椂鏍￠獙鍣ㄥ洖閫€鍒拌嚜鐒惰瑷€瑙ｆ瀽锛堟寜鍏崇郴绔犺妭鐨?detected_by 瑙勫垯锛夈€?    items:
+      This rule's relationships with other rules, for validator structural detection.
+      When not filled, validator falls back to natural language parsing
+      (according to the relationship chapter's detected_by rules).
+    items:
       type: object
       fields:
         type:
           type: enum
           values: ["hierarchy", "dependency", "conflict", "redundancy"]
-          description: "鍏崇郴绫诲瀷锛屽搴斿叧绯荤珷鑺傜殑 types 瀹氫箟"
+          description: "Relationship type, corresponding to the types definition in the relationship chapter"
         target:
           type: string
           pattern: "^[A-Z]{2,6}-\\d{3}$"
-          description: "鐩爣瑙勫垯 ID"
+          description: "Target rule ID"
         description:
           type: string
-          description: "鍏崇郴璇存槑"
+          description: "Relationship description"
     examples:
       - type: hierarchy
         target: "CORE-001"
-        description: "CORE-006锛堝厓瑙勫垯锛変紭鍏堢骇楂樹簬 CORE-001"
+        description: "CORE-006 (meta-rule) has higher priority than CORE-001"
 
-# 鈹€鈹€ 瑙勫垯闂村叧绯?鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
+# ─── Rule Relations ─────────────────────────────────────────────────────────
 
 relations:
   description: >
-    瑙勫垯涔嬮棿鍙兘瀛樺湪鐨勫叧绯伙紝渚涙牎楠屽櫒妫€娴嬨€?  types:
-    - hierarchy:     # 浼樺厛绾ц鐩栵紙濡?CORE-006 瑕嗙洊鎵€鏈夊叾浠栬鍒欙級
-        description: "涓€鏉¤鍒欏０鏄庝紭鍏堢骇楂樹簬鍙︿竴鏉★紝鍐茬獊鏃朵互姝や负鍑?
-        detected_by: "condition 瀛楁涓彁鍙婂叾浠栬鍒?ID"
-    - dependency:    # 瑙勫垯 A 鐨勬湁鏁堟€т緷璧栬鍒?B
-        description: "涓€鏉¤鍒欑殑 enforce 闇€瑕佸彟涓€鏉¤鍒欏厛婊¤冻"
-        detected_by: "rationale 瀛楁涓彁鍙婂叾浠栬鍒?ID"
-    - conflict:      # 涓ゆ潯瑙勫垯鍦ㄥ悓涓€鏉′欢涓嬭姹備笉鍚岃涓?        description: "鍚屼竴 scope + condition 涓嬩袱涓?action 鐭涚浘"
-        detected_by: "鏍￠獙鍣ㄦ寜 scope + condition 鍒嗙粍鍚庡姣?action"
-    - redundancy:    # 涓ゆ潯瑙勫垯鐨?action 鍜?scope 楂樺害閲嶅悎
-        description: "瑙勫垯 A 鐨勭害鏉熷畬鍏ㄨ瑙勫垯 B 瑕嗙洊"
-        detected_by: "鏍￠獙鍣ㄨ绠楄鍒欏鐨?Jaccard 鐩镐技搴?
+    Possible relationships between rules, for validator detection.
+  types:
+    - hierarchy:     # Priority override (e.g. CORE-006 overrides all other rules)
+        description: "One rule declares higher priority than another; this takes precedence on conflict"
+        detected_by: "condition field mentions other rule IDs"
+    - dependency:    # Rule A's validity depends on Rule B
+        description: "One rule's enforcement requires another rule to be satisfied first"
+        detected_by: "rationale field mentions other rule IDs"
+    - conflict:      # Two rules require different actions under the same condition
+        description: "Two actions conflict under the same scope + condition"
+        detected_by: "Validator groups by scope + condition then compares actions"
+    - redundancy:    # Rule A and Rule B's action and scope highly overlap
+        description: "Rule A's constraint is completely covered by Rule B"
+        detected_by: "Validator calculates Jaccard similarity of rule pairs"

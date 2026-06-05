@@ -1,8 +1,8 @@
-# Hermes-3 鏈湴閮ㄧ讲 docker-compose 閰嶇疆
-# 浣跨敤 Ollama 瀹瑰櫒閮ㄧ讲鏀寔 function calling 鐨?Hermes-3 妯″瀷
+# Hermes-3 local deployment docker-compose config
+# Uses Ollama container to deploy Hermes-3 model with function calling support.
 #
-# 鍚姩: docker-compose -f adapters/hermes/docker-compose.yml up -d
-# 楠岃瘉: python scripts/verify_hermes.py
+# Start: docker-compose -f adapters/hermes/docker-compose.yml up -d
+# Verify: python scripts/verify_hermes.py
 
 version: "3.8"
 
@@ -13,7 +13,8 @@ services:
     ports:
       - "11434:11434"
     volumes:
-      # 鎸佷箙鍖栨ā鍨嬫暟鎹?      - ollama_data:/root/.ollama
+      # Persist model data
+      - ollama_data:/root/.ollama
     environment:
       - OLLAMA_HOST=0.0.0.0
       - OLLAMA_KEEP_ALIVE=24h
@@ -22,11 +23,12 @@ services:
 #      resources:
 #        reservations:
 #          devices:
-            # GPU 鍔犻€燂紙濡傛湁 NVIDIA GPU锛?#            - driver: nvidia
+            # GPU acceleration (for NVIDIA GPU)
+#            - driver: nvidia
 #              count: 1
 #              capabilities: [gpu]
 
-  # Open WebUI 鈥?鍙€夛紝鎻愪緵 Web 鐣岄潰绠＄悊妯″瀷
+  # Open WebUI — optional, provides web interface for model management
   open-webui:
     image: ghcr.io/open-webui/open-webui:main
     container_name: hermes-webui

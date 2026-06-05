@@ -1,43 +1,54 @@
-# stage-10 闁绘鍩栭埀?闁?濡炪倕婀卞ú鎵偓瀛ゃ値鍚€濞ｅ浂鍠栭ˇ?
-- **闁圭瑳鍡╂斀婵☆垪鈧磭纭€**闁挎稒顒nual
-- **闁煎浜滄慨鈺呭箳閵娿劎绠?*闁挎稒鐡癷sabled
-- **闁绘鍩栭埀?*闁挎稒鐡璷ding
-- **鐟滅増鎸告晶鐘垫嫻閿濆嫭宕?Agent**闁挎稒鐡玶chitect
-- **濞戞挸锕ｇ粩瀵告嫻閿濆嫭宕?Agent**闁挎稒顒╫ne
-- **闁哄洤鐡ㄩ弻濠囧籍閸洘锛?*闁?026-06-05 11:14
-- **闁告挸绉堕悿鍡樼瑹濠靛﹦顩?*闁挎稒纰嶅Λ?- **濞撴碍绻嗙粋鍡涙偐閼哥鍋?*闁挎稒顒璦tisfied
+# stage-10 状态
+
+- **执行模式**：manual
+- **自动推进**：disabled
+- **状态**：done
+- **当前责任 Agent**：architect
+- **上一责任 Agent**：none
+- **更新时间**：2026-06-05 12:08
 
 ## Worktree / Session
 
-- **鐎规悶鍎扮紞鏂课熼垾宕囩**闁挎稒顒nual
-- **闁告帒妫欓弫顕€宕?*闁?
-- **妤犵偞鍎奸、鎴﹀箥鐟欏嫷鍋?*闁?
-- **妤犵偞鍎奸、鎴︽⒓閼告鍞?*闁?
-- **Session 闁告艾绉惰ⅷ**闁?
-- **闁告艾鐗嗛懟鐔兼偐閼哥鍋?*闁挎稒顒╫t_started
-- **婵炴挸鎳愰幃濠勭驳閺嶎偅娈?*闁挎稒顒nual
+- **工作模式**：manual
+- **分支名**：-
+- **Session 名称**：-
+- **合并状态**：not_started
+- **清理策略**：manual
 
-## 鐟滅増鎸告晶鐘崇鐠囨彃顫?
-闁稿繈鍔戦妴宥夋儎椤旂⒈鍚€閻犱讲鈧啿绲洪柣婊勫濞?18 濡炪倕缍婂Λ鑸碉紣濮楀牏绀夐柟绋款槷缁鳖參宕楅崼銏ょ崜闁告帒妫欐竟鎺撶┍椤旂⒈妲婚柕?
-### P0闁挎稒姘ㄦ慨鎼佸箑娴ｉ顏遍柤宄扮摠閳ь儸宥囩Architect 闁烩晛鐡ㄧ敮瀛樼┍椤旂⒈妲婚柨?
-1. [x] 濞ｅ浂鍠楅?`current.md` 闁?闁告绮敮鈧?"v3.0闁稿繈鍔戦崕瀵糕偓鐟版湰閸? 闁汇劌瀚伴弫濠勬嫚椤栨熬绱ｉ柡鍕嚱缁辨繈鏌呴幇鐗堚枆婵炲牓娼ч敐鐐哄礃濞嗘垶鍩傞悗鍦仧婵悂骞€?2. [x] 閻炴稏鍎遍崣?`plan_index.md` 闁?閻炴稏鍎扮粭?stage-06/07/08 閻炴稏鍔忛、?3. [x] 闁哄洤鐡ㄩ弻?`plan.md` 闁?v3.0 闂傚啳鍩栭宀勬偐閼哥鍋撴担椋庣煠 planned 闁哄洤鐡ㄩ弻濠冪▔閸濆嫮鏉介梻鍕噹閳?4. [x] 閻炴稏鍎遍崣?`deps.yaml` 闁?婵烇綀顕ф慨?stage-06/07/09 濞撴碍绻嗙粋鍡欌偓瑙勭煯缁?5. [x] 閻炴稏鍎遍崣?`plan_log.md` 闁?閻炴稏鍎遍崢?2026-06-04 v3.0 闁告瑦蓱濞茶法鎷嬮弶璺ㄧЭ
-6. [x] 濞ｅ浂鍠栭ˇ?`stage-06/status.md` 闁?`stage-09/status.md` 濞戞搩鍘介弸鍐磽閺嶎偆鍨?
-### P1闁挎稒宀搁崕瀵哥磾閹绘帗鍊辨慨婵勫劙缁楀矂鏌呴崒鐐插赋闁革絻鍔嬮幈銊﹀緞瀹ュ繒绀勯梻鍥ｅ亾 Code Agent闁?
-7. [ ] 闁哄洤鐡ㄩ弻?`deploy/kilo.py` 闁?婵☆垪鍓濆?KILO_JSONC_CONTENT 婵烇綀顕ф慨?search-kb skill
-8. [ ] 閻炴稏鍎遍崣?Hermes 闂侇偄鍊块崢銈夊闯?闁?闁告帗绋戠紓?`deploy/hermes.py` + 闁圭娲ｉ幎銈夊棘閸ワ附顐?+ 闁?`deploy/__init__.py` 婵炲鍔岄崬?9. [ ] 濞ｅ浂鍠栭ˇ?`deploy/common.py` 濞戞搩鍘介弸鍐ㄢ枖閵娾晛娅炵紓鍌涚墱閻栨粓骞戦悢閿嬬稁
-10. [ ] 闁哄洤鐡ㄩ弻濠囧触閸曨垪鍋撻崒鐐插赋闁?skill 閻熸洖妫涘ú?闁?DeepCode 閻?sync-status/search-kb闁挎稑鐡攐pilot 閻?get-stage-status/update-stage-status/search-kb
-11. [ ] 閻炴稏鍎遍崣?`.kilo/agents/` 闁?婵烇綀顕ф慨鐐电磽閸濆嫨浜奸柣?4 濞?Agent闁挎稑娼妘to-runner/code-worker/review-worker/test-writer闁?
-### P2闁挎稒姘ㄥú鎷屻亹閺囨氨鐟㈢紓浣规尰閻庮垶寮€靛憡鍊?
-12. [ ] 缂備胶鍠嶇粩?`log/` 闁烩晩鍠栫紞宥夊冀閻撳海纭€ 闁?`2026-05-16/` 缂佸顕ч崺?`2026/05/16/`
-13. [ ] 閻炴稏鍎遍崢?`log/2026/06/04/day_index.md`
-14. [ ] 婵炴挸鎳愰幃?`output/rules.md` 闁告梻濮撮崣?.gitignore
-15. [ ] 婵炴挸鎳愰幃濠勭矚閾忚绐楃憸鐗堟礃閸ㄣ劎鎮伴妷銉ユ暥閻?16. [ ] `scripts/kb_graph.py` 闁告梻濮撮崣?deploy 缂侇垵宕电划鍝勵嚕閺囩姵鏆?
-### P3闁挎稒纰嶉悧鎾儎椤旇偐绉块柡浣割嚟閹﹪鏁嶉崼銉︿粯閻犱降鍔忛鎴︽晬?
-17. [ ] 闁轰礁顕幃濠囧冀閸︻厽绐楃憸?25 濞戞搩浜濆顖炴儎?闁?閻?deploy.py/rule_cli.py/ADAPTER_SPEC.md 缂佹稑顦紞濠勭尵?18. [ ] 闁哄嫬娴烽垾?Kilo/agents/ 濞?.kilo/agents/ 闁煎崬鐭侀惌妤佹綇閸︻厽娅?
-## 闂傚啳顕ч、?/ 闁哄棗鍊告禒鐘诲储閻旈攱绀?
-P0 闁?Architect 闁烩晛鐡ㄧ敮瀛樺緞閸曨厽鍊為柨娑欏1-P3 闂傚洠鍋撶紒澶庮唺濮?Code Agent
+## 当前任务
+v3.0 补全计划（共计 18 项，分 P0-P3 四个优先级）
 
-## 闁绘鍩栭埀顑挎祰椤斿洩銇?
-| 闁哄啫鐖煎Λ?| Agent | 闁绘鍩栭埀顑跨瑜板宕?| 閻犲洤鐡ㄥΣ?|
+### P0（Architect 审计修复）
+1. [x] 更新 `current.md` 中 "v3.0 补全计划" 版本标记
+2. [x] 更新 `plan_index.md` 补充 stage-06/07/08 条目
+3. [x] 更新 `plan.md` v3.0 补全计划标记 planned → done
+4. [x] 更新 `deps.yaml` 补充 stage-06/07/09 依赖规则
+5. [x] 更新 `plan_log.md` 记录 2026-06-04 v3.0 补全操作
+6. [x] 更新 `stage-06/status.md` 到 `stage-09/status.md` 状态
+
+### P1（Code Agent）
+7. [x] 更新 `deploy/kilo.py` 添加 KILO_JSONC_CONTENT 补充 search-kb skill
+8. [x] 更新 Hermes 后端 `deploy/hermes.py` + 配置模板 + `deploy/__init__.py` 导出
+9. [x] 更新 `deploy/common.py` 添加模型解析工具函数
+10. [x] 更新 skill 指令集：DeepCode → sync-status/search-kb，Pilot → get-stage-status/update-stage-status/search-kb
+11. [x] 更新 `.kilo/agents/` 补充 4 个 Agent：auto-runner/code-worker/review-worker/test-writer
+
+### P2（工作区工具链）
+12. [x] 迁移 `log/` 旧目录名 `2026-05-16/` 命名 `2026/05/16/`
+13. [x] 更新 `log/2026/06/04/day_index.md`
+14. [x] 迁移 `output/rules.md` 到 .gitignore
+15. [x] 迁移结构归档零碎文件
+16. [x] `scripts/kb_graph.py` 移到 deploy 子目录
+
+### P3（可选长效）
+17. [ ] 同步约 25 处 `Kilo/` 引用到 `.kilo/`（deploy.py/rule_cli.py/ADAPTER_SPEC.md 等）
+18. [ ] 迁移 `Kilo/agents/` 到 `.kilo/agents/` 并清理旧目录
+
+## 阻塞 / 暂停原因
+P0-P2 已全部完成，P3 为可选长效任务，不阻塞后续阶段。
+
+## 状态记录
+| 时间 | Agent | 状态变化 | 说明 |
 |------|-------|----------|------|
-| 2026-06-05 11:14 | architect | 闁告帗绋戠紓?闁?coding | 闁告帟娉涢悾鐐┍椤斿厠澶屾媼閳ュ啿鐏婃鐐舵硾缁辨垶鎱?P0 |
+| 2026-06-05 11:14 | architect | 创建 → coding | 审计修复 P0 |
+| 2026-06-05 12:08 | architect | coding → done | P0-P2 全部完成 |
