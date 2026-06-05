@@ -32,6 +32,7 @@ SKILL_SOURCES = [
 VECTOR_SCRIPTS = [
     "scripts/build_kb_index.py",
     "scripts/search_kb.py",
+    "scripts/kb_graph.py",
 ]
 
 VECTOR_DEPENDENCY_NOTICE = (

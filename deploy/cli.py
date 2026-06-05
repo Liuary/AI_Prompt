@@ -19,6 +19,7 @@ def show_help():
   -c, --claude        仅部署 Claude Code 适配器（CLAUDE.md + .claude/commands/）
   -p, --copilot       仅部署 GitHub Copilot 适配器（.github/copilot-instructions.md）
   -o, --opencode      仅部署 OpenCode 适配器（Agent/Skill → .opencode/）
+  -m, --hermes        仅部署 Hermes (Ollama) 适配器（docker-compose.yml + Modelfile）
   --obsidian          部署 Obsidian Vault 模板（.ai/obsidian/ → 目标项目）
   -l, --list          列出所有支持的 AI 工具
   -h, --help          显示本帮助信息
@@ -37,7 +38,8 @@ def show_list():
     print("  claude      Claude Code — Anthropic 的终端 Agent 工具，通过 CLAUDE.md + 命令提供治理能力")
     print("  copilot     GitHub Copilot — IDE 内嵌 AI 助手，通过 copilot-instructions.md 提供行为约束")
     print("  opencode    OpenCode — 开源终端 Agent 工具（Kilo 上游），支持完整 Agent 角色体系")
-    print("\n用法：python deploy.py <目标路径> [-k | -d | -c | -p | -o]")
+    print("  hermes      Hermes (Ollama) — 本地模型适配器，通过 Ollama 运行 Hermes-3 模型")
+    print("\n用法：python deploy.py <目标路径> [-k | -d | -c | -p | -o | -m]")
     print("不指定选项时默认部署全部。")
     sys.exit(0)
 
@@ -56,6 +58,7 @@ def build_parser():
     tool_group.add_argument("-c", "--claude",   action="store_true", help=argparse.SUPPRESS)
     tool_group.add_argument("-p", "--copilot",  action="store_true", help=argparse.SUPPRESS)
     tool_group.add_argument("-o", "--opencode", action="store_true", help=argparse.SUPPRESS)
+    tool_group.add_argument("-m", "--hermes",   action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("--obsidian", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("-l", "--list", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("-h", "--help", action="store_true", help=argparse.SUPPRESS)
@@ -69,6 +72,7 @@ def resolve_tool(args) -> str:
     if args.claude:   return "claude"
     if args.copilot:  return "copilot"
     if args.opencode: return "opencode"
+    if args.hermes:   return "hermes"
     return "all"
 
 

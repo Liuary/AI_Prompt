@@ -11,6 +11,8 @@ DEEPCODE_FILES = {
     "adapters/deepcode/skills/bug-acceptance/SKILL.md": ".agents/skills/bug-acceptance/SKILL.md",
     "adapters/deepcode/skills/get-stage-status/SKILL.md": ".agents/skills/get-stage-status/SKILL.md",
     "adapters/deepcode/skills/update-stage-status/SKILL.md": ".agents/skills/update-stage-status/SKILL.md",
+    "adapters/deepcode/skills/sync-status/SKILL.md": ".agents/skills/sync-status/SKILL.md",
+    "adapters/deepcode/skills/search-kb/SKILL.md": ".agents/skills/search-kb/SKILL.md",
 }
 
 DEEPCODE_DIRS = [
@@ -19,6 +21,8 @@ DEEPCODE_DIRS = [
     ".agents/skills/bug-acceptance",
     ".agents/skills/get-stage-status",
     ".agents/skills/update-stage-status",
+    ".agents/skills/sync-status",
+    ".agents/skills/search-kb",
     ".deepcode",
 ]
 

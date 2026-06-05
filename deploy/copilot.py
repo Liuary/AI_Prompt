@@ -17,6 +17,9 @@ COPILOT_SKILLS = {
     "adapters/copilot/skills/check-kb/SKILL.md": ".github/skills/check-kb/SKILL.md",
     "adapters/copilot/skills/bug-acceptance/SKILL.md": ".github/skills/bug-acceptance/SKILL.md",
     "adapters/copilot/skills/sync-status/SKILL.md": ".github/skills/sync-status/SKILL.md",
+    "adapters/copilot/skills/get-stage-status/SKILL.md": ".github/skills/get-stage-status/SKILL.md",
+    "adapters/copilot/skills/update-stage-status/SKILL.md": ".github/skills/update-stage-status/SKILL.md",
+    "adapters/copilot/skills/search-kb/SKILL.md": ".github/skills/search-kb/SKILL.md",
 }
 
 COPILOT_AGENTS = {
@@ -37,6 +40,9 @@ COPILOT_DIRS = [
     ".github/skills/check-kb",
     ".github/skills/bug-acceptance",
     ".github/skills/sync-status",
+    ".github/skills/get-stage-status",
+    ".github/skills/update-stage-status",
+    ".github/skills/search-kb",
     ".github/agents",
     ".github/scripts",
 ]

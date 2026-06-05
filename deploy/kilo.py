@@ -33,6 +33,7 @@ KILO_JSONC_CONTENT = """\
   "skills": {
     "get-bugs": ".kilo/skills/get-bugs",
     "check-kb": ".kilo/skills/check-kb",
+    "search-kb": ".kilo/skills/search-kb",
     "bug-acceptance": ".kilo/skills/bug-acceptance",
     "sync-status": ".kilo/skills/sync-status",
     "get-stage-status": ".kilo/skills/get-stage-status",
