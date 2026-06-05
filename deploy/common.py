@@ -1,4 +1,3 @@
-锘? deploy/common.py
 # deploy/common.py
 # AI_Prompt 闁劎璁查懘姘拱 閳?闁氨鏁ら柅鏄忕帆
 
@@ -159,12 +158,13 @@ def report(status: str, path: str, detail: str = "") -> str:
 
 
 def create_directories(target: Path, tool_dirs: list[str]) -> list[str]:
+    """Create AI and tool-specific directories."""
     lines = []
     all_dirs = list(AI_DIRS) + list(tool_dirs)
     for d in all_dirs:
         dir_path = target / d
         if dir_path.exists():
-            lines.append(report("skipped", str(d), "瀹告彃鐡ㄩ崷?))
+            lines.append(report("skipped", str(d)))
         else:
             dir_path.mkdir(parents=True, exist_ok=True)
             lines.append(report("created", str(d)))
@@ -172,17 +172,18 @@ def create_directories(target: Path, tool_dirs: list[str]) -> list[str]:
 
 
 def copy_files(source: Path, target: Path, file_map: dict) -> tuple:
+    """Copy files from source to target based on file_map."""
     lines, copied, skipped, missing = [], 0, 0, 0
     for src_rel, dst_rel in file_map.items():
         src_path = source / src_rel
         dst_path = target / dst_rel
         if not src_path.exists():
-            lines.append(report("warning", str(dst_rel), f"濠ф劖鏋冩禒鏈电瑝鐎涙ê婀? {src_rel}"))
+            lines.append(report("warning", str(dst_rel), "source missing"))
             missing += 1
             continue
         dst_path.parent.mkdir(parents=True, exist_ok=True)
         if dst_path.exists():
-            lines.append(report("skipped", str(dst_rel), "瀹告彃鐡ㄩ崷?))
+            lines.append(report("skipped", str(dst_rel)))
             skipped += 1
         else:
             shutil.copy2(src_path, dst_path)
@@ -192,49 +193,44 @@ def copy_files(source: Path, target: Path, file_map: dict) -> tuple:
 
 
 def deploy_resources(source: Path, target: Path, prefix: str, rules_dir: str = "instructions") -> tuple[list[str], int, int]:
-    """鐏忓棝鈧氨鏁?Instructions 閸?Skills 闁劎璁查崚鎵窗閺嶅洨娲拌ぐ鏇樷偓?""
+    """Deploy Instructions and Skills to target directory."""
     lines = []
     inst_map = {s: f"{prefix}/{rules_dir}/{Path(s).name}" for s in INSTRUCTION_SOURCES}
     skill_map = {s: s.replace("skills/", f"{prefix}/skills/") for s in SKILL_SOURCES}
     total_copied, total_skipped = 0, 0
-
-    lines.append(f"  [闁氨鏁ょ痪锔芥将 閳?{prefix}/{rules_dir}/]")
+    lines.append(f"  [Instructions => {prefix}/{rules_dir}/]")
     i_lines, ic, iskip, im = copy_files(source, target, inst_map)
     lines.extend(i_lines)
-    lines.append(report("info", f"鐟欏嫬鍨? 婢跺秴鍩?{ic}, 鐠哄疇绻?{iskip}" + (f", 缂傚搫銇?{im}" if im else "")))
+    lines.append(report("info", f"Instructions: copied {ic}, skipped {iskip}"))
     total_copied += ic; total_skipped += iskip
-
-    lines.append(f"  [闁氨鏁ら幎鈧懗?閳?{prefix}/skills/]")
+    lines.append(f"  [Skills => {prefix}/skills/]")
     s_lines, sc, sskip, sm = copy_files(source, target, skill_map)
     lines.extend(s_lines)
-    lines.append(report("info", f"閹垛偓閼? 婢跺秴鍩?{sc}, 鐠哄疇绻?{sskip}" + (f", 缂傚搫銇?{sm}" if sm else "")))
+    lines.append(report("info", f"Skills: copied {sc}, skipped {sskip}"))
     total_copied += sc; total_skipped += sskip
-
     return lines, total_copied, total_skipped
 
-
-# 閳光偓閳光偓 闁氨鏁ら柊宥囩枂 閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓閳光偓
-
 def configure_gitignore(target: Path) -> list[str]:
+    """Configure root .gitignore with required entries."""
     lines = []
     root_path = target / ".gitignore"
     existing = set()
     if root_path.exists():
         existing = set(line.strip() for line in root_path.read_text(encoding="utf-8").splitlines() if line.strip())
-    missing = [e for e in ROOT_GITIGNORE_ENTRIES if e not in existing]
-    if missing:
+    missing_entries = [e for e in ROOT_GITIGNORE_ENTRIES if e not in existing]
+    if missing_entries:
         with root_path.open("a", encoding="utf-8") as f:
             if root_path.stat().st_size > 0:
                 f.seek(0, os.SEEK_END)
                 if f.tell() > 0: f.write("\n")
-            f.writelines(e + "\n" for e in missing)
-        lines.append(report("created", ".gitignore", f"鏉╄棄濮?{len(missing)} 閺?))
+            f.writelines(e + "\n" for e in missing_entries)
+        lines.append(report("created", ".gitignore", f"added {len(missing_entries)} entries"))
     else:
-        lines.append(report("skipped", ".gitignore", "閺夛紕娲扮€瑰本鏆?))
+        lines.append(report("skipped", ".gitignore"))
     ai_path = target / ".ai" / ".gitignore"
     ai_path.parent.mkdir(parents=True, exist_ok=True)
     if ai_path.exists():
-        lines.append(report("skipped", ".ai/.gitignore", "瀹告彃鐡ㄩ崷?))
+        lines.append(report("skipped", ".ai/.gitignore"))
     else:
         ai_path.write_text(AI_GITIGNORE_CONTENT, encoding="utf-8")
         lines.append(report("created", ".ai/.gitignore"))
@@ -242,45 +238,49 @@ def configure_gitignore(target: Path) -> list[str]:
 
 
 def configure_info_json(target: Path) -> list[str]:
+    """Configure .ai/.info.json with user identity."""
     path = target / ".ai" / ".info.json"
     if path.exists():
-        return [report("skipped", ".ai/.info.json", "瀹告彃鐡ㄩ崷?)]
+        return [report("skipped", ".ai/.info.json")]
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(INFO_JSON_CONTENT, encoding="utf-8")
     return [report("created", ".ai/.info.json")]
 
 
 def configure_config_yaml(target: Path) -> list[str]:
+    """Configure .ai/config.yaml with workflow defaults."""
     path = target / ".ai" / "config.yaml"
     if path.exists():
-        return [report("skipped", ".ai/config.yaml", "瀹告彃鐡ㄩ崷?)]
+        return [report("skipped", ".ai/config.yaml")]
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(CONFIG_YAML_CONTENT, encoding="utf-8")
     return [report("created", ".ai/config.yaml")]
 
 
 def configure_config_yaml_with_backend(target: Path, backend: str) -> list[str]:
-    """娴ｈ法鏁ら幐鍥х暰濡€崇€烽崥搴ｎ伂閻㈢喐鍨?config.yaml閵?""
+    """Configure config.yaml with model backend settings."""
     path = target / ".ai" / "config.yaml"
     if path.exists():
         existing = path.read_text(encoding="utf-8")
         if "models:" in existing:
-            return [report("skipped", ".ai/config.yaml", f"瀹稿弶婀?models 閼哄偊绱濈捄瀹犵箖鐟曞棛娲?)]
+            return [report("skipped", ".ai/config.yaml", "models section already exists")]
         model_section = MODELS_CONFIG_TEMPLATES.get(backend, MODELS_CONFIG_TEMPLATES["openai"])
         new_content = existing.rstrip() + "\n" + model_section
         path.write_text(new_content, encoding="utf-8")
-        return [report("created", ".ai/config.yaml", f"鏉╄棄濮?models 閼?(backend={backend})")]
+        return [report("created", ".ai/config.yaml", "appended models section")]
     path.parent.mkdir(parents=True, exist_ok=True)
     model_section = MODELS_CONFIG_TEMPLATES.get(backend, MODELS_CONFIG_TEMPLATES["openai"])
     path.write_text(CONFIG_YAML_CONTENT + model_section, encoding="utf-8")
-    return [report("created", ".ai/config.yaml", f"閸?models 閼?(backend={backend})")]
+    return [report("created", ".ai/config.yaml", "created with models section")]
+
 
 
 def generate_workspace(target: Path) -> list[str]:
-    name = f"{target.resolve().name}.code-workspace"
+    """Generate VS Code workspace file."""
+    name = f'{target.resolve().name}.code-workspace'
     ws_path = target / name
     if ws_path.exists():
-        return [report("skipped", name, "瀹告彃鐡ㄩ崷?)]
+        return [report("skipped", name)]
     workspace = {
         "folders": [{"path": "."}],
         "settings": {
@@ -289,5 +289,5 @@ def generate_workspace(target: Path) -> list[str]:
             "chat.useCustomAgentHooks": True,
         },
     }
-    ws_path.write_text(json.dumps(workspace, indent=4, ensure_ascii=False) + "\n", encoding="utf-8")
+    ws_path.write_text(json.dumps(workspace, indent=2, ensure_ascii=False), encoding="utf-8")
     return [report("created", name)]

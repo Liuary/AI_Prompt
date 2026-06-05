@@ -8,6 +8,7 @@
   "skills": {
     "get-bugs": "skills/get-bugs",
     "check-kb": "skills/check-kb",
+    "search-kb": "skills/search-kb",
     "bug-acceptance": "skills/bug-acceptance",
     "sync-status": "skills/sync-status",
     "get-stage-status": "skills/get-stage-status",
