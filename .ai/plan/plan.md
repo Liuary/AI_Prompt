@@ -177,3 +177,28 @@ v2.0 解决了"AI Agent 该怎么做事"（约束、角色、流程、状态机�
 - **Obsidian Vault 集成**：`.ai/` 目录即 Obsidian vault
 - **Dataview 仪表盘**：计划状态、审查、Bug 面板
 - **统一 CLI 工具**：`ai status` / `ai review` / `ai bugs` / `ai log`
+
+---
+
+## 八、阶段十一：OpenCode 适配器工具兼容性修正
+
+> 优先级：🟠  |  状态：planned  |  详见：stage-11/
+
+### 背景
+
+AI_Prompt 的 OpenCode 适配器当前直接复用 Kilo Agent 定义文件（ + "dapters/kilo/agents/*.md" + @"）。这些文件包含 OpenCode 不兼容的引用：YAML 中的  + "edit/gent_manager/	odowrite" + @" 权限声明对应不存在的工具，正文中的"用 write/edit 工具"等指导性语句会误导 Agent 调用不存在的工具。
+
+本阶段按照 [[docs/agent-tool-compatibility-fix.md]] 的分析，创建 OpenCode 专用的 Agent 定义和指令文件。
+
+### 目标
+
+- 创建  + "dapters/opencode/agents/" + @" 下 9 个 OpenCode 专用 Agent 定义
+- 创建  + "dapters/opencode/instructions/core.md" + @" 专用指令文件
+- 修改  + "deploy/opencode.py" + @" 指向新文件
+- 所有生成文件不含  + "edit/gent_manager/	odowrite/	odoread" + @" 等不存在的工具引用
+
+### 影响范围
+
+- 新建： + "dapters/opencode/agents/" + @" 下 9 个 Agent 文件 +  + "dapters/opencode/instructions/core.md" + @"
+- 修改： + "deploy/opencode.py" + @"、 + "deploy/opencode.md" + @"
+- 不修改 Kilo/Claude/Copilot 等现有适配器

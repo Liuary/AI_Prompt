@@ -20,4 +20,6 @@
 | 2026-05-13 15:35 | code | 处理 REV-024~029：状态修正/日志补全/文档同步 |
 | 2026-05-15 23:28 | code | 创建阶段五（并行支持改造）：依赖图 + 多 WorkTree 并行 + AutoRunner 内部并行 |
 | 2026-05-15 23:35 | code | 阶段五 coding → ready_for_review，6/6 文件改造完成 |
-| 2026-05-16 00:30 | auto-runner | 创建 stage-05，处理 REV-051~055（deps.yaml/审查路径/职责分离/部署目录/Hook路径） |
+| 2026-05-16 00:30 | auto-runner | 创建 stage-05，处理 REV-051~055（deps.yaml/审查路径/职责分离/部署目录/Hook路径） || 2026-06-27 01:09 | architect | stage-11 计划创建：OpenCode 适配器工具兼容性修正（方向A），创建专用 Agent 定义和指令文件 |
+| 2026-06-27 01:20 | architect | stage-11 coding 完成，ready_for_review：12 个文件全部就绪，部署测试 + grep 验证通过 |
+| 2026-06-27 01:37 | architect | stage-11 done：REV-001~005 全部 closed，OpenCode 适配器工具兼容性修正完成 |
