@@ -52,6 +52,13 @@ permission:
 5. 调用 `load skill check-kb` 查阅知识库。
 6. 若用户指定计划阶段，调用 `load skill get-stage-status` 读取该阶段状态。
 
+
+7. 读取 `.ai/config.yaml` 的 `defaults.execution_mode` 和 `defaults.auto_advance`：
+   - 若 `execution_mode=manual` 或 `auto_advance=disabled`，向用户报告当前配置并询问：
+     「当前项目默认未启用自动闭环（execution_mode=manual, auto_advance=disabled）。是否要开启自动闭环？开启后 Architect 可自动调度 Agent Manager worktree 完成子计划闭环。」
+   - 用户确认 → 修改 `.ai/config.yaml` 对应字段为 `auto` / `enabled`
+   - 用户拒绝 → 保持现有配置不变
+   - 若已是 `auto + enabled` → 跳过此步骤
 ---
 
 ## 计划工作流
@@ -72,6 +79,9 @@ permission:
 - 将计划写入 `.ai/plan/` 对应位置（大计划 → `plan.md`，小计划 → `{stage}/` 子目录）。
 - 每个计划必须包含**验证步骤**：明确写出如何端到端测试该计划是否成功。
 - 每个小计划阶段必须创建 `{stage}/status.md`。默认值来自 `.ai/config.yaml` defaults（状态文件初始化时由 `update-stage-status` skill 读取 config.yaml 写入）。
+  创建新阶段 status.md 时，若 `.ai/config.yaml` 的 `execution_mode=manual` 或 `auto_advance=disabled`，询问用户：「新阶段 {stage} 默认执行模式为 manual/disabled，是否对此阶段单独启用自动闭环？」
+  - 用户确认 → 在该阶段 status.md 中将执行模式设为 `auto`、自动推进设为 `enabled`（局部覆盖 config.yaml 全局默认）
+  - 用户拒绝 → 沿用 config.yaml 的默认值（manual/disabled）
 - 只写推荐方案，不在计划文件中存放备用方案对比。
 - 更新 `.ai/plan/plan_index.md` 和 `.ai/plan/plan_log.md`。
 
